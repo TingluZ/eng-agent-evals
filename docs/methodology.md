@@ -27,3 +27,22 @@ The reference functions are checked against independent sources (`tests/test_phy
 - Gnielinski within 15 % of Dittus-Boelter at Re = 5×10⁴, Pr = 7.
 - Internal consistency of the property table: Pr ≈ μc_p/k.
 - Invalid inputs (non-positive dimensions, out-of-range temperature, incompatible units) raise descriptive errors, which the agent receives as retry prompts.
+
+## Agent
+
+The agent (`src/eng_agent_evals/agent.py`) is a PydanticAI `Agent` with six tools and a typed output.
+
+| Tool | Wraps |
+|---|---|
+| `convert_units` | `units.convert` (pint) |
+| `water_properties` | `physics.water_properties` |
+| `reynolds_number` | `physics.reynolds_number`, `physics.flow_regime` |
+| `friction_factor` | `physics.friction_factor` |
+| `pressure_drop` | `physics.pressure_drop` |
+| `heat_transfer_coefficient` | `physics.nusselt_number`, `physics.heat_transfer_coefficient` |
+
+Tools take SI inputs, so unit conversion is an explicit, observable step in the trajectory. Invalid inputs raise `ModelRetry`: the error message is returned to the model, which may correct the call (up to two retries per tool).
+
+The output is an `Answer`: `value`, `unit`, `regime`, `assumptions`, `missing_inputs` and `explanation`. When a required input is absent, the agent is instructed to return `value = null` and name the missing input rather than assume one; when no roughness is given, it assumes a smooth pipe and states the assumption. Both behaviours are evaluated.
+
+The model is set by `AGENT_MODEL` (default `openai:gpt-5.4-mini`). Agent wiring is unit-tested without API calls using PydanticAI's `TestModel` and `FunctionModel`, including a scripted trajectory that must reproduce the reference pressure drop exactly.
