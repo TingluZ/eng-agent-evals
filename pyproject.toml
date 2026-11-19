@@ -12,6 +12,9 @@ dependencies = [
     "pint>=0.24",
 ]
 
+[project.scripts]
+ask = "eng_agent_evals.ask:main"
+
 [dependency-groups]
 dev = ["pytest>=8"]
 
