@@ -6,3 +6,6 @@ __pycache__/
 .logfire/
 dist/
 *.egg-info/
+
+# Private working notes (kept local)
+notes/
