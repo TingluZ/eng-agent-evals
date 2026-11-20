@@ -44,3 +44,4 @@ uv run python -m eng_agent_evals.run_evals --model openai:gpt-5.4
 | `results/` | Saved evaluation reports |
 | `tests/` | Reference physics, agent wiring, dataset, evaluators and runner; no API calls |
 | `docs/methodology.md` | Ground truth, reference correlations, verification, agent and evaluation design |
+| `docs/run-log.md` | Each evaluation run: results, failures and their causes, and the changes made |
