@@ -1,0 +1,6117 @@
+{
+  "model": "openai:gpt-6.1-sol",
+  "timestamp": "2026-11-20T19:23:51+00:00",
+  "git_commit": "db92c0e",
+  "dataset": "pipe_flow",
+  "summary": {
+    "overall": {
+      "successes": 60,
+      "n": 60,
+      "rate": 1.0,
+      "ci_low": 0.9398260695220669,
+      "ci_high": 0.9999999999999999
+    },
+    "process": {
+      "successes": 60,
+      "n": 60,
+      "rate": 1.0,
+      "ci_low": 0.9398260695220669,
+      "ci_high": 0.9999999999999999
+    },
+    "per_case_type": {
+      "heat_transfer": {
+        "successes": 15,
+        "n": 15,
+        "rate": 1.0,
+        "ci_low": 0.7961107336956521,
+        "ci_high": 1.0
+      },
+      "pressure_drop": {
+        "successes": 20,
+        "n": 20,
+        "rate": 1.0,
+        "ci_low": 0.8388698745050667,
+        "ci_high": 1.0
+      },
+      "reynolds_regime": {
+        "successes": 10,
+        "n": 10,
+        "rate": 1.0,
+        "ci_low": 0.7224598312333834,
+        "ci_high": 1.0
+      },
+      "trap": {
+        "successes": 15,
+        "n": 15,
+        "rate": 1.0,
+        "ci_low": 0.7961107336956521,
+        "ci_high": 1.0
+      }
+    },
+    "correctness_checks": {
+      "ValueWithinTolerance": {
+        "successes": 60,
+        "n": 60,
+        "rate": 1.0,
+        "ci_low": 0.9398260695220669,
+        "ci_high": 0.9999999999999999
+      },
+      "RegimeCorrect": {
+        "successes": 60,
+        "n": 60,
+        "rate": 1.0,
+        "ci_low": 0.9398260695220669,
+        "ci_high": 0.9999999999999999
+      },
+      "FlagsMissingInputs": {
+        "successes": 58,
+        "n": 58,
+        "rate": 1.0,
+        "ci_low": 0.9378800031047062,
+        "ci_high": 0.9999999999999999
+      },
+      "reports_requested_unit": {
+        "successes": 2,
+        "n": 2,
+        "rate": 1.0,
+        "ci_low": 0.34237195288961925,
+        "ci_high": 1.0
+      }
+    },
+    "process_checks": {
+      "tool_correctness": {
+        "successes": 55,
+        "n": 55,
+        "rate": 1.0,
+        "ci_low": 0.9347128562105721,
+        "ci_high": 0.9999999999999999
+      },
+      "ValueTraceableToTool": {
+        "successes": 55,
+        "n": 55,
+        "rate": 1.0,
+        "ci_low": 0.9347128562105721,
+        "ci_high": 0.9999999999999999
+      },
+      "InputsTraceable": {
+        "successes": 59,
+        "n": 59,
+        "rate": 1.0,
+        "ci_low": 0.938868520215908,
+        "ci_high": 1.0
+      }
+    },
+    "mean_trajectory_score": 1.0,
+    "mean_tool_calls": 2.2333333333333334,
+    "retry_rate": 0.0,
+    "task_errors": 0,
+    "per_repeat": {},
+    "inconsistent_cases": []
+  },
+  "cases": [
+    {
+      "name": "pressure_drop-01",
+      "source_case": "pressure_drop-01",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "93.4538 vs 93.4538 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 93.45383424,
+          "unit": "Pa",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth pipe assumed because pipe material and roughness were not specified.",
+            "Pressure drop includes straight-pipe friction only; fitting losses and elevation effects are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach calculation using water properties at the specified temperature. The Reynolds number is 1059.145299145299, indicating laminar flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 25,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.025,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.027,
+              "diameter": 0.025,
+              "length": 107,
+              "temperature_c": 42,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 93.45383424,
+              "reynolds_number": 1059.145299145299,
+              "regime": "laminar",
+              "friction_factor": 0.060426081342801814
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3518,
+          "output_tokens": 176
+        }
+      },
+      "duration_s": 8.909054,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-02",
+      "source_case": "pressure_drop-02",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "230.688 vs 230.688 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 230.688,
+          "unit": "Pa",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth pipe, as specified.",
+            "Fully developed flow; pressure drop includes pipe friction only."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach calculation gives a frictional pressure drop of 230.688 Pa. The Reynolds number is 518.9866833125261, indicating laminar flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 20,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.02,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.025,
+              "diameter": 0.02,
+              "length": 120,
+              "temperature_c": 22,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 230.688,
+              "reynolds_number": 518.9866833125261,
+              "regime": "laminar",
+              "friction_factor": 0.1233172296281447
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3519,
+          "output_tokens": 166
+        }
+      },
+      "duration_s": 8.512636,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-03",
+      "source_case": "pressure_drop-03",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "55.6595 vs 55.6595 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 55.65952000000001,
+          "unit": "Pa",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth tube, as specified.",
+            "Fully developed flow; pressure drop includes wall friction only, excluding fittings and elevation changes."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach calculation using water properties at the specified temperature gives a Reynolds number of 502.4888924661945, indicating laminar flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 15,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.015,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.021,
+              "diameter": 0.015,
+              "length": 30,
+              "temperature_c": 43,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 55.65952000000001,
+              "reynolds_number": 502.4888924661945,
+              "regime": "laminar",
+              "friction_factor": 0.1273659994470538
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3523,
+          "output_tokens": 171
+        }
+      },
+      "duration_s": 8.216923,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-04",
+      "source_case": "pressure_drop-04",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "1938.28 vs 1938.28 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 1938.2774399999998,
+          "unit": "Pa",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth pipe, as specified.",
+            "Pressure drop is due to fully developed pipe friction; entrance and fitting losses are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Calculated using Darcy\u2013Weisbach with the laminar Darcy friction factor and water properties at the specified temperature."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 10,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.01,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.061,
+              "diameter": 0.01,
+              "length": 187,
+              "temperature_c": 52,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 1938.2774399999998,
+              "reynolds_number": 1133.887758945386,
+              "regime": "laminar",
+              "friction_factor": 0.05644297638376973
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3497,
+          "output_tokens": 161
+        }
+      },
+      "duration_s": 8.221524,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-05",
+      "source_case": "pressure_drop-05",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "9601.5 vs 9601.5 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 9601.497563820774,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "The pipe is hydraulically smooth because material and roughness were not specified.",
+            "Only straight-pipe friction is included; fitting losses and elevation effects are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Calculated using the Darcy\u2013Weisbach equation with water properties at the given temperature and a Colebrook Darcy friction factor. The Reynolds number is 86187.52192432975, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 32,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.032,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 1.1,
+              "diameter": 0.032,
+              "length": 28,
+              "temperature_c": 71,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 9601.497563820774,
+              "reynolds_number": 86187.52192432975,
+              "regime": "turbulent",
+              "friction_factor": 0.01856060336488132
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3506,
+          "output_tokens": 188
+        }
+      },
+      "duration_s": 7.984874,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-06",
+      "source_case": "pressure_drop-06",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:absolute",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "54138.8 vs 54138.8 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=4, precision=4/4=1.000, recall=4/4=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop'], actual: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 4,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 54138.78519695603,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Steady, fully developed flow; only straight-pipe friction is included, excluding fittings and entrance losses."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach pressure drop using the Colebrook Darcy friction factor of 0.028511408498882312. The specified roughness gives a relative roughness of 0.0001; the Reynolds number is 13937.482946793996, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 15,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.015,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 0.0015,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 1.5e-06,
+            "retried": false
+          },
+          {
+            "name": "relative_roughness",
+            "args": {
+              "roughness": 1.5e-06,
+              "diameter": 0.015
+            },
+            "result": 0.0001,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.82,
+              "diameter": 0.015,
+              "length": 85,
+              "temperature_c": 26,
+              "relative_roughness": 0.0001
+            },
+            "result": {
+              "pressure_drop": 54138.78519695603,
+              "reynolds_number": 13937.482946793996,
+              "regime": "turbulent",
+              "friction_factor": 0.028511408498882312
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 5,
+          "input_tokens": 6111,
+          "output_tokens": 262
+        }
+      },
+      "duration_s": 13.073213,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-07",
+      "source_case": "pressure_drop-07",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "76.9181 vs 76.9181 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 76.91811943929883,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe, as specified.",
+            "Fully developed flow; pressure drop includes pipe friction only."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach pressure drop using the Colebrook Darcy friction factor of 0.028809708734401415. The Reynolds number is 13052.270327349526, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 50,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.05,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.15,
+              "diameter": 0.05,
+              "length": 12,
+              "temperature_c": 48,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 76.91811943929883,
+              "reynolds_number": 13052.270327349526,
+              "regime": "turbulent",
+              "friction_factor": 0.028809708734401415
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3524,
+          "output_tokens": 176
+        }
+      },
+      "duration_s": 8.277649,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-08",
+      "source_case": "pressure_drop-08",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:relative",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "100265 vs 100265 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 100265.23508676044,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Pressure drop is for pipe friction only; losses from fittings and elevation changes are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach calculation using the specified relative roughness and water properties at the given temperature. The Reynolds number is 30800.128410914927 and the Darcy friction factor is 0.02346793692279939."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 32,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.032,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 1.2,
+              "diameter": 0.032,
+              "length": 190,
+              "temperature_c": 12,
+              "relative_roughness": 4.7e-05
+            },
+            "result": {
+              "pressure_drop": 100265.23508676044,
+              "reynolds_number": 30800.128410914927,
+              "regime": "turbulent",
+              "friction_factor": 0.02346793692279939
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3547,
+          "output_tokens": 185
+        }
+      },
+      "duration_s": 8.190861,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-09",
+      "source_case": "pressure_drop-09",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "26.767 vs 26.767 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 26.766978087357153,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe assumed because pipe material and roughness were not specified.",
+            "Pressure drop is due to pipe friction only; fitting losses and elevation effects are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach pressure drop using the Colebrook Darcy friction factor and water properties at the specified temperature."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 80,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.08,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.067,
+              "diameter": 0.08,
+              "length": 31,
+              "temperature_c": 50,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 26.766978087357153,
+              "reynolds_number": 9681.316270566727,
+              "regime": "turbulent",
+              "friction_factor": 0.031149500165272338
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3521,
+          "output_tokens": 169
+        }
+      },
+      "duration_s": 7.630035,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-10",
+      "source_case": "pressure_drop-10",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:absolute",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "2290.66 vs 2290.66 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=4, precision=4/4=1.000, recall=4/4=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop'], actual: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 4,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 2290.6634876862663,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Fully developed flow; only straight-pipe friction is included, excluding entrance, exit and fitting losses."
+          ],
+          "missing_inputs": [],
+          "explanation": "Using the specified absolute roughness gives a relative roughness of 0.005999999999999999. The Reynolds number is 14653.08461025983 (turbulent), and the Colebrook Darcy friction factor is 0.03698442689634213. Applying the Darcy\u2013Weisbach equation gives the frictional pressure drop reported above."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 25,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.025,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 0.15,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.00015,
+            "retried": false
+          },
+          {
+            "name": "relative_roughness",
+            "args": {
+              "roughness": 0.00015,
+              "diameter": 0.025
+            },
+            "result": 0.005999999999999999,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.88,
+              "diameter": 0.025,
+              "length": 4,
+              "temperature_c": 6,
+              "relative_roughness": 0.005999999999999999
+            },
+            "result": {
+              "pressure_drop": 2290.6634876862663,
+              "reynolds_number": 14653.08461025983,
+              "regime": "turbulent",
+              "friction_factor": 0.03698442689634213
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 5,
+          "input_tokens": 6111,
+          "output_tokens": 279
+        }
+      },
+      "duration_s": 13.090662,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-11",
+      "source_case": "pressure_drop-11",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "9469.79 vs 9469.79 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 9469.789212061001,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe, as specified.",
+            "Pressure drop includes straight-pipe friction only, excluding fittings and elevation changes."
+          ],
+          "missing_inputs": [],
+          "explanation": "Calculated using the Darcy\u2013Weisbach equation with the smooth-pipe Colebrook friction factor and water properties at the specified temperature."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 50,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.05,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.51,
+              "diameter": 0.05,
+              "length": 186,
+              "temperature_c": 69,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 9469.789212061001,
+              "reynolds_number": 60803.485254691695,
+              "regime": "turbulent",
+              "friction_factor": 0.020007701778670728
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3524,
+          "output_tokens": 163
+        }
+      },
+      "duration_s": 6.953553,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-12",
+      "source_case": "pressure_drop-12",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:relative",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "103.952 vs 103.952 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 103.95190235417734,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Pressure drop includes straight-pipe friction only; fittings and elevation changes are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach calculation using the specified relative roughness and the Colebrook Darcy friction factor. Water properties are evaluated at the specified temperature."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 65,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.065,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.052,
+              "diameter": 0.065,
+              "length": 139,
+              "temperature_c": 79,
+              "relative_roughness": 0.004
+            },
+            "result": {
+              "pressure_drop": 103.95190235417734,
+              "reynolds_number": 9132.292303417616,
+              "regime": "turbulent",
+              "friction_factor": 0.0369750999025004
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3535,
+          "output_tokens": 164
+        }
+      },
+      "duration_s": 7.826216,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-13",
+      "source_case": "pressure_drop-13",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "2526.56 vs 2526.56 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 2526.556282291083,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth circular tube, as specified.",
+            "Pressure drop includes straight-tube friction only; fitting losses and elevation effects are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach calculation using water properties at the specified temperature and the smooth-pipe Colebrook friction factor. Reynolds number is 39964.89642184557 and Darcy friction factor is 0.021974386739474217."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 50,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.05,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.43,
+              "diameter": 0.05,
+              "length": 63,
+              "temperature_c": 52,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 2526.556282291083,
+              "reynolds_number": 39964.89642184557,
+              "regime": "turbulent",
+              "friction_factor": 0.021974386739474217
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3524,
+          "output_tokens": 190
+        }
+      },
+      "duration_s": 8.854411,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-14",
+      "source_case": "pressure_drop-14",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:absolute",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "5815.19 vs 5815.19 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=4, precision=4/4=1.000, recall=4/4=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop'], actual: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 4,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 5815.186674701438,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Steady, fully developed flow; pressure drop includes pipe friction only, excluding fittings and elevation changes."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach calculation using the specified copper roughness and the Colebrook Darcy friction factor of 0.018858250692391748. The Reynolds number is 82210.44574982724, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 0.0015,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 1.5e-06,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 65,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.065,
+            "retried": false
+          },
+          {
+            "name": "relative_roughness",
+            "args": {
+              "roughness": 1.5e-06,
+              "diameter": 0.065
+            },
+            "result": 2.3076923076923076e-05,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.74,
+              "diameter": 0.065,
+              "length": 74,
+              "temperature_c": 47,
+              "relative_roughness": 2.3076923076923076e-05
+            },
+            "result": {
+              "pressure_drop": 5815.186674701438,
+              "reynolds_number": 82210.44574982724,
+              "regime": "turbulent",
+              "friction_factor": 0.018858250692391748
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 5,
+          "input_tokens": 6164,
+          "output_tokens": 256
+        }
+      },
+      "duration_s": 13.066566,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-15",
+      "source_case": "pressure_drop-15",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "751543 vs 751543 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 751542.6111357579,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe as specified.",
+            "Fully developed flow; pressure drop includes pipe friction only, excluding fittings and elevation changes."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach pressure drop using the Colebrook Darcy friction factor and water properties at the specified temperature."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 10,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.01,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 2.6,
+              "diameter": 0.01,
+              "length": 112,
+              "temperature_c": 64,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 751542.6111357579,
+              "reynolds_number": 57734.35943866004,
+              "regime": "turbulent",
+              "friction_factor": 0.02023634948547748
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3524,
+          "output_tokens": 161
+        }
+      },
+      "duration_s": 8.172362,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-16",
+      "source_case": "pressure_drop-16",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:relative",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "270.55 vs 270.55 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 270.549737253243,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [],
+          "missing_inputs": [],
+          "explanation": "Frictional pressure drop calculated using Darcy\u2013Weisbach with the Colebrook Darcy friction factor and water properties at the specified temperature. The supplied relative roughness was used."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 50,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.05,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.099,
+              "diameter": 0.05,
+              "length": 80,
+              "temperature_c": 91,
+              "relative_roughness": 0.0052
+            },
+            "result": {
+              "pressure_drop": 270.549737253243,
+              "reynolds_number": 15318.638113570738,
+              "regime": "turbulent",
+              "friction_factor": 0.03577132115701751
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3550,
+          "output_tokens": 148
+        }
+      },
+      "duration_s": 8.507297,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-17",
+      "source_case": "pressure_drop-17",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "13244.9 vs 13244.9 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 13244.898463356953,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe assumed because pipe material and roughness were not specified.",
+            "Only straight-pipe friction is included; fitting and entrance losses are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Calculated using the Darcy\u2013Weisbach equation with the Colebrook Darcy friction factor and water properties at the specified temperature."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 20,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.02,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 2.4,
+              "diameter": 0.02,
+              "length": 5,
+              "temperature_c": 49,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 13244.898463356953,
+              "reynolds_number": 85086.37015781921,
+              "regime": "turbulent",
+              "friction_factor": 0.018611210123447512
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3506,
+          "output_tokens": 168
+        }
+      },
+      "duration_s": 8.034479,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-18",
+      "source_case": "pressure_drop-18",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:absolute",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "5869.24 vs 5869.24 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=4, precision=4/4=1.000, recall=4/4=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop'], actual: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 4,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 5869.239386906835,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Steady, fully developed flow; only pipe-wall friction losses are included."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach pressure drop using the Colebrook Darcy friction factor of 0.0295143180457884. The relative roughness is 0.0017999999999999997 and the Reynolds number is 19673.600000000002, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 25,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.025,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 0.045,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 4.4999999999999996e-05,
+            "retried": false
+          },
+          {
+            "name": "relative_roughness",
+            "args": {
+              "roughness": 4.4999999999999996e-05,
+              "diameter": 0.025
+            },
+            "result": 0.0017999999999999997,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.38,
+              "diameter": 0.025,
+              "length": 70,
+              "temperature_c": 59,
+              "relative_roughness": 0.0017999999999999997
+            },
+            "result": {
+              "pressure_drop": 5869.239386906835,
+              "reynolds_number": 19673.600000000002,
+              "regime": "turbulent",
+              "friction_factor": 0.0295143180457884
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 5,
+          "input_tokens": 6137,
+          "output_tokens": 264
+        }
+      },
+      "duration_s": 12.792194,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-19",
+      "source_case": "pressure_drop-19",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "97651.1 vs 97651.1 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 97651.09058999858,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe, as specified.",
+            "Only distributed pipe friction is included; fitting and entrance losses are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Using the Darcy\u2013Weisbach equation with water properties at the specified temperature gives Reynolds number 89288.14210273644 and Darcy friction factor 0.018422526151205158."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 20,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.02,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 1.9,
+              "diameter": 0.02,
+              "length": 60,
+              "temperature_c": 68,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 97651.09058999858,
+              "reynolds_number": 89288.14210273644,
+              "regime": "turbulent",
+              "friction_factor": 0.018422526151205158
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3509,
+          "output_tokens": 176
+        }
+      },
+      "duration_s": 7.57926,
+      "evaluator_failures": []
+    },
+    {
+      "name": "pressure_drop-20",
+      "source_case": "pressure_drop-20",
+      "case_type": "pressure_drop",
+      "tags": [
+        "units:metric",
+        "roughness:relative",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "26415 vs 26415 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 26415.015408201423,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [],
+          "missing_inputs": [],
+          "explanation": "Using the Darcy\u2013Weisbach equation with the specified relative roughness and the Colebrook Darcy friction factor of 0.030430610908699692 gives the frictional pressure drop. The Reynolds number is 10789.112426035505, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 15,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.015,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.37,
+              "diameter": 0.015,
+              "length": 193,
+              "temperature_c": 55,
+              "relative_roughness": 0.0001
+            },
+            "result": {
+              "pressure_drop": 26415.015408201423,
+              "reynolds_number": 10789.112426035505,
+              "regime": "turbulent",
+              "friction_factor": 0.030430610908699692
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3551,
+          "output_tokens": 169
+        }
+      },
+      "duration_s": 7.349454,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-01",
+      "source_case": "heat_transfer-01",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "163.602 vs 163.602 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 163.60200000000003,
+          "unit": "W/(m^2*K)",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth tube because roughness was not specified.",
+            "Fully developed flow with constant wall temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "The heat-transfer tool gives a Reynolds number of 996.051282051282, indicating laminar flow. Using the fully developed, constant-wall-temperature Nusselt number of 3.66 gives the reported convective heat transfer coefficient."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 15,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.015,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.024,
+              "diameter": 0.015,
+              "temperature_c": 81,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 163.60200000000003,
+              "nusselt_number": 3.66,
+              "reynolds_number": 996.051282051282,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3490,
+          "output_tokens": 184
+        }
+      },
+      "duration_s": 7.599541,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-02",
+      "source_case": "heat_transfer-02",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "69.7573 vs 69.7573 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 69.7573125,
+          "unit": "W/(m^2*K)",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth pipe, since material and roughness were not specified.",
+            "Thermally and hydrodynamically fully developed flow with constant wall temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "The heat-transfer calculation gives Reynolds number 1632.9162011173185, indicating laminar flow. Using the fully developed constant-wall-temperature Nusselt number of 3.66 gives the reported convective heat transfer coefficient."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 32,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.032,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.044,
+              "diameter": 0.032,
+              "temperature_c": 27,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 69.7573125,
+              "nusselt_number": 3.66,
+              "reynolds_number": 1632.9162011173185,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3499,
+          "output_tokens": 192
+        }
+      },
+      "duration_s": 8.00716,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-03",
+      "source_case": "heat_transfer-03",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "148.816 vs 148.816 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 148.81560000000002,
+          "unit": "W/(m^2*K)",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth tube.",
+            "Fully developed internal flow with constant wall temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number is 1304.7093226256982, indicating laminar flow. Using the fully developed constant-wall-temperature Nusselt number of 3.66, the coefficient follows from h = Nu k / D."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 15,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.015,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.075,
+              "diameter": 0.015,
+              "temperature_c": 27,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 148.81560000000002,
+              "nusselt_number": 3.66,
+              "reynolds_number": 1304.7093226256982,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3492,
+          "output_tokens": 178
+        }
+      },
+      "duration_s": 7.258209,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-04",
+      "source_case": "heat_transfer-04",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "66.9551 vs 66.9551 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 66.955125,
+          "unit": "W/(m^2*K)",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth tube.",
+            "Fully developed internal flow with constant wall temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "The heat-transfer tool gives laminar flow with Reynolds number 1552.1053064582475. Using the fully developed, constant-wall-temperature Nusselt number of 3.66 gives the convective heat-transfer coefficient."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 32,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.032,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.059,
+              "diameter": 0.032,
+              "temperature_c": 13,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 66.955125,
+              "nusselt_number": 3.66,
+              "reynolds_number": 1552.1053064582475,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3471,
+          "output_tokens": 174
+        }
+      },
+      "duration_s": 9.370303,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-05",
+      "source_case": "heat_transfer-05",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "225.09 vs 225.09 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 225.09,
+          "unit": "W/(m^2*K)",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth tube.",
+            "Fully developed flow with constant wall temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "The heat-transfer calculation gives Reynolds number 611.3947368421053, indicating laminar flow. Using Nusselt number 3.66 yields h = 225.09 W/(m^2*K)."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 10,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.01,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.049,
+              "diameter": 0.01,
+              "temperature_c": 30,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 225.09,
+              "nusselt_number": 3.66,
+              "reynolds_number": 611.3947368421053,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3469,
+          "output_tokens": 170
+        }
+      },
+      "duration_s": 7.588471,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-06",
+      "source_case": "heat_transfer-06",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "5376.49 vs 5376.49 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 5376.489203814076,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe, since pipe material and roughness were not specified.",
+            "Fully developed internal flow with water properties evaluated at the specified water temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "Used the Gnielinski correlation for turbulent flow in a circular pipe. The calculated Reynolds number is 280181.7109144543 and the Nusselt number is 800.0727981866185."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 100,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.1,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.98,
+              "diameter": 0.1,
+              "temperature_c": 84,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 5376.489203814076,
+              "nusselt_number": 800.0727981866185,
+              "reynolds_number": 280181.7109144543,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3505,
+          "output_tokens": 190
+        }
+      },
+      "duration_s": 7.48799,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-07",
+      "source_case": "heat_transfer-07",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "4901.72 vs 4901.72 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 4901.715192656163,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe, since pipe material and roughness were not specified.",
+            "Fully developed internal flow."
+          ],
+          "missing_inputs": [],
+          "explanation": "Used the Gnielinski correlation with water properties at the specified temperature. The computed Reynolds number is 192124.6017699115, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 80,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.08,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.84,
+              "diameter": 0.08,
+              "temperature_c": 84,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 4901.715192656163,
+              "nusselt_number": 583.5375229352575,
+              "reynolds_number": 192124.6017699115,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3505,
+          "output_tokens": 170
+        }
+      },
+      "duration_s": 8.276557,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-08",
+      "source_case": "heat_transfer-08",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "9631.52 vs 9631.52 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 9631.523620480106,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe because pipe material and roughness were not specified.",
+            "Fully developed internal flow with water properties evaluated at the stated bulk temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "Used the Gnielinski correlation for fully developed turbulent flow in a circular pipe. The calculated Reynolds number is 37136.092396535125."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 10,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.01,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 1.2,
+              "diameter": 0.01,
+              "temperature_c": 91,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 9631.523620480106,
+              "nusselt_number": 142.60473231388966,
+              "reynolds_number": 37136.092396535125,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3505,
+          "output_tokens": 176
+        }
+      },
+      "duration_s": 8.565733,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-09",
+      "source_case": "heat_transfer-09",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "2186.57 vs 2186.57 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 2186.5657255414076,
+          "unit": "W/(m^2\u00b7K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe, since pipe material and roughness were not specified.",
+            "Fully developed internal flow."
+          ],
+          "missing_inputs": [],
+          "explanation": "The heat transfer coefficient was calculated using the Gnielinski correlation with water properties at the specified temperature. The computed Reynolds number indicates turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 25,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.025,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.37,
+              "diameter": 0.025,
+              "temperature_c": 38,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 2186.5657255414076,
+              "nusselt_number": 87.07254402442686,
+              "reynolds_number": 13466.752199413491,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3506,
+          "output_tokens": 168
+        }
+      },
+      "duration_s": 7.456378,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-10",
+      "source_case": "heat_transfer-10",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "4253.35 vs 4253.35 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 4253.349599957008,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe, since material and roughness were not specified.",
+            "Fully developed internal flow, with water properties evaluated at the given bulk temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Gnielinski correlation gives the convective heat transfer coefficient using the Reynolds number and water properties. The computed Reynolds number is 107491.89189189191, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 80,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.08,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 1,
+              "diameter": 0.08,
+              "temperature_c": 34,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 4253.349599957008,
+              "nusselt_number": 547.582825871517,
+              "reynolds_number": 107491.89189189191,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3487,
+          "output_tokens": 183
+        }
+      },
+      "duration_s": 7.76954,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-11",
+      "source_case": "heat_transfer-11",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "1805.68 vs 1805.68 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 1805.6750077989152,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe assumed because pipe material and roughness were not specified.",
+            "Water properties evaluated at the stated water temperature; fully developed internal flow."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number indicates turbulent flow. Using the Gnielinski correlation for the Nusselt number and h = Nu k/D gives the estimated convective heat transfer coefficient."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 65,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.065,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.45,
+              "diameter": 0.065,
+              "temperature_c": 17,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 1805.6750077989152,
+              "nusselt_number": 198.0575016991723,
+              "reynolds_number": 26712.860082304527,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3506,
+          "output_tokens": 182
+        }
+      },
+      "duration_s": 7.855368,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-12",
+      "source_case": "heat_transfer-12",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "3489.62 vs 3489.62 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 3489.6175893583813,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe assumed because pipe material and roughness were not specified.",
+            "Fully developed internal flow."
+          ],
+          "missing_inputs": [],
+          "explanation": "Used the Gnielinski correlation for turbulent pipe flow with water properties evaluated at the specified temperature. The computed Reynolds number is 9054.47036328872."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 10,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.01,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.48,
+              "diameter": 0.01,
+              "temperature_c": 53,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 3489.6175893583813,
+              "nusselt_number": 53.93535686798116,
+              "reynolds_number": 9054.47036328872,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3506,
+          "output_tokens": 172
+        }
+      },
+      "duration_s": 6.880093,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-13",
+      "source_case": "heat_transfer-13",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "16173.1 vs 16173.1 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 16173.140140695821,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe assumed because pipe material and roughness were not specified.",
+            "Fully developed internal flow."
+          ],
+          "missing_inputs": [],
+          "explanation": "The heat transfer coefficient was estimated using the Gnielinski correlation with water properties evaluated at the supplied temperature. The calculated Reynolds number is 149407.6923076923, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 20,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.02,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 2.7,
+              "diameter": 0.02,
+              "temperature_c": 81,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 16173.140140695821,
+              "nusselt_number": 482.42028756736227,
+              "reynolds_number": 149407.6923076923,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3505,
+          "output_tokens": 177
+        }
+      },
+      "duration_s": 6.669195,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-14",
+      "source_case": "heat_transfer-14",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "11206.1 vs 11206.1 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 11206.143319378176,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe assumed because pipe material and roughness were not specified.",
+            "Fully developed internal flow."
+          ],
+          "missing_inputs": [],
+          "explanation": "The heat transfer coefficient was estimated using the Gnielinski correlation with water properties evaluated at the specified temperature. The Reynolds number is 283695.47096415673, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 50,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.05,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 2.1,
+              "diameter": 0.05,
+              "temperature_c": 79
+            },
+            "result": {
+              "h": 11206.143319378176,
+              "nusselt_number": 837.1539906901372,
+              "reynolds_number": 283695.47096415673,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3498,
+          "output_tokens": 169
+        }
+      },
+      "duration_s": 6.812344,
+      "evaluator_failures": []
+    },
+    {
+      "name": "heat_transfer-15",
+      "source_case": "heat_transfer-15",
+      "case_type": "heat_transfer",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "3590.62 vs 3590.62 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 3590.6166227350423,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth tube, since roughness was not specified.",
+            "Fully developed internal flow."
+          ],
+          "missing_inputs": [],
+          "explanation": "The heat transfer coefficient is calculated using the Gnielinski correlation with water properties evaluated at the given temperature. The computed Reynolds number is 82573.60335195532, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 80,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.08,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.89,
+              "diameter": 0.08,
+              "temperature_c": 27,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 3590.6166227350423,
+              "nusselt_number": 470.97775015380125,
+              "reynolds_number": 82573.60335195532,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3497,
+          "output_tokens": 175
+        }
+      },
+      "duration_s": 7.746113,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-01",
+      "source_case": "reynolds_regime-01",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:metric",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "1681.52 vs 1681.52 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'reynolds_number'], actual: ['convert_units', 'reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 1681.5241935483873,
+          "unit": "dimensionless",
+          "regime": "laminar",
+          "assumptions": [
+            "A smooth pipe is assumed; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "Computed Re = \u03c1VD/\u03bc using water properties at the specified temperature and the internal diameter converted to metres. The flow is laminar."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 15,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.015,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.077,
+              "diameter": 0.015,
+              "temperature_c": 38
+            },
+            "result": {
+              "reynolds_number": 1681.5241935483873,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3470,
+          "output_tokens": 151
+        }
+      },
+      "duration_s": 7.38121,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-02",
+      "source_case": "reynolds_regime-02",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:si",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "1053.39 vs 1053.39 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=1, precision=1/1=1.000, recall=1/1=1.000, F1=1.000 (expected: ['reynolds_number'], actual: ['reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 1,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 1053.3946443061939,
+          "unit": "dimensionless",
+          "regime": "laminar",
+          "assumptions": [
+            "The pipe is assumed smooth; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number is calculated using Re = \u03c1VD/\u03bc, with water properties evaluated at the specified temperature. The flow is laminar."
+        },
+        "tool_calls": [
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.04,
+              "diameter": 0.01,
+              "temperature_c": 77
+            },
+            "result": {
+              "reynolds_number": 1053.3946443061939,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 2,
+          "input_tokens": 2284,
+          "output_tokens": 123
+        }
+      },
+      "duration_s": 5.090412,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-03",
+      "source_case": "reynolds_regime-03",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:metric",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "919.148 vs 919.148 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'reynolds_number'], actual: ['convert_units', 'reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 919.148034643571,
+          "unit": "dimensionless",
+          "regime": "laminar",
+          "assumptions": [
+            "A smooth pipe is assumed because roughness was not specified; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "Computed Re = \u03c1VD/\u03bc using water properties at the specified temperature and the pipe diameter converted to metres. The flow is laminar."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 20,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.02,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.069,
+              "diameter": 0.02,
+              "temperature_c": 6
+            },
+            "result": {
+              "reynolds_number": 919.148034643571,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3468,
+          "output_tokens": 155
+        }
+      },
+      "duration_s": 7.532191,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-04",
+      "source_case": "reynolds_regime-04",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:si",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "1250.22 vs 1250.22 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=1, precision=1/1=1.000, recall=1/1=1.000, F1=1.000 (expected: ['reynolds_number'], actual: ['reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 1,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 1250.2204928664073,
+          "unit": "dimensionless",
+          "regime": "laminar",
+          "assumptions": [
+            "A smooth pipe is assumed because roughness was not specified; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "Reynolds number calculated as Re = \u03c1VD/\u03bc using liquid-water properties at the specified temperature. The flow is laminar."
+        },
+        "tool_calls": [
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.02,
+              "diameter": 0.02,
+              "temperature_c": 92
+            },
+            "result": {
+              "reynolds_number": 1250.2204928664073,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 2,
+          "input_tokens": 2290,
+          "output_tokens": 128
+        }
+      },
+      "duration_s": 4.708938,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-05",
+      "source_case": "reynolds_regime-05",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:metric",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "159118 vs 159118 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'reynolds_number'], actual: ['convert_units', 'reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 159117.64011799413,
+          "unit": "dimensionless",
+          "regime": "turbulent",
+          "assumptions": [
+            "A smooth pipe is assumed; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "Calculated Re = \u03c1vD/\u03bc using liquid-water properties at the given temperature and the internal diameter converted to metres. The flow is turbulent."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 80,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.08,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.63,
+              "diameter": 0.08,
+              "temperature_c": 93
+            },
+            "result": {
+              "reynolds_number": 159117.64011799413,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3470,
+          "output_tokens": 152
+        }
+      },
+      "duration_s": 7.824821,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-06",
+      "source_case": "reynolds_regime-06",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:si",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "9269.38 vs 9269.38 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=1, precision=1/1=1.000, recall=1/1=1.000, F1=1.000 (expected: ['reynolds_number'], actual: ['reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 1,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 9269.382627422827,
+          "unit": "dimensionless",
+          "regime": "turbulent",
+          "assumptions": [
+            "The stated pipe diameter is the internal diameter.",
+            "A smooth pipe is assumed; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "Computed Reynolds number using Re = \u03c1vD/\u03bc, with water properties evaluated at the specified temperature. The flow is turbulent."
+        },
+        "tool_calls": [
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.26,
+              "diameter": 0.025,
+              "temperature_c": 37
+            },
+            "result": {
+              "reynolds_number": 9269.382627422827,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 2,
+          "input_tokens": 2290,
+          "output_tokens": 130
+        }
+      },
+      "duration_s": 4.928267,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-07",
+      "source_case": "reynolds_regime-07",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:metric",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "23569.3 vs 23569.3 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'reynolds_number'], actual: ['convert_units', 'reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 23569.335793357935,
+          "unit": "dimensionless",
+          "regime": "turbulent",
+          "assumptions": [
+            "A smooth pipe is assumed; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number was calculated from the water properties at the specified temperature, the mean velocity, and the converted pipe diameter. The flow is turbulent."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 65,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.065,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.17,
+              "diameter": 0.065,
+              "temperature_c": 61
+            },
+            "result": {
+              "reynolds_number": 23569.335793357935,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3479,
+          "output_tokens": 151
+        }
+      },
+      "duration_s": 6.988882,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-08",
+      "source_case": "reynolds_regime-08",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:si",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "31063.9 vs 31063.9 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=1, precision=1/1=1.000, recall=1/1=1.000, F1=1.000 (expected: ['reynolds_number'], actual: ['reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 1,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 31063.9294197489,
+          "unit": "dimensionless",
+          "regime": "turbulent",
+          "assumptions": [
+            "A smooth pipe is assumed because roughness is not specified; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number is calculated from the mean velocity, internal diameter, and water properties at the specified temperature. The flow is turbulent."
+        },
+        "tool_calls": [
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.37,
+              "diameter": 0.05,
+              "temperature_c": 46
+            },
+            "result": {
+              "reynolds_number": 31063.9294197489,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 2,
+          "input_tokens": 2284,
+          "output_tokens": 126
+        }
+      },
+      "duration_s": 5.508506,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-09",
+      "source_case": "reynolds_regime-09",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:metric",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "9372.95 vs 9372.95 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'reynolds_number'], actual: ['convert_units', 'reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 9372.952380952382,
+          "unit": "dimensionless",
+          "regime": "turbulent",
+          "assumptions": [
+            "A smooth pipe is assumed; roughness does not affect the Reynolds number calculation."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number is calculated from mean velocity, pipe diameter, and water properties at the specified temperature. The flow is turbulent."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 20,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.02,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.23,
+              "diameter": 0.02,
+              "temperature_c": 58
+            },
+            "result": {
+              "reynolds_number": 9372.952380952382,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3479,
+          "output_tokens": 148
+        }
+      },
+      "duration_s": 6.566154,
+      "evaluator_failures": []
+    },
+    {
+      "name": "reynolds_regime-10",
+      "source_case": "reynolds_regime-10",
+      "case_type": "reynolds_regime",
+      "tags": [
+        "units:si",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "62049.8 vs 62049.8 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=1, precision=1/1=1.000, recall=1/1=1.000, F1=1.000 (expected: ['reynolds_number'], actual: ['reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 1,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 62049.833033650146,
+          "unit": "dimensionless",
+          "regime": "turbulent",
+          "assumptions": [
+            "A smooth pipe is assumed because roughness was not specified; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number is calculated as Re = \u03c1VD/\u03bc, using liquid-water properties at the specified temperature. The flow is turbulent."
+        },
+        "tool_calls": [
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.99,
+              "diameter": 0.025,
+              "temperature_c": 73
+            },
+            "result": {
+              "reynolds_number": 62049.833033650146,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 2,
+          "input_tokens": 2284,
+          "output_tokens": 128
+        }
+      },
+      "duration_s": 6.338965,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-transition-01",
+      "source_case": "trap-transition-01",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "trap:transition",
+        "regime:laminar"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "2116.94 vs 2116.94 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected laminar, got laminar"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'reynolds_number'], actual: ['convert_units', 'reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 2116.9411177644715,
+          "unit": "dimensionless",
+          "regime": "laminar",
+          "assumptions": [
+            "Smooth pipe assumed; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number is calculated using Re = \u03c1VD/\u03bc, with water properties at the specified temperature. The flow is laminar."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 25,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.025,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.085,
+              "diameter": 0.025,
+              "temperature_c": 20
+            },
+            "result": {
+              "reynolds_number": 2116.9411177644715,
+              "regime": "laminar"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3482,
+          "output_tokens": 148
+        }
+      },
+      "duration_s": 6.637852,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-transition-02",
+      "source_case": "trap-transition-02",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "trap:transition",
+        "regime:transitional"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "2988.62 vs 2988.62 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected transitional, got transitional"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'reynolds_number'], actual: ['convert_units', 'reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 2988.6227544910175,
+          "unit": "dimensionless",
+          "regime": "transitional",
+          "assumptions": [
+            "The tube is assumed smooth; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number is calculated as Re = \u03c1vD/\u03bc using water properties at the specified temperature and the tube diameter converted to metres."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 20,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.02,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.15,
+              "diameter": 0.02,
+              "temperature_c": 20
+            },
+            "result": {
+              "reynolds_number": 2988.6227544910175,
+              "regime": "transitional"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3458,
+          "output_tokens": 151
+        }
+      },
+      "duration_s": 6.688101,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-transition-03",
+      "source_case": "trap-transition-03",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "trap:transition",
+        "regime:transitional"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "213.264 vs 213.264 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected transitional, got transitional"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop'], actual: ['convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 213.2641670208289,
+          "unit": "Pa",
+          "regime": "transitional",
+          "assumptions": [
+            "Smooth tube as specified; only straight-tube friction losses are included."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach pressure drop using the Colebrook friction factor and water properties at the specified temperature. The flow is transitional, so the predicted pressure drop is approximate."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 15,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.015,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.12,
+              "diameter": 0.015,
+              "length": 10,
+              "temperature_c": 40,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 213.2641670208289,
+              "reynolds_number": 2735.0076569678404,
+              "regime": "transitional",
+              "friction_factor": 0.044779313440844605
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3497,
+          "output_tokens": 164
+        }
+      },
+      "duration_s": 8.395221,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-transition-04",
+      "source_case": "trap-transition-04",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "trap:transition",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "1916.61 vs 1916.61 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=2, precision=2/2=1.000, recall=2/2=1.000, F1=1.000 (expected: ['convert_units', 'heat_transfer_coefficient'], actual: ['convert_units', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 1916.6083661079963,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth tube, since material and roughness were not specified.",
+            "Fully developed internal flow."
+          ],
+          "missing_inputs": [],
+          "explanation": "Calculated using the Gnielinski correlation for water at the specified conditions. The Reynolds number is 4367.105263157895, indicating turbulent flow near the transition region."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 10,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.01,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.35,
+              "diameter": 0.01,
+              "temperature_c": 30,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 1916.6083661079963,
+              "nusselt_number": 31.164363676552785,
+              "reynolds_number": 4367.105263157895,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3494,
+          "output_tokens": 173
+        }
+      },
+      "duration_s": 6.771479,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-units-01",
+      "source_case": "trap-units-01",
+      "case_type": "trap",
+      "tags": [
+        "units:imperial",
+        "roughness:smooth",
+        "trap:units",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "9156.06 vs 9156.06 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=5, precision=5/5=1.000, recall=5/5=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'convert_units', 'convert_units', 'pressure_drop'], actual: ['convert_units', 'convert_units', 'convert_units', 'convert_units', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 5,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 9156.05902937596,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "The stated pipe diameter is the internal diameter.",
+            "The pipe is hydraulically smooth, as specified.",
+            "Only straight-pipe friction losses are included; fittings and elevation effects are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Calculated using Darcy\u2013Weisbach with the Colebrook friction factor for a smooth pipe and water properties at the converted temperature. The Reynolds number indicates turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 68,
+              "from_unit": "degF",
+              "to_unit": "degC"
+            },
+            "result": 20.000000000000057,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 6,
+              "from_unit": "ft/s",
+              "to_unit": "m/s"
+            },
+            "result": 1.8287999999999998,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 50,
+              "from_unit": "ft",
+              "to_unit": "m"
+            },
+            "result": 15.239999999999998,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 2,
+              "from_unit": "inch",
+              "to_unit": "m"
+            },
+            "result": 0.0508,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 1.8287999999999998,
+              "diameter": 0.0508,
+              "length": 15.239999999999998,
+              "temperature_c": 20.000000000000057,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 9156.05902937596,
+              "reynolds_number": 92550.71310179649,
+              "regime": "turbulent",
+              "friction_factor": 0.018283836676816233
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 6,
+          "input_tokens": 7391,
+          "output_tokens": 289
+        }
+      },
+      "duration_s": 16.78314,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-units-02",
+      "source_case": "trap-units-02",
+      "case_type": "trap",
+      "tags": [
+        "units:flow_rate",
+        "roughness:unspecified",
+        "trap:units",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "3227.1 vs 3227.1 W/(m^2*K) (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches heat_transfer_coefficient output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=4, precision=4/4=1.000, recall=4/4=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'mean_velocity', 'heat_transfer_coefficient'], actual: ['convert_units', 'convert_units', 'mean_velocity', 'heat_transfer_coefficient'])"
+        },
+        "tool_calls": {
+          "value": 4,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 3227.102810577575,
+          "unit": "W/(m^2*K)",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth tube, since material and roughness were not specified.",
+            "Fully developed internal flow; water properties evaluated at the stated bulk temperature."
+          ],
+          "missing_inputs": [],
+          "explanation": "The volumetric flow rate was converted to SI units and used to calculate mean velocity. The heat transfer coefficient was then calculated using the Gnielinski correlation for turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 20,
+              "from_unit": "L/min",
+              "to_unit": "m^3/s"
+            },
+            "result": 0.00033333333333333343,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 25,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.025,
+            "retried": false
+          },
+          {
+            "name": "mean_velocity",
+            "args": {
+              "flow_rate": 0.00033333333333333343,
+              "diameter": 0.025
+            },
+            "result": 0.6790610905254203,
+            "retried": false
+          },
+          {
+            "name": "heat_transfer_coefficient",
+            "args": {
+              "velocity": 0.6790610905254203,
+              "diameter": 0.025,
+              "temperature_c": 25,
+              "relative_roughness": 0
+            },
+            "result": {
+              "h": 3227.102810577575,
+              "nusselt_number": 133.02155031234852,
+              "reynolds_number": 18805.27650553661,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 5,
+          "input_tokens": 6040,
+          "output_tokens": 251
+        }
+      },
+      "duration_s": 12.292079,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-units-03",
+      "source_case": "trap-units-03",
+      "case_type": "trap",
+      "tags": [
+        "units:imperial",
+        "units:flow_rate",
+        "roughness:absolute",
+        "trap:units",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "6379.76 vs 6379.76 Pa (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=7, precision=7/7=1.000, recall=7/7=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'convert_units', 'convert_units', 'mean_velocity', 'relative_roughness', 'pressure_drop'], actual: ['convert_units', 'convert_units', 'convert_units', 'convert_units', 'mean_velocity', 'relative_roughness', 'pressure_drop'])"
+        },
+        "tool_calls": {
+          "value": 7,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 6379.763163342813,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "The stated pipe diameter is the actual internal diameter, not a nominal pipe size.",
+            "Only straight-pipe friction is included; fittings and elevation changes are excluded."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach pressure drop using the Colebrook friction factor and the specified absolute roughness. Mean velocity is 0.9338257130973866 m/s, Reynolds number is 41046.804644270786, and Darcy friction factor is 0.02441225481146259."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 30,
+              "from_unit": "US gal/min",
+              "to_unit": "m^3/s"
+            },
+            "result": 0.0018927058919999996,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 100,
+              "from_unit": "ft",
+              "to_unit": "m"
+            },
+            "result": 30.479999999999997,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 2,
+              "from_unit": "inch",
+              "to_unit": "m"
+            },
+            "result": 0.0508,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 0.045,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 4.4999999999999996e-05,
+            "retried": false
+          },
+          {
+            "name": "mean_velocity",
+            "args": {
+              "flow_rate": 0.0018927058919999996,
+              "diameter": 0.0508
+            },
+            "result": 0.9338257130973866,
+            "retried": false
+          },
+          {
+            "name": "relative_roughness",
+            "args": {
+              "roughness": 4.4999999999999996e-05,
+              "diameter": 0.0508
+            },
+            "result": 0.0008858267716535433,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 0.9338257130973866,
+              "diameter": 0.0508,
+              "length": 30.479999999999997,
+              "temperature_c": 15,
+              "relative_roughness": 0.0008858267716535433
+            },
+            "result": {
+              "pressure_drop": 6379.763163342813,
+              "reynolds_number": 41046.804644270786,
+              "regime": "turbulent",
+              "friction_factor": 0.02441225481146259
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 8,
+          "input_tokens": 10363,
+          "output_tokens": 393
+        }
+      },
+      "duration_s": 18.527019,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-units-04",
+      "source_case": "trap-units-04",
+      "case_type": "trap",
+      "tags": [
+        "units:imperial",
+        "trap:units",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "48898.4 vs 48898.4 dimensionless (0.00%)"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches reynolds_number output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=4, precision=4/4=1.000, recall=4/4=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'convert_units', 'reynolds_number'], actual: ['convert_units', 'convert_units', 'convert_units', 'reynolds_number'])"
+        },
+        "tool_calls": {
+          "value": 4,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 48898.430903640285,
+          "unit": "dimensionless",
+          "regime": "turbulent",
+          "assumptions": [
+            "The stated tube diameter is the internal diameter.",
+            "The tube is assumed smooth because roughness was not specified; roughness does not affect the Reynolds number."
+          ],
+          "missing_inputs": [],
+          "explanation": "The Reynolds number is calculated as Re = \u03c1VD/\u03bc using water properties at the converted temperature. The resulting flow regime is turbulent."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 140,
+              "from_unit": "degF",
+              "to_unit": "degC"
+            },
+            "result": 60.00000000000006,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 3,
+              "from_unit": "ft/s",
+              "to_unit": "m/s"
+            },
+            "result": 0.9143999999999999,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 1,
+              "from_unit": "inch",
+              "to_unit": "m"
+            },
+            "result": 0.0254,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 0.9143999999999999,
+              "diameter": 0.0254,
+              "temperature_c": 60.00000000000006
+            },
+            "result": {
+              "reynolds_number": 48898.430903640285,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 5,
+          "input_tokens": 6030,
+          "output_tokens": 237
+        }
+      },
+      "duration_s": 11.796705,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-missing-01",
+      "source_case": "trap-missing-01",
+      "case_type": "trap",
+      "tags": [
+        "units:imperial",
+        "roughness:unspecified",
+        "trap:missing_input"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "expected ['length'], flagged ['Pipe length'], value None"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "tool_calls": {
+          "value": 2,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": null,
+          "unit": "Pa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe assumed because material and roughness are unspecified.",
+            "The stated pipe size is treated as the internal diameter."
+          ],
+          "missing_inputs": [
+            "Pipe length"
+          ],
+          "explanation": "The flow is turbulent. Darcy\u2013Weisbach pressure drop requires the pipe length. What is the pipe length? If the pipe size is nominal rather than an internal diameter, please also provide its actual internal diameter or pipe schedule."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 2,
+              "from_unit": "inch",
+              "to_unit": "m"
+            },
+            "result": 0.0508,
+            "retried": false
+          },
+          {
+            "name": "reynolds_number",
+            "args": {
+              "velocity": 1,
+              "diameter": 0.0508,
+              "temperature_c": 20
+            },
+            "result": {
+              "reynolds_number": 50607.345309381235,
+              "regime": "turbulent"
+            },
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 3,
+          "input_tokens": 3447,
+          "output_tokens": 174
+        }
+      },
+      "duration_s": 8.368481,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-missing-02",
+      "source_case": "trap-missing-02",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "roughness:absolute",
+        "trap:missing_input"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "expected ['velocity'], flagged ['Mean flow velocity or volumetric flow rate'], value None"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "tool_calls": {
+          "value": 1,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": null,
+          "unit": "Pa",
+          "regime": null,
+          "assumptions": [],
+          "missing_inputs": [
+            "Mean flow velocity or volumetric flow rate"
+          ],
+          "explanation": "The pressure drop cannot be determined without the mean flow velocity or volumetric flow rate. Either input is needed to compute the Reynolds number, flow regime, friction factor, and Darcy\u2013Weisbach pressure drop."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 40,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.04,
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 2,
+          "input_tokens": 2256,
+          "output_tokens": 114
+        }
+      },
+      "duration_s": 4.873392,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-missing-03",
+      "source_case": "trap-missing-03",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "roughness:unspecified",
+        "trap:missing_input"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "expected ['diameter'], flagged ['Tube internal diameter.'], value None"
+        }
+      },
+      "scores": {
+        "tool_calls": {
+          "value": 0,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": null,
+          "unit": "W/(m^2*K)",
+          "regime": null,
+          "assumptions": [
+            "The tube is circular and hydraulically smooth.",
+            "The intended calculation assumes fully developed internal flow."
+          ],
+          "missing_inputs": [
+            "Tube internal diameter."
+          ],
+          "explanation": "Please provide the tube\u2019s internal diameter. It is needed to calculate the Reynolds number, determine the flow regime, and calculate the heat transfer coefficient."
+        },
+        "tool_calls": [],
+        "usage": {
+          "requests": 1,
+          "input_tokens": 1098,
+          "output_tokens": 97
+        }
+      },
+      "duration_s": 3.383935,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-out_of_range-01",
+      "source_case": "trap-out_of_range-01",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "trap:out_of_range"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "tool_calls": {
+          "value": 1,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": null,
+          "unit": "Pa",
+          "regime": null,
+          "assumptions": [],
+          "missing_inputs": [
+            "Liquid-water density and dynamic viscosity at the specified temperature and operating pressure."
+          ],
+          "explanation": "The water-property calculation tools do not support the specified temperature, so a reliable pressure drop or flow regime cannot be computed with the available tools. Provide the liquid-water density and dynamic viscosity, or an operating pressure and a suitable property source. The pipe is explicitly smooth; Darcy\u2013Weisbach with a Reynolds-dependent friction factor is the appropriate method."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 50,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.05,
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 2,
+          "input_tokens": 2316,
+          "output_tokens": 217
+        }
+      },
+      "duration_s": 7.762079,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-out_of_range-02",
+      "source_case": "trap-out_of_range-02",
+      "case_type": "trap",
+      "tags": [
+        "units:mixed",
+        "roughness:unspecified",
+        "trap:out_of_range"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected None, got None"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "tool_calls": {
+          "value": 1,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": null,
+          "unit": "W/(m^2*K)",
+          "regime": null,
+          "assumptions": [
+            "The tube is assumed smooth because no material or roughness was specified."
+          ],
+          "missing_inputs": [
+            "Operating pressure, to verify that the water remains liquid.",
+            "Liquid-water properties at the operating temperature and pressure, beyond the available calculation tools' temperature range."
+          ],
+          "explanation": "The specified temperature converts to 121.11111111111114 \u00b0C, outside the supported range of the water-property and heat-transfer tools. Therefore, the heat transfer coefficient and flow regime cannot be reliably calculated with the available tools. Please provide the operating pressure and suitable water-property data, or confirm whether the temperature was intended to be lower."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 250,
+              "from_unit": "\u00b0F",
+              "to_unit": "\u00b0C"
+            },
+            "result": 121.11111111111114,
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 2,
+          "input_tokens": 2250,
+          "output_tokens": 278
+        }
+      },
+      "duration_s": 8.305884,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-output_unit-01",
+      "source_case": "trap-output_unit-01",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "roughness:smooth",
+        "trap:output_unit",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "10135.4 vs 10135.4 Pa (0.00%)"
+        },
+        "reports_requested_unit": {
+          "value": true,
+          "reason": "requested kPa, got 'kPa'"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=3, precision=3/3=1.000, recall=3/3=1.000, F1=1.000 (expected: ['convert_units', 'pressure_drop', 'convert_units'], actual: ['convert_units', 'pressure_drop', 'convert_units'])"
+        },
+        "tool_calls": {
+          "value": 3,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 10.135421384167554,
+          "unit": "kPa",
+          "regime": "turbulent",
+          "assumptions": [
+            "Smooth pipe, as specified; straight-pipe friction only, excluding fitting and entrance losses."
+          ],
+          "missing_inputs": [],
+          "explanation": "Darcy\u2013Weisbach pressure drop using the Colebrook friction factor. The Reynolds number is 29886.227544910176, indicating turbulent flow."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 25,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.025,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 1.2,
+              "diameter": 0.025,
+              "length": 15,
+              "temperature_c": 20,
+              "relative_roughness": 0
+            },
+            "result": {
+              "pressure_drop": 10135.421384167554,
+              "reynolds_number": 29886.227544910176,
+              "regime": "turbulent",
+              "friction_factor": 0.023503930649631265
+            },
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 10135.421384167554,
+              "from_unit": "Pa",
+              "to_unit": "kPa"
+            },
+            "result": 10.135421384167554,
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 4,
+          "input_tokens": 4809,
+          "output_tokens": 202
+        }
+      },
+      "duration_s": 9.905759,
+      "evaluator_failures": []
+    },
+    {
+      "name": "trap-output_unit-02",
+      "source_case": "trap-output_unit-02",
+      "case_type": "trap",
+      "tags": [
+        "units:metric",
+        "roughness:absolute",
+        "trap:output_unit",
+        "regime:turbulent"
+      ],
+      "passed": true,
+      "process_ok": true,
+      "assertions": {
+        "tool_correctness": {
+          "value": true,
+          "reason": null
+        },
+        "ValueWithinTolerance": {
+          "value": true,
+          "reason": "159125 vs 159125 Pa (0.00%)"
+        },
+        "reports_requested_unit": {
+          "value": true,
+          "reason": "requested psi, got 'psi'"
+        },
+        "RegimeCorrect": {
+          "value": true,
+          "reason": "expected turbulent, got turbulent"
+        },
+        "FlagsMissingInputs": {
+          "value": true,
+          "reason": "nothing missing, flagged []"
+        },
+        "ValueTraceableToTool": {
+          "value": true,
+          "reason": "matches pressure_drop output"
+        },
+        "InputsTraceable": {
+          "value": true,
+          "reason": null
+        }
+      },
+      "scores": {
+        "trajectory": {
+          "value": 1.0,
+          "reason": "LCS=5, precision=5/5=1.000, recall=5/5=1.000, F1=1.000 (expected: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop', 'convert_units'], actual: ['convert_units', 'convert_units', 'relative_roughness', 'pressure_drop', 'convert_units'])"
+        },
+        "tool_calls": {
+          "value": 5,
+          "reason": null
+        },
+        "retries": {
+          "value": 0,
+          "reason": null
+        }
+      },
+      "output": {
+        "answer": {
+          "value": 23.079084766118388,
+          "unit": "psi",
+          "regime": "turbulent",
+          "assumptions": [
+            "Fully developed flow; pressure drop includes pipe-wall friction only, excluding fittings and elevation changes."
+          ],
+          "missing_inputs": [],
+          "explanation": "Used Darcy\u2013Weisbach with the Colebrook Darcy friction factor and the specified cast iron roughness. Converted the resulting pressure drop from Pa to psi."
+        },
+        "tool_calls": [
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 40,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.04,
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 0.26,
+              "from_unit": "mm",
+              "to_unit": "m"
+            },
+            "result": 0.00026000000000000003,
+            "retried": false
+          },
+          {
+            "name": "relative_roughness",
+            "args": {
+              "roughness": 0.00026000000000000003,
+              "diameter": 0.04
+            },
+            "result": 0.006500000000000001,
+            "retried": false
+          },
+          {
+            "name": "pressure_drop",
+            "args": {
+              "velocity": 2.5,
+              "diameter": 0.04,
+              "length": 60,
+              "temperature_c": 10,
+              "relative_roughness": 0.006500000000000001
+            },
+            "result": {
+              "pressure_drop": 159124.6880108456,
+              "reynolds_number": 76488.14078041316,
+              "regime": "turbulent",
+              "friction_factor": 0.03395678714512393
+            },
+            "retried": false
+          },
+          {
+            "name": "convert_units",
+            "args": {
+              "value": 159124.6880108456,
+              "from_unit": "Pa",
+              "to_unit": "psi"
+            },
+            "result": 23.079084766118388,
+            "retried": false
+          }
+        ],
+        "usage": {
+          "requests": 6,
+          "input_tokens": 7539,
+          "output_tokens": 272
+        }
+      },
+      "duration_s": 15.693322,
+      "evaluator_failures": []
+    }
+  ],
+  "errors": [],
+  "repeat": 1
+}

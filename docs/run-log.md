@@ -203,3 +203,44 @@ Pooled intervals over repeats are narrower than the evidence supports (attempts 
 | E3 | Record the limitation; consider matching numbers with their units | Proposed |
 | F12 | Proposed: calculation tools accept a volumetric flow rate as an alternative to velocity | Proposed |
 | F3 | Decision needed: enforce through tool design, or accept model-side prefix conversion as a reported, ungated deviation | Open |
+
+---
+
+## Runs 3b and 3c: stronger models on the run 3 agent
+
+Same agent code, instructions and dataset as run 3 (`src/` and `data/` unchanged since `22cc7be`); only the model differs. One repeat each.
+
+| | |
+|---|---|
+| Date | 20 Nov 2026 |
+| Models | 3b `openai:gpt-5.4`; 3c `openai:gpt-6.1-sol` |
+| Result files | `results/20261120T191639Z-openai_gpt-5.4.json`, `results/20261120T192351Z-openai_gpt-6.1-sol.json` |
+| Cost (estimated from tokens and list prices) | 3b ≈ $1.30 (≈ $0.022 per case); 3c ≈ $1.00 (≈ $0.017 per case); run 3 ≈ $0.003 per attempt |
+
+### Results
+
+| | gpt-5.4-mini (run 3, per repeat) | gpt-5.4 (3b) | gpt-6.1-sol (3c) |
+|---|---|---|---|
+| **Correct answers** | 55–56/60, 92–93 % | 59/60, 98 % [91 %, 100 %] | **60/60, 100 % [94 %, 100 %]** |
+| Process clean | 76/180 pooled, 42 % | 55/60, 92 % [82 %, 96 %] | **60/60, 100 % [94 %, 100 %]** |
+| Missing-input traps | 0/9 | 2/3 (see below) | 3/3 |
+| `trap-units-03` (flow rate) | 0/3 | 1/1 | 1/1 |
+| Model-side mm conversion (F3) | 77/180 | 3/60 | 0/60 |
+| Mean trajectory score | 0.810 | 0.975 | 1.000 |
+| Requests per case | 2.89 | 3.18 | 3.23 |
+| Mean latency per case | 5.0 s | 6.5 s | 8.4 s |
+
+### Findings
+
+| ID | Observation |
+|---|---|
+| F11, F12, F3 | Not reproduced by gpt-6.1-sol; F11 and F12 not reproduced by gpt-5.4; F3 reduced to 3/60 with gpt-5.4. The run 3 failures are capability-dependent: the same tools and instructions are sufficient for the stronger models |
+| E4 | gpt-5.4's one incorrect case (`trap-missing-01`) declined correctly and named the pipe length, but reported no regime; the reference expects "turbulent", as Re is computable from the given velocity and diameter. Arguably too strict for a refusal case; to be reviewed |
+| E5 | gpt-6.1-sol saturates the suite: 60/60 on every check. With no failures, the evaluation bounds its error rate only to below ≈ 5 % (rule of three: 3/60); it cannot distinguish it from any model that is better than that |
+
+### Actions
+
+| ID | Action | Status |
+|---|---|---|
+| E5 | Extend the dataset with harder and more realistic cases so the strongest model is no longer at the ceiling | Proposed |
+| — | Decide the agent's target model from cost, latency and the required pass rate, rather than continuing to adapt the agent to gpt-5.4-mini | Open |
