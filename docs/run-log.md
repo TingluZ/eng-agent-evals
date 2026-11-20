@@ -55,9 +55,34 @@ Per-case-type intervals overlap, so differences between case types are not signi
 
 | ID | Action | Status |
 |---|---|---|
-| F1, F7, E1 | Add an evaluator checking every numeric tool argument is traceable to the question or an earlier tool output | Planned |
-| F1 | Instruction: use `water_properties` output exactly; never assume properties | Planned |
-| F4 | Instruction: convert only inputs not already in SI | Planned |
-| F5 | `mean_velocity` description: only when a volumetric flow rate is given | Planned |
-| F6 | Evaluate disabling parallel tool calls | Planned |
-| E2 | Separate correctness assertions (gated) from process assertions (reported) | Planned |
+| F1, F7, E1 | Add `InputsTraceable`: every numeric tool argument must be traceable to the question or an earlier tool output | Done (eval change); run 1 re-scored below |
+| E2 | Separate correctness assertions (decide a pass, gated) from process assertions (reported) | Done (eval change); run 1 re-scored below |
+| F1 | Instruction: use `water_properties` output exactly; never substitute typical values | Done (agent change); to verify in run 2 |
+| F2 | Instruction: report in the SI unit of the producing tool; convert with `convert_units` only when another unit is requested | Done (agent change); to verify in run 2 |
+| F4 | Instruction: convert only inputs not already in SI | Done (agent change); to verify in run 2 |
+| F5 | `mean_velocity` description: only when a volumetric flow rate is given | Done (agent change); to verify in run 2 |
+| F6 | Instruction: no tool calls with placeholder values. Disabling parallel tool calls was not chosen, as it adds a model request per tool call | Done (agent change); to verify in run 2 |
+| F7 | Instruction: pass numbers between tools exactly as returned | Done (agent change); to verify in run 2 |
+
+---
+
+## Run 1, re-scored: evaluation change only
+
+The run 1 outputs re-scored offline under the revised evaluation (correctness/process split and `InputsTraceable`), with no new model calls. The agent is unchanged, so differences from run 1 are due to the evaluation alone. This is the baseline for run 2.
+
+| | Passed | Rate | 95 % CI |
+|---|---|---|---|
+| **Correct answers** (gated) | 57/60 | 95 % | [86 %, 98 %] |
+| Process clean | 31/60 | 52 % | [39 %, 64 %] |
+| `InputsTraceable` | 31/59 | 53 % | [40 %, 65 %] |
+
+The three incorrect cases are F1 (2) and F2 (1). The previous 53/60 counted the F3 shortcuts as failures; they are now process failures.
+
+### Findings
+
+| ID | Type | Cases | Observation |
+|---|---|---|---|
+| F1 | Confirmed by new check | `reynolds_regime-06`, `-08` | `InputsTraceable` flags `density=1000`, `viscosity=0.001` directly |
+| F5 | Wider than seen in run 1 | 14 cases | A flow rate computed by the model (V·A) and passed to `mean_velocity`, when the question gave a velocity |
+| F7 | Wider than seen in run 1 | 10 cases | Values rounded or re-typed between tools: Reynolds numbers in 9 cases (e.g. 13 500 for 13 466.8; 500 for 502.5; 9145.7 for 9132.3), a friction factor in 1. Within value tolerance, but not copied |
+| F3 | Confirmed by new check | `pressure_drop-12`, `reynolds_regime-09`, `trap-transition-02` | Diameters converted by the model (`diameter=0.065` from "65 mm") |
