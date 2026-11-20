@@ -139,8 +139,67 @@ The intervals on the correctness rate overlap; the change in pass rate is not si
 
 | ID | Action | Status |
 |---|---|---|
-| F3 | Instruction defines SI as the seven base units and coherent derived units (no prefix or numerical factor), with °C as the temperature exception; every other unit, including prefixed units such as mm, goes through `convert_units` | Done; to verify in run 3 |
-| F1, F7, F8 | Structural fix: calculation tools take velocity, diameter, temperature (and length, ε/D) and compute properties, Re and f internally (`physics.pipe_flow`); `friction_factor` tool removed; property instructions removed | Done; to verify in run 3 |
-| F6 | Parallel tool calls disabled (`parallel_tool_calls=False`); placeholder instruction removed | Done; to verify in run 3, including requests and tokens per case |
-| F10 | `convert_units` accepts "US gal", "imperial gal" and "gpm" | Done; to verify in run 3 |
-| — | `run_evals --repeat N`; per-repeat pass rates and cases with inconsistent outcomes | Done; run 3 uses `--repeat 3` |
+| F3 | Instruction defines SI as the seven base units and coherent derived units (no prefix or numerical factor), with °C as the temperature exception; every other unit, including prefixed units such as mm, goes through `convert_units` | Not effective in run 3 |
+| F1, F7, F8 | Structural fix: calculation tools take velocity, diameter, temperature (and length, ε/D) and compute properties, Re and f internally (`physics.pipe_flow`); `friction_factor` tool removed; property instructions removed | Verified in run 3; caused regression F11 |
+| F6 | Parallel tool calls disabled (`parallel_tool_calls=False`); placeholder instruction removed | Verified in run 3; requests per case fell |
+| F10 | `convert_units` accepts "US gal", "imperial gal" and "gpm" | Verified in run 3 (conversion succeeds; see F12) |
+| — | `run_evals --repeat N`; per-repeat pass rates and cases with inconsistent outcomes | Done; used in run 3 |
+
+---
+
+## Run 3: tools compute intermediate values
+
+| | |
+|---|---|
+| Date | 20 Nov 2026 |
+| Model | `openai:gpt-5.4-mini` |
+| Code | `22cc7be` (calculation tools take the question's inputs and compute properties, Re and f internally; SI defined by rule in the instructions; parallel tool calls disabled; gallon spellings) |
+| Cases | 60 × 3 repeats = 180 attempts |
+| Result file | `results/20261120T185653Z-openai_gpt-5.4-mini.json` |
+| Cost | ≈ $0.5 total, ≈ $0.003 per attempt (estimated from the per-case costs shown in the report) |
+
+### Results
+
+| | Run 1 (re-scored) | Run 2 | Run 3 (pooled over 3 repeats) |
+|---|---|---|---|
+| **Correct answers** | 57/60, 95 % | 54/60, 90 % | 167/180, 93 % [88 %, 96 %] |
+| Regular cases (not traps) | 42/45 | 41/45 | 134/135 |
+| Traps | 15/15 | 13/15 | 33/45 |
+| Missing-input traps | 3/3 | 2/3 | **0/9** |
+| Process clean | 31/60, 52 % | 24/60, 40 % | 76/180, 42 % |
+| Model requests per case | 4.07 | 3.73 | 2.89 |
+| Input tokens per case | 4373 | 4317 | 3422 |
+| Mean latency per case | 7.7 s | 7.0 s | 5.0 s |
+| Retries from placeholder arguments | 24 | 19 | 1 |
+
+Correct answers per repeat: 56/60, 56/60, 55/60. One case (`pressure_drop-19`) changed outcome between repeats. Run-to-run variation is small compared with the differences between runs, so the changes below are systematic.
+
+Pooled intervals over repeats are narrower than the evidence supports (attempts at the same case are correlated); compare the per-repeat rates (56/60 [84 %, 97 %], 56/60 [84 %, 97 %], 55/60 [82 %, 96 %]) with the single-run rates of runs 1 and 2.
+
+### Finding-level outcomes
+
+| ID | Measure | Run 2 | Run 3 | Outcome |
+|---|---|---|---|---|
+| F1 | Generic properties passed to a tool | 5 cases | 0 (no property arguments exist) | Fixed by construction |
+| F7, F8 | Intermediate values re-typed between tools | 10+ cases, 2 wrong by an order of magnitude | 0 (no intermediate arguments exist) | Fixed by construction |
+| F6 | Retries from placeholder arguments | 19 | 1 | Fixed |
+| F10 | "US gal/min" not converted | 1 case | 0 | Fixed |
+| F3 | `tool_correctness` failures from model-side mm conversion | 30/60 cases | 77/180 attempts | Not fixed by the rule-based instruction; answers unaffected |
+
+### Findings
+
+| ID | Type | Cases | Observation | Cause |
+|---|---|---|---|---|
+| F11 | **Regression**, wrong answer | `trap-missing-01`, `-02`, `-03`: 9/9 attempts | The missing input is invented as 1 (length = 1 m, velocity = 1 m/s, diameter = 1 m), passed to the tool, and not flagged; `missing_inputs` is empty | Each calculation tool now requires every input as an argument. With no partial calculation available, the model fills the required argument rather than declining. In runs 1–2 it could compute intermediate steps and stop |
+| E3 | Eval gap | `trap-missing-01` | `InputsTraceable` passed `length=1` | Traceability matches numbers by value, not by quantity: "1 m/s" in the question supplies a 1 |
+| F12 | Wrong answer | `trap-units-03`: 3/3 attempts | Velocity computed by the model from the flow rate (0.742 m/s; correct 0.934 m/s), skipping `mean_velocity`; 35 % error | Helper tool skipped; possibly encouraged by "use the calculation tools directly" |
+| F13 | Wrong answer, intermittent | `pressure_drop-19`: 1/3 attempts | "68 °C" converted as if °F, giving 20 °C | Misreading of the question's unit |
+
+### Actions
+
+| ID | Action | Status |
+|---|---|---|
+| F11 | Proposed: make length, velocity and diameter optional tool arguments; a missing one raises a retry instructing the model to report it in `missing_inputs` | Proposed |
+| E3 | Record the limitation; consider matching numbers with their units | Proposed |
+| F12 | Proposed: calculation tools accept a volumetric flow rate as an alternative to velocity | Proposed |
+| F3 | Decision needed: enforce through tool design, or accept model-side prefix conversion as a reported, ungated deviation | Open |
