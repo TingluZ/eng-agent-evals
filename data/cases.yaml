@@ -1,0 +1,1336 @@
+# yaml-language-server: $schema=cases_schema.json
+name: pipe_flow
+cases:
+- name: pressure_drop-01
+  inputs: What is the pressure drop over 107 m of pipe with an internal diameter of
+    25 mm, carrying water at 42 °C with a mean velocity of 0.027 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:laminar
+  expected_output:
+    quantity: pressure_drop
+    value: 93.45383424
+    unit: Pa
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-02
+  inputs: What is the pressure drop over 120 m of smooth pipe with an internal diameter
+    of 20 mm, carrying water at 22 °C with a mean velocity of 0.025 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - regime:laminar
+  expected_output:
+    quantity: pressure_drop
+    value: 230.688
+    unit: Pa
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-03
+  inputs: What is the pressure drop over 30 m of smooth tube with an internal diameter
+    of 15 mm, carrying water at 43 °C with a mean velocity of 0.021 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - regime:laminar
+  expected_output:
+    quantity: pressure_drop
+    value: 55.65952000000001
+    unit: Pa
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-04
+  inputs: Water at 52 °C flows at 0.061 m/s through 187 m of 10 mm smooth pipe. What
+    is the pressure drop?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - regime:laminar
+  expected_output:
+    quantity: pressure_drop
+    value: 1938.2774399999998
+    unit: Pa
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-05
+  inputs: A 32 mm bore pipe, 28 m long, carries water at 71 °C at 1.1 m/s. Calculate
+    the frictional pressure drop.
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 9601.497563820774
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-06
+  inputs: A 15 mm bore drawn copper pipe (absolute roughness 0.0015 mm), 85 m long,
+    carries water at 26 °C at 0.82 m/s. Calculate the frictional pressure drop.
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - relative_roughness
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:absolute
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 54138.78519695603
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-07
+  inputs: What is the pressure drop over 12 m of smooth pipe with an internal diameter
+    of 50 mm, carrying water at 48 °C with a mean velocity of 0.15 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 76.91811943929883
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-08
+  inputs: Water at 12 °C flows at 1.2 m/s through 190 m of 32 mm drawn copper pipe
+    (relative roughness ε/D = 4.7e-05). What is the pressure drop?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:relative
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 100265.23508676044
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-09
+  inputs: What is the pressure drop over 31 m of pipe with an internal diameter of
+    80 mm, carrying water at 50 °C with a mean velocity of 0.067 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 26.766978087357153
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-10
+  inputs: A 25 mm bore galvanised iron pipe (absolute roughness 0.15 mm), 4 m long,
+    carries water at 6 °C at 0.88 m/s. Calculate the frictional pressure drop.
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - relative_roughness
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:absolute
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 2290.6634876862663
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-11
+  inputs: What is the pressure drop over 186 m of smooth pipe with an internal diameter
+    of 50 mm, carrying water at 69 °C with a mean velocity of 0.51 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 9469.789212061001
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-12
+  inputs: Water at 79 °C flows at 0.052 m/s through 139 m of 65 mm cast iron pipe
+    (relative roughness ε/D = 0.004). What is the pressure drop?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:relative
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 103.95190235417734
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-13
+  inputs: What is the pressure drop over 63 m of smooth tube with an internal diameter
+    of 50 mm, carrying water at 52 °C with a mean velocity of 0.43 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 2526.556282291083
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-14
+  inputs: What is the pressure drop over 74 m of drawn copper pipe (absolute roughness
+    0.0015 mm) with an internal diameter of 65 mm, carrying water at 47 °C with a
+    mean velocity of 0.74 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - relative_roughness
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:absolute
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 5815.186674701438
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-15
+  inputs: What is the pressure drop over 112 m of smooth pipe with an internal diameter
+    of 10 mm, carrying water at 64 °C with a mean velocity of 2.6 m/s?
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 751542.6111357579
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-16
+  inputs: A 50 mm bore cast iron pipe (relative roughness ε/D = 0.0052), 80 m long,
+    carries water at 91 °C at 0.099 m/s. Calculate the frictional pressure drop.
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:relative
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 270.549737253243
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-17
+  inputs: A 20 mm bore pipe, 5 m long, carries water at 49 °C at 2.4 m/s. Calculate
+    the frictional pressure drop.
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 13244.898463356953
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-18
+  inputs: A 25 mm bore commercial steel pipe (absolute roughness 0.045 mm), 70 m long,
+    carries water at 59 °C at 0.38 m/s. Calculate the frictional pressure drop.
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - relative_roughness
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:absolute
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 5869.239386906835
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-19
+  inputs: A 20 mm bore smooth pipe, 60 m long, carries water at 68 °C at 1.9 m/s.
+    Calculate the frictional pressure drop.
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 97651.09058999858
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: pressure_drop-20
+  inputs: A 15 mm bore drawn copper pipe (relative roughness ε/D = 0.0001), 193 m
+    long, carries water at 55 °C at 0.37 m/s. Calculate the frictional pressure drop.
+  metadata:
+    case_type: pressure_drop
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:relative
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 26415.015408201423
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-01
+  inputs: Water at 81 °C flows at 0.024 m/s through a 15 mm diameter tube. What is
+    the convective heat transfer coefficient?
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:laminar
+  expected_output:
+    quantity: heat_transfer
+    value: 163.60200000000003
+    unit: W/(m^2*K)
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-02
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 27 °C moving at 0.044 m/s in a pipe of 32 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:laminar
+  expected_output:
+    quantity: heat_transfer
+    value: 69.7573125
+    unit: W/(m^2*K)
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-03
+  inputs: Water at 27 °C flows at 0.075 m/s through a 15 mm diameter tube. What is
+    the convective heat transfer coefficient?
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:laminar
+  expected_output:
+    quantity: heat_transfer
+    value: 148.81560000000002
+    unit: W/(m^2*K)
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-04
+  inputs: What is h for water at 13 °C flowing at 0.059 m/s inside a 32 mm tube?
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:laminar
+  expected_output:
+    quantity: heat_transfer
+    value: 66.955125
+    unit: W/(m^2*K)
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-05
+  inputs: What is h for water at 30 °C flowing at 0.049 m/s inside a 10 mm tube?
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:laminar
+  expected_output:
+    quantity: heat_transfer
+    value: 225.09
+    unit: W/(m^2*K)
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-06
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 84 °C moving at 0.98 m/s in a pipe of 100 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 5376.489203814076
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-07
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 84 °C moving at 0.84 m/s in a pipe of 80 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 4901.715192656163
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-08
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 91 °C moving at 1.2 m/s in a pipe of 10 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 9631.523620480106
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-09
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 38 °C moving at 0.37 m/s in a pipe of 25 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 2186.5657255414076
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-10
+  inputs: Water at 34 °C flows at 1 m/s through a 80 mm diameter tube. What is the
+    convective heat transfer coefficient?
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 4253.349599957008
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-11
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 17 °C moving at 0.45 m/s in a pipe of 65 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 1805.6750077989152
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-12
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 53 °C moving at 0.48 m/s in a pipe of 10 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 3489.6175893583813
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-13
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 81 °C moving at 2.7 m/s in a pipe of 20 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 16173.140140695821
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-14
+  inputs: Estimate the heat transfer coefficient for fully developed flow of water
+    at 79 °C moving at 2.1 m/s in a pipe of 50 mm inner diameter.
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 11206.143319378176
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: heat_transfer-15
+  inputs: Water at 27 °C flows at 0.89 m/s through a 80 mm diameter tube. What is
+    the convective heat transfer coefficient?
+  metadata:
+    case_type: heat_transfer
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 3590.6166227350423
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-01
+  inputs: Water at 38 °C moves at 0.077 m/s through a pipe of 15 mm internal diameter.
+    Find the Reynolds number and the flow regime.
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:metric
+    - regime:laminar
+  expected_output:
+    quantity: reynolds_number
+    value: 1681.5241935483873
+    unit: dimensionless
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-02
+  inputs: Water at 77 °C moves at 0.04 m/s through a pipe of 0.01 m internal diameter.
+    Find the Reynolds number and the flow regime.
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:si
+    - regime:laminar
+  expected_output:
+    quantity: reynolds_number
+    value: 1053.3946443061939
+    unit: dimensionless
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-03
+  inputs: Water at 6 °C moves at 0.069 m/s through a pipe of 20 mm internal diameter.
+    Find the Reynolds number and the flow regime.
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:metric
+    - regime:laminar
+  expected_output:
+    quantity: reynolds_number
+    value: 919.148034643571
+    unit: dimensionless
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-04
+  inputs: What is the Reynolds number for water at 92 °C flowing at 0.02 m/s in a
+    0.02 m pipe, and is the flow laminar or turbulent?
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:si
+    - regime:laminar
+  expected_output:
+    quantity: reynolds_number
+    value: 1250.2204928664073
+    unit: dimensionless
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-05
+  inputs: Water at 93 °C moves at 0.63 m/s through a pipe of 80 mm internal diameter.
+    Find the Reynolds number and the flow regime.
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:metric
+    - regime:turbulent
+  expected_output:
+    quantity: reynolds_number
+    value: 159117.64011799413
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-06
+  inputs: What is the Reynolds number for water at 37 °C flowing at 0.26 m/s in a
+    0.025 m pipe, and is the flow laminar or turbulent?
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:si
+    - regime:turbulent
+  expected_output:
+    quantity: reynolds_number
+    value: 9269.382627422827
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-07
+  inputs: What is the Reynolds number for water at 61 °C flowing at 0.17 m/s in a
+    65 mm pipe, and is the flow laminar or turbulent?
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:metric
+    - regime:turbulent
+  expected_output:
+    quantity: reynolds_number
+    value: 23569.335793357935
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-08
+  inputs: Water at 46 °C moves at 0.37 m/s through a pipe of 0.05 m internal diameter.
+    Find the Reynolds number and the flow regime.
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:si
+    - regime:turbulent
+  expected_output:
+    quantity: reynolds_number
+    value: 31063.9294197489
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-09
+  inputs: What is the Reynolds number for water at 58 °C flowing at 0.23 m/s in a
+    20 mm pipe, and is the flow laminar or turbulent?
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:metric
+    - regime:turbulent
+  expected_output:
+    quantity: reynolds_number
+    value: 9372.952380952382
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: reynolds_regime-10
+  inputs: Water at 73 °C moves at 0.99 m/s through a pipe of 0.025 m internal diameter.
+    Find the Reynolds number and the flow regime.
+  metadata:
+    case_type: reynolds_regime
+    expected_trajectory:
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:si
+    - regime:turbulent
+  expected_output:
+    quantity: reynolds_number
+    value: 62049.833033650146
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-transition-01
+  inputs: Water at 20 °C flows at 0.085 m/s in a 25 mm pipe. What is the Reynolds
+    number and is the flow laminar, transitional or turbulent?
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:metric
+    - trap:transition
+    - regime:laminar
+  expected_output:
+    quantity: reynolds_number
+    value: 2116.9411177644715
+    unit: dimensionless
+    regime: laminar
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-transition-02
+  inputs: Find the Reynolds number and flow regime for water at 20 °C moving at 0.15
+    m/s through a 20 mm tube.
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:metric
+    - trap:transition
+    - regime:transitional
+  expected_output:
+    quantity: reynolds_number
+    value: 2988.6227544910175
+    unit: dimensionless
+    regime: transitional
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-transition-03
+  inputs: Water at 40 °C flows at 0.12 m/s through 10 m of 15 mm smooth tube. What
+    is the pressure drop?
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:metric
+    - roughness:smooth
+    - trap:transition
+    - regime:transitional
+  expected_output:
+    quantity: pressure_drop
+    value: 213.2641670208289
+    unit: Pa
+    regime: transitional
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-transition-04
+  inputs: What is the convective heat transfer coefficient for water at 30 °C flowing
+    at 0.35 m/s in a 10 mm tube?
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - trap:transition
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 1916.6083661079963
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-units-01
+  inputs: Water at 68 °F flows at 6 ft/s through 50 ft of 2 inch smooth pipe. What
+    is the pressure drop?
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - convert_units
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:imperial
+    - roughness:smooth
+    - trap:units
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 9156.05902937596
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-units-02
+  inputs: Water at 25 °C flows at 20 L/min through a 25 mm tube. What is the heat
+    transfer coefficient?
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - water_properties
+    - mean_velocity
+    - reynolds_number
+    - heat_transfer_coefficient
+    tags:
+    - units:flow_rate
+    - roughness:unspecified
+    - trap:units
+    - regime:turbulent
+  expected_output:
+    quantity: heat_transfer
+    value: 3227.102810577575
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-units-03
+  inputs: 30 US gal/min of water at 15 °C flows through 100 ft of 2 inch commercial
+    steel pipe (absolute roughness 0.045 mm). What is the pressure drop?
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - convert_units
+    - convert_units
+    - water_properties
+    - mean_velocity
+    - reynolds_number
+    - relative_roughness
+    - friction_factor
+    - pressure_drop
+    tags:
+    - units:imperial
+    - units:flow_rate
+    - roughness:absolute
+    - trap:units
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 6379.763163342813
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-units-04
+  inputs: Water at 140 °F flows at 3 ft/s through a 1 inch tube. What is the Reynolds
+    number, and what is the flow regime?
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - convert_units
+    - water_properties
+    - reynolds_number
+    tags:
+    - units:imperial
+    - trap:units
+    - regime:turbulent
+  expected_output:
+    quantity: reynolds_number
+    value: 48898.430903640285
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-missing-01
+  inputs: Water at 20 °C flows at 1 m/s through a 2 inch pipe. What is the pressure
+    drop?
+  metadata:
+    case_type: trap
+    expected_trajectory: null
+    tags:
+    - units:imperial
+    - roughness:unspecified
+    - trap:missing_input
+  expected_output:
+    quantity: pressure_drop
+    value: null
+    unit: Pa
+    regime: turbulent
+    missing_inputs:
+    - length
+    requested_unit: null
+  evaluators: []
+- name: trap-missing-02
+  inputs: What is the pressure drop over 25 m of 40 mm commercial steel pipe (absolute
+    roughness 0.045 mm) carrying water at 50 °C?
+  metadata:
+    case_type: trap
+    expected_trajectory: null
+    tags:
+    - units:metric
+    - roughness:absolute
+    - trap:missing_input
+  expected_output:
+    quantity: pressure_drop
+    value: null
+    unit: Pa
+    regime: null
+    missing_inputs:
+    - velocity
+    requested_unit: null
+  evaluators: []
+- name: trap-missing-03
+  inputs: Water at 60 °C flows at 0.8 m/s through a tube. What is the heat transfer
+    coefficient?
+  metadata:
+    case_type: trap
+    expected_trajectory: null
+    tags:
+    - units:metric
+    - roughness:unspecified
+    - trap:missing_input
+  expected_output:
+    quantity: heat_transfer
+    value: null
+    unit: W/(m^2*K)
+    regime: null
+    missing_inputs:
+    - diameter
+    requested_unit: null
+  evaluators: []
+- name: trap-out_of_range-01
+  inputs: Water at 120 °C flows at 1.5 m/s through 20 m of 50 mm smooth pipe. What
+    is the pressure drop?
+  metadata:
+    case_type: trap
+    expected_trajectory: null
+    tags:
+    - units:metric
+    - roughness:smooth
+    - trap:out_of_range
+  expected_output:
+    quantity: pressure_drop
+    value: null
+    unit: Pa
+    regime: null
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-out_of_range-02
+  inputs: Water at 250 °F flows at 0.5 m/s through a 25 mm tube. What is the heat
+    transfer coefficient?
+  metadata:
+    case_type: trap
+    expected_trajectory: null
+    tags:
+    - units:mixed
+    - roughness:unspecified
+    - trap:out_of_range
+  expected_output:
+    quantity: heat_transfer
+    value: null
+    unit: W/(m^2*K)
+    regime: null
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: trap-output_unit-01
+  inputs: Water at 20 °C flows at 1.2 m/s through 15 m of 25 mm smooth pipe. What
+    is the pressure drop in kPa?
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - friction_factor
+    - pressure_drop
+    - convert_units
+    tags:
+    - units:metric
+    - roughness:smooth
+    - trap:output_unit
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 10135.421384167554
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: kPa
+  evaluators: []
+- name: trap-output_unit-02
+  inputs: Water at 10 °C flows at 2.5 m/s through 60 m of 40 mm cast iron pipe (absolute
+    roughness 0.26 mm). Give the pressure drop in psi.
+  metadata:
+    case_type: trap
+    expected_trajectory:
+    - convert_units
+    - convert_units
+    - water_properties
+    - reynolds_number
+    - relative_roughness
+    - friction_factor
+    - pressure_drop
+    - convert_units
+    tags:
+    - units:metric
+    - roughness:absolute
+    - trap:output_unit
+    - regime:turbulent
+  expected_output:
+    quantity: pressure_drop
+    value: 159124.68801084554
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: psi
+  evaluators: []
+evaluators: []
+report_evaluators: []
