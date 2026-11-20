@@ -139,7 +139,7 @@ The intervals on the correctness rate overlap; the change in pass rate is not si
 
 | ID | Action | Status |
 |---|---|---|
-| F3 | Instruction lists the units the tools accept (m, m/s, m³/s, Pa, kg/m³, Pa·s, W/(m²·K), °C); every other unit, including mm, goes through `convert_units` | Done; to verify in run 3 |
+| F3 | Instruction defines SI as the seven base units and coherent derived units (no prefix or numerical factor), with °C as the temperature exception; every other unit, including prefixed units such as mm, goes through `convert_units` | Done; to verify in run 3 |
 | F1, F7, F8 | Structural fix: calculation tools take velocity, diameter, temperature (and length, ε/D) and compute properties, Re and f internally (`physics.pipe_flow`); `friction_factor` tool removed; property instructions removed | Done; to verify in run 3 |
 | F6 | Parallel tool calls disabled (`parallel_tool_calls=False`); placeholder instruction removed | Done; to verify in run 3, including requests and tokens per case |
 | F10 | `convert_units` accepts "US gal", "imperial gal" and "gpm" | Done; to verify in run 3 |
