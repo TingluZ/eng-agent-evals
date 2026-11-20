@@ -56,6 +56,8 @@ class ToolCall(BaseModel):
 class AgentRun(BaseModel):
     answer: Answer
     tool_calls: list[ToolCall]
+    usage: dict[str, int] = {}
+    """Model requests and token counts for the run."""
 
     @property
     def successful_calls(self) -> list[ToolCall]:

@@ -236,34 +236,31 @@ def _scripted_pressure_drop(messages: list[ModelMessage], info: AgentInfo) -> Mo
     return ModelResponse(parts=[call])
 
 
-def test_end_to_end_with_scripted_agent():
+def run_scripted_evaluation(dataset: Dataset):
+    """Evaluate `dataset` offline with the scripted agent, as run_evals does with a real model."""
+    from eng_agent_evals.run_evals import make_task
+
     logfire.configure(send_to_logfire=False, console=False)
     logfire.instrument_pydantic_ai()
-    agent = build_agent(FunctionModel(_scripted_pressure_drop))
+    task = make_task(build_agent(FunctionModel(_scripted_pressure_drop)))
+    return with_trajectory_evaluators(dataset).evaluate_sync(task, progress=False)
 
-    async def task(question: str) -> AgentRun:
-        result = await agent.run(question)
-        return AgentRun(answer=result.output, tool_calls=extract_tool_calls(result.all_messages()))
 
+def scripted_case(name: str = "pd", case_type: str = "pressure_drop", **expected) -> Case:
     w = physics.water_properties(20)
     re = physics.reynolds_number(2, 0.05, w.density, w.dynamic_viscosity)
     expected_dp = physics.pressure_drop(physics.friction_factor(re), 30, 0.05, w.density, 2)
     trajectory = ["convert_units", "water_properties", "reynolds_number", "friction_factor", "pressure_drop"]
-    dataset = with_trajectory_evaluators(
-        Dataset(
-            name="one_case",
-            cases=[
-                Case(
-                    name="pd",
-                    inputs="pressure drop?",
-                    expected_output=_expected(value=expected_dp),
-                    metadata=CaseMetadata(case_type="pressure_drop", expected_trajectory=trajectory, tags=[]),
-                )
-            ],
-        )
+    return Case(
+        name=name,
+        inputs="pressure drop?",
+        expected_output=_expected(**{"value": expected_dp, **expected}),
+        metadata=CaseMetadata(case_type=case_type, expected_trajectory=trajectory, tags=[]),
     )
 
-    report = dataset.evaluate_sync(task, progress=False)
+
+def test_end_to_end_with_scripted_agent():
+    report = run_scripted_evaluation(Dataset(name="one_case", cases=[scripted_case()]))
     assert not report.failures, report.failures[0].error_message
     case = report.cases[0]
     assertions = {name: r.value for name, r in case.assertions.items()}
@@ -279,6 +276,7 @@ def test_end_to_end_with_scripted_agent():
     assert case.scores["trajectory"].value == 1.0
     assert case.scores["tool_calls"].value == 5
     assert case.scores["retries"].value == 0
+    assert case.output.usage["requests"] == 6
 
 
 def test_trajectory_evaluators_attached_only_where_a_trajectory_is_defined():
