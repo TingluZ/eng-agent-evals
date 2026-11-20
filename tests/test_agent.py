@@ -26,7 +26,9 @@ from eng_agent_evals.agent import Answer, build_agent
 EXPECTED_TOOLS = {
     "convert_units",
     "water_properties",
+    "mean_velocity",
     "reynolds_number",
+    "relative_roughness",
     "friction_factor",
     "pressure_drop",
     "heat_transfer_coefficient",

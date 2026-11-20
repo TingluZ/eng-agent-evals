@@ -60,6 +60,12 @@ def water_properties(temperature_c: float) -> WaterProperties:
     return WaterProperties(temperature_c, rho, mu, k, pr)
 
 
+def mean_velocity(flow_rate: float, diameter: float) -> float:
+    """Mean velocity from volumetric flow rate: V = Q / (pi D^2 / 4), in m/s."""
+    _require_positive(flow_rate=flow_rate, diameter=diameter)
+    return flow_rate / (math.pi * diameter**2 / 4.0)
+
+
 def reynolds_number(velocity: float, diameter: float, density: float, viscosity: float) -> float:
     """Re = rho * V * D / mu."""
     _require_positive(velocity=velocity, diameter=diameter, density=density, viscosity=viscosity)
@@ -72,6 +78,14 @@ def flow_regime(re: float) -> Regime:
     if re < TURBULENT_LIMIT:
         return "transitional"
     return "turbulent"
+
+
+def relative_roughness(roughness: float, diameter: float) -> float:
+    """Relative roughness eps / D from absolute roughness and diameter, both in m."""
+    _require_positive(diameter=diameter)
+    if roughness < 0:
+        raise ValueError(f"roughness must be >= 0, got {roughness}")
+    return roughness / diameter
 
 
 def friction_factor(re: float, relative_roughness: float = 0.0) -> float:

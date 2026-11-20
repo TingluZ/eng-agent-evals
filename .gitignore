@@ -9,3 +9,6 @@ dist/
 
 # Private working notes (kept local)
 notes/
+
+# macOS
+.DS_Store
