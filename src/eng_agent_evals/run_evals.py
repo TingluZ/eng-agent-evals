@@ -23,13 +23,13 @@ from typing import Any
 import logfire
 from pydantic_ai import Agent
 from pydantic_evals import Dataset
-from pydantic_evals.reporting import EvaluationReport
+from pydantic_evals.reporting import EvaluationReport, ReportCase
 from rich.console import Console
 from rich.table import Table
 
 from .agent import DEFAULT_MODEL, Answer, build_agent
 from .dataset import load_dataset
-from .evaluators import AgentRun, extract_tool_calls, with_trajectory_evaluators
+from .evaluators import CORRECTNESS_CHECKS, AgentRun, extract_tool_calls, with_trajectory_evaluators
 
 RESULTS_DIR = Path(__file__).resolve().parents[2] / "results"
 
@@ -101,20 +101,32 @@ def stratified_subset(dataset: Dataset, n: int) -> Dataset:
 
 # --- summarising ---------------------------------------------------------------
 
+def case_passed(case: ReportCase) -> bool:
+    """Every correctness assertion that applies passed, and no evaluator raised."""
+    return not case.evaluator_failures and all(
+        bool(r.value) for name, r in case.assertions.items() if name in CORRECTNESS_CHECKS
+    )
+
+
+def case_process_ok(case: ReportCase) -> bool:
+    """Every process assertion that applies passed."""
+    return all(bool(r.value) for name, r in case.assertions.items() if name not in CORRECTNESS_CHECKS)
+
+
 def summarise(report: EvaluationReport) -> dict[str, Any]:
     """Pass rates with Wilson intervals, overall, per evaluator and per case type.
 
-    A case passes when every assertion that applies to it passes. Cases whose
-    task raised, or where an evaluator raised, count as failed.
+    A case passes when every correctness assertion that applies to it passes;
+    process assertions are summarised separately. Cases whose task raised, or
+    where an evaluator raised, count as failed on both.
     """
-    overall = Rate(0, 0)
+    overall, process = Rate(0, 0), Rate(0, 0)
     per_type: dict[str, Rate] = defaultdict(lambda: Rate(0, 0))
     per_evaluator: dict[str, Rate] = defaultdict(lambda: Rate(0, 0))
     trajectory_scores, tool_calls, retries = [], 0, 0
 
     for case in report.cases:
-        values = [bool(r.value) for r in case.assertions.values()]
-        passed = all(values) and not case.evaluator_failures
+        passed = case_passed(case)
         for name, result in case.assertions.items():
             per_evaluator[name].n += 1
             per_evaluator[name].successes += bool(result.value)
@@ -125,16 +137,21 @@ def summarise(report: EvaluationReport) -> dict[str, Any]:
         for rate in (overall, per_type[case.metadata.case_type]):
             rate.n += 1
             rate.successes += passed
+        process.n += 1
+        process.successes += case_process_ok(case) and not case.evaluator_failures
 
     for failure in report.failures:
         overall.n += 1
+        process.n += 1
         per_type[failure.metadata.case_type].n += 1
 
     completed = len(report.cases)
     return {
         "overall": overall.as_dict(),
+        "process": process.as_dict(),
         "per_case_type": {k: v.as_dict() for k, v in sorted(per_type.items())},
-        "per_evaluator": {k: v.as_dict() for k, v in per_evaluator.items()},
+        "correctness_checks": {k: v.as_dict() for k, v in per_evaluator.items() if k in CORRECTNESS_CHECKS},
+        "process_checks": {k: v.as_dict() for k, v in per_evaluator.items() if k not in CORRECTNESS_CHECKS},
         "mean_trajectory_score": sum(trajectory_scores) / len(trajectory_scores) if trajectory_scores else None,
         "mean_tool_calls": tool_calls / completed if completed else None,
         "retry_rate": retries / tool_calls if tool_calls else 0.0,
@@ -150,13 +167,17 @@ def print_summary(summary: dict[str, Any], console: Console) -> None:
     table = Table(title="Pass rates (Wilson 95 % CI)")
     for col in ("", "passed", "rate", "95 % CI"):
         table.add_column(col)
-    table.add_row(*_rate_row("overall", summary["overall"]), style="bold")
+    table.add_row(*_rate_row("overall (correct answers)", summary["overall"]), style="bold")
+    table.add_row(*_rate_row("process (all process checks)", summary["process"]))
     table.add_section()
     for name, d in summary["per_case_type"].items():
         table.add_row(*_rate_row(f"case type: {name}", d))
     table.add_section()
-    for name, d in summary["per_evaluator"].items():
-        table.add_row(*_rate_row(name, d))
+    for name, d in summary["correctness_checks"].items():
+        table.add_row(*_rate_row(f"correctness: {name}", d))
+    table.add_section()
+    for name, d in summary["process_checks"].items():
+        table.add_row(*_rate_row(f"process: {name}", d))
     console.print(table)
 
     mean_traj = summary["mean_trajectory_score"]
@@ -182,7 +203,8 @@ def to_json(report: EvaluationReport, summary: dict[str, Any], model: str) -> di
                 "name": case.name,
                 "case_type": case.metadata.case_type,
                 "tags": case.metadata.tags,
-                "passed": all(bool(r.value) for r in case.assertions.values()) and not case.evaluator_failures,
+                "passed": case_passed(case),
+                "process_ok": case_process_ok(case),
                 "assertions": results(case.assertions),
                 "scores": results(case.scores),
                 "output": case.output.model_dump(mode="json"),

@@ -6,8 +6,10 @@ answer against the reference (`ExpectedAnswer`) and the tool outputs; the
 built-in `TrajectoryMatch` and `ToolCorrectness`, attached per case by
 `with_trajectory_evaluators`, check the tool sequence from the trace.
 
-Assertions (bool) count towards a case passing; scores and metrics (numbers) are
-reported but do not.
+Assertions (bool) are grouped into correctness checks, which decide whether a
+case passes, and process checks, which are reported separately: a correct answer
+reached by a shortcut is a process failure, not a wrong answer. Scores and
+metrics (numbers) are reported but never decide a pass.
 """
 
 from __future__ import annotations
@@ -227,6 +229,36 @@ class ValueTraceableToTool(Evaluator):
         return EvaluationReason(False, f"{answer.value} {answer.unit} matches no tool output")
 
 
+_NUMBER = re.compile(r"[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
+
+
+@dataclass
+class InputsTraceable(Evaluator):
+    """Every numeric argument of every successful tool call equals, within
+    `rel_tol`, a number in the question or an output of an earlier successful
+    call. Catches values the model substituted or re-typed (for example generic
+    water properties instead of the `water_properties` result). Zero is always
+    allowed, for smooth-pipe roughness."""
+
+    rel_tol: float = 1e-3
+
+    def evaluate(self, ctx: Ctx) -> EvaluatorOutput:
+        calls = ctx.output.successful_calls
+        if not calls:
+            return {}
+        known = [float(x) for x in _NUMBER.findall(ctx.inputs)] + [0.0]
+        untraced = []
+        for call in calls:
+            for name, value in call.args.items():
+                if isinstance(value, (int, float)) and not isinstance(value, bool):
+                    if not any(_is_close(float(value), k, self.rel_tol) for k in known):
+                        untraced.append(f"{call.name}.{name}={value:g}")
+            known += _numbers(call.result)
+        if untraced:
+            return EvaluationReason(False, "untraceable: " + ", ".join(untraced))
+        return EvaluationReason(True)
+
+
 @dataclass
 class ToolCallStats(Evaluator):
     """Metrics, not assertions: number of tool calls and of retried calls."""
@@ -246,8 +278,14 @@ CUSTOM_EVALUATORS: list[Evaluator] = [
     RegimeCorrect(),
     FlagsMissingInputs(),
     ValueTraceableToTool(),
+    InputsTraceable(),
     ToolCallStats(),
 ]
+
+CORRECTNESS_CHECKS = frozenset(
+    {"ValueWithinTolerance", "reports_requested_unit", "RegimeCorrect", "FlagsMissingInputs"}
+)
+"""Assertions that decide whether a case passes. All other assertions are process checks."""
 
 
 # --- built-in trajectory evaluators, per case ---------------------------------

@@ -17,6 +17,7 @@ from eng_agent_evals.dataset import CaseMetadata, ExpectedAnswer
 from eng_agent_evals.evaluators import (
     AgentRun,
     FlagsMissingInputs,
+    InputsTraceable,
     RegimeCorrect,
     ReportsRequestedUnit,
     ToolCall,
@@ -176,6 +177,65 @@ def test_value_traceable_not_applicable_without_value():
     assert ValueTraceableToTool().evaluate(_ctx(_answer(value=None), _expected(value=None))) == {}
 
 
+# --- input traceability ------------------------------------------------------
+
+_QUESTION = "What is the Reynolds number for water at 37 °C flowing at 0.26 m/s in a 0.025 m pipe?"
+_PROPS = {"density": 993.25, "dynamic_viscosity": 0.0006965}
+
+
+def _inputs_ctx(calls: list[ToolCall]):
+    ctx = _ctx(_answer(), _expected(), calls)
+    ctx.inputs = _QUESTION
+    return ctx
+
+
+def test_inputs_traceable_when_copied_from_question_and_tools():
+    calls = [
+        ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
+        ToolCall(
+            name="reynolds_number",
+            args={"velocity": 0.26, "diameter": 0.025, "density": 993.25, "viscosity": 0.0006965},
+            result={"reynolds_number": 9269.4, "regime": "turbulent"},
+        ),
+        ToolCall(name="friction_factor", args={"reynolds_number": 9269.4, "relative_roughness": 0.0}, result=0.03),
+    ]
+    assert InputsTraceable().evaluate(_inputs_ctx(calls)).value is True
+
+
+def test_inputs_traceable_catches_substituted_properties():
+    # Run 1, reynolds_regime-06: properties looked up, then generic values used.
+    calls = [
+        ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
+        ToolCall(
+            name="reynolds_number",
+            args={"velocity": 0.26, "diameter": 0.025, "density": 1000, "viscosity": 0.001},
+            result={"reynolds_number": 6500.0, "regime": "turbulent"},
+        ),
+    ]
+    result = InputsTraceable().evaluate(_inputs_ctx(calls))
+    assert result.value is False
+    assert "reynolds_number.density=1000" in result.reason
+    assert "reynolds_number.viscosity=0.001" in result.reason
+
+
+def test_inputs_traceable_catches_retyped_numbers():
+    # Run 1, pressure_drop-12: Re 9132.3 from the tool passed on as 9145.7.
+    calls = [
+        ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
+        ToolCall(name="friction_factor", args={"reynolds_number": 9145.7}, result=0.03),
+    ]
+    ctx = _inputs_ctx([*calls[:1], ToolCall(name="reynolds_number", args={}, result={"reynolds_number": 9132.3}), calls[1]])
+    assert InputsTraceable().evaluate(ctx).value is False
+
+
+def test_inputs_traceable_rejects_values_from_later_calls():
+    calls = [
+        ToolCall(name="reynolds_number", args={"velocity": 0.26, "diameter": 0.025, "density": 993.25, "viscosity": 0.0006965}),
+        ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
+    ]
+    assert InputsTraceable().evaluate(_inputs_ctx(calls)).value is False
+
+
 def test_tool_call_stats():
     calls = [*_CALLS, ToolCall(name="water_properties", args={}, result="error", retried=True)]
     assert ToolCallStats().evaluate(_ctx(_answer(), _expected(), calls)) == {"tool_calls": 3, "retries": 1}
@@ -253,7 +313,7 @@ def scripted_case(name: str = "pd", case_type: str = "pressure_drop", **expected
     trajectory = ["convert_units", "water_properties", "reynolds_number", "friction_factor", "pressure_drop"]
     return Case(
         name=name,
-        inputs="pressure drop?",
+        inputs="Water at 20 °C flows at 2 m/s through 30 m of 50 mm smooth pipe. What is the pressure drop?",
         expected_output=_expected(**{"value": expected_dp, **expected}),
         metadata=CaseMetadata(case_type=case_type, expected_trajectory=trajectory, tags=[]),
     )
@@ -270,6 +330,7 @@ def test_end_to_end_with_scripted_agent():
         "RegimeCorrect": True,
         "FlagsMissingInputs": True,
         "ValueTraceableToTool": True,
+        "InputsTraceable": True,
         "tool_correctness": True,
     }
     # The output tool is not part of the span-based trajectory, so the match is exact.
@@ -289,4 +350,4 @@ def test_trajectory_evaluators_attached_only_where_a_trajectory_is_defined():
             assert names == set(), case.name
         else:
             assert names == {"trajectory", "tool_correctness"}, case.name
-    assert len(dataset.evaluators) == 6
+    assert len(dataset.evaluators) == 7
