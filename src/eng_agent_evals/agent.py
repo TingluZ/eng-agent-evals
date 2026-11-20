@@ -1,9 +1,10 @@
 """A PydanticAI agent that answers pipe-flow and heat-transfer questions.
 
 The agent does no arithmetic itself: every number comes from a tool, and every
-tool is a thin wrapper around the reference functions in physics.py. That makes
-two things checkable in the evals: whether the final number is right, and
-whether the agent called the right tools with the right inputs (its trajectory).
+tool is a thin wrapper around the reference functions in physics.py. The
+calculation tools take the question's inputs (velocity, diameter, temperature,
+...) and look up properties and intermediate results themselves, so the model
+never has to copy one tool's output into another tool's input.
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ from typing import Literal
 from pydantic import BaseModel, Field
 from pydantic_ai import Agent, ModelRetry
 from pydantic_ai.models import Model
+from pydantic_ai.settings import ModelSettings
 
 from . import physics, units
 
@@ -24,23 +26,25 @@ You are an engineering assistant for internal flow of liquid water in circular p
 
 Rules:
 - Never do arithmetic in your head. Every number in your answer must come from a tool.
-- Convert inputs that are not in SI units (for example mm, inch, ft, L/min, °F) with
-  `convert_units` before using them. Do not convert values that are already in SI
-  (m, m/s, m^3/s, Pa, °C for temperature lookups).
-- Get water properties from `water_properties` and use the returned values exactly;
-  never substitute typical values such as 1000 kg/m^3 or 0.001 Pa·s.
-- Pass numbers between tools exactly as returned: copy them, do not round or re-type them.
-- Call a tool only when all of its inputs are known. Never call a tool with placeholder
-  values such as 0 while waiting for another tool's result.
-- Compute the Reynolds number and report the flow regime.
+- The tools work in these units only: m, m/s, m^3/s, Pa, kg/m^3, Pa·s, W/(m^2·K),
+  and °C for temperature. Any value given in another unit (for example mm, cm, inch,
+  ft, L/min, gal/min, °F, K, kPa, psi) must be converted with `convert_units` before
+  use. Values already in one of these units are used as given.
+- Use the calculation tools directly with the converted inputs: they look up water
+  properties and compute the Reynolds number themselves.
+- Report the flow regime.
 - If a required input is missing (for example pipe length for a pressure drop),
   do not guess: set `value` to null and list what is missing in `missing_inputs`.
 - If the pipe material or roughness is not given, assume a smooth pipe and say so
   in `assumptions`.
-- Report the value in the SI unit of the tool that produced it. If the question asks
+- Report the value in the unit of the tool that produced it. If the question asks
   for another unit, convert the value with `convert_units` and report that result
   with the requested unit.
 """
+
+# One tool call per model response: parallel calls were issued with placeholder
+# arguments before the results they depended on existed.
+MODEL_SETTINGS = ModelSettings(parallel_tool_calls=False)
 
 
 class Answer(BaseModel):
@@ -64,6 +68,7 @@ def build_agent(model: Model | str | None = None) -> Agent[None, Answer]:
         instructions=INSTRUCTIONS,
         name="pipe_flow_agent",
         retries=2,
+        model_settings=MODEL_SETTINGS,
         defer_model_check=True,
     )
 
@@ -78,7 +83,8 @@ def build_agent(model: Model | str | None = None) -> Agent[None, Answer]:
     @agent.tool_plain
     def water_properties(temperature_c: float) -> dict[str, float]:
         """Liquid water properties at a temperature in °C (0-100): density [kg/m^3],
-        dynamic viscosity [Pa·s], thermal conductivity [W/(m·K)], Prandtl number."""
+        dynamic viscosity [Pa·s], thermal conductivity [W/(m·K)], Prandtl number.
+        Not needed for the calculation tools, which look properties up themselves."""
         try:
             props = physics.water_properties(temperature_c)
         except ValueError as exc:
@@ -100,15 +106,6 @@ def build_agent(model: Model | str | None = None) -> Agent[None, Answer]:
             raise ModelRetry(str(exc)) from exc
 
     @agent.tool_plain
-    def reynolds_number(velocity: float, diameter: float, density: float, viscosity: float) -> dict:
-        """Reynolds number and flow regime. Inputs in SI: m/s, m, kg/m^3, Pa·s."""
-        try:
-            re = physics.reynolds_number(velocity, diameter, density, viscosity)
-        except ValueError as exc:
-            raise ModelRetry(str(exc)) from exc
-        return {"reynolds_number": re, "regime": physics.flow_regime(re)}
-
-    @agent.tool_plain
     def relative_roughness(roughness: float, diameter: float) -> float:
         """Relative roughness eps/D from absolute roughness and pipe diameter, both in m.
         Not needed if the question already gives eps/D."""
@@ -118,39 +115,49 @@ def build_agent(model: Model | str | None = None) -> Agent[None, Answer]:
             raise ModelRetry(str(exc)) from exc
 
     @agent.tool_plain
-    def friction_factor(reynolds_number: float, relative_roughness: float = 0.0) -> float:
-        """Darcy friction factor: 64/Re if laminar, Colebrook otherwise.
-        relative_roughness is absolute roughness divided by diameter (0 for a smooth pipe)."""
+    def reynolds_number(velocity: float, diameter: float, temperature_c: float) -> dict:
+        """Reynolds number and flow regime for water. Inputs: m/s, m, °C (0-100)."""
         try:
-            return physics.friction_factor(reynolds_number, relative_roughness)
+            flow = physics.pipe_flow(velocity, diameter, temperature_c)
         except ValueError as exc:
             raise ModelRetry(str(exc)) from exc
+        return {"reynolds_number": flow.reynolds_number, "regime": flow.regime}
 
     @agent.tool_plain
     def pressure_drop(
-        friction_factor: float, length: float, diameter: float, density: float, velocity: float
-    ) -> float:
-        """Darcy-Weisbach pressure drop in Pa. Inputs in SI: -, m, m, kg/m^3, m/s."""
+        velocity: float, diameter: float, length: float, temperature_c: float, relative_roughness: float = 0.0
+    ) -> dict:
+        """Darcy-Weisbach pressure drop [Pa] for water in a pipe, with the Reynolds number,
+        regime and Darcy friction factor (64/Re if laminar, Colebrook otherwise).
+        Inputs: m/s, m, m, °C (0-100); relative_roughness is eps/D (0 for a smooth pipe)."""
         try:
-            return physics.pressure_drop(friction_factor, length, diameter, density, velocity)
+            flow = physics.pipe_flow(velocity, diameter, temperature_c, relative_roughness)
+            dp = physics.pressure_drop(flow.friction_factor, length, diameter, flow.water.density, velocity)
         except ValueError as exc:
             raise ModelRetry(str(exc)) from exc
+        return {
+            "pressure_drop": dp,
+            "reynolds_number": flow.reynolds_number,
+            "regime": flow.regime,
+            "friction_factor": flow.friction_factor,
+        }
 
     @agent.tool_plain
     def heat_transfer_coefficient(
-        reynolds_number: float,
-        prandtl: float,
-        thermal_conductivity: float,
-        diameter: float,
-        relative_roughness: float = 0.0,
-    ) -> dict[str, float]:
-        """Convective heat transfer coefficient h [W/(m^2·K)] for fully developed pipe flow,
-        with the Nusselt number (3.66 if laminar, Gnielinski otherwise)."""
+        velocity: float, diameter: float, temperature_c: float, relative_roughness: float = 0.0
+    ) -> dict:
+        """Convective heat transfer coefficient h [W/(m^2·K)] for fully developed flow of
+        water in a pipe, with the Nusselt number (3.66 if laminar, Gnielinski otherwise),
+        Reynolds number and regime. Inputs: m/s, m, °C (0-100); relative_roughness is eps/D."""
         try:
-            nu = physics.nusselt_number(reynolds_number, prandtl, relative_roughness)
-            h = physics.heat_transfer_coefficient(nu, thermal_conductivity, diameter)
+            flow = physics.pipe_flow(velocity, diameter, temperature_c, relative_roughness)
         except ValueError as exc:
             raise ModelRetry(str(exc)) from exc
-        return {"nusselt_number": nu, "h": h}
+        return {
+            "h": flow.heat_transfer_coefficient,
+            "nusselt_number": flow.nusselt_number,
+            "reynolds_number": flow.reynolds_number,
+            "regime": flow.regime,
+        }
 
     return agent

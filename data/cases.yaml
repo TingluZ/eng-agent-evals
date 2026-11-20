@@ -8,9 +8,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -31,9 +28,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -54,9 +48,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -77,9 +68,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -100,9 +88,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -124,10 +109,7 @@ cases:
     expected_trajectory:
     - convert_units
     - convert_units
-    - water_properties
-    - reynolds_number
     - relative_roughness
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -148,9 +130,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -171,9 +150,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -194,9 +170,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -218,10 +191,7 @@ cases:
     expected_trajectory:
     - convert_units
     - convert_units
-    - water_properties
-    - reynolds_number
     - relative_roughness
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -242,9 +212,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -265,9 +232,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -288,9 +252,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -313,10 +274,7 @@ cases:
     expected_trajectory:
     - convert_units
     - convert_units
-    - water_properties
-    - reynolds_number
     - relative_roughness
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -337,9 +295,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -360,9 +315,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -383,9 +335,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -407,10 +356,7 @@ cases:
     expected_trajectory:
     - convert_units
     - convert_units
-    - water_properties
-    - reynolds_number
     - relative_roughness
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -431,9 +377,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -454,9 +397,6 @@ cases:
     case_type: pressure_drop
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -477,8 +417,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -499,8 +437,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -521,8 +457,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -542,8 +476,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -563,8 +495,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -585,8 +515,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -607,8 +535,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -629,8 +555,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -651,8 +575,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -673,8 +595,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -695,8 +615,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -717,8 +635,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -739,8 +655,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -761,8 +675,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -783,8 +695,6 @@ cases:
     case_type: heat_transfer
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -805,7 +715,6 @@ cases:
     case_type: reynolds_regime
     expected_trajectory:
     - convert_units
-    - water_properties
     - reynolds_number
     tags:
     - units:metric
@@ -824,7 +733,6 @@ cases:
   metadata:
     case_type: reynolds_regime
     expected_trajectory:
-    - water_properties
     - reynolds_number
     tags:
     - units:si
@@ -844,7 +752,6 @@ cases:
     case_type: reynolds_regime
     expected_trajectory:
     - convert_units
-    - water_properties
     - reynolds_number
     tags:
     - units:metric
@@ -863,7 +770,6 @@ cases:
   metadata:
     case_type: reynolds_regime
     expected_trajectory:
-    - water_properties
     - reynolds_number
     tags:
     - units:si
@@ -883,7 +789,6 @@ cases:
     case_type: reynolds_regime
     expected_trajectory:
     - convert_units
-    - water_properties
     - reynolds_number
     tags:
     - units:metric
@@ -902,7 +807,6 @@ cases:
   metadata:
     case_type: reynolds_regime
     expected_trajectory:
-    - water_properties
     - reynolds_number
     tags:
     - units:si
@@ -922,7 +826,6 @@ cases:
     case_type: reynolds_regime
     expected_trajectory:
     - convert_units
-    - water_properties
     - reynolds_number
     tags:
     - units:metric
@@ -941,7 +844,6 @@ cases:
   metadata:
     case_type: reynolds_regime
     expected_trajectory:
-    - water_properties
     - reynolds_number
     tags:
     - units:si
@@ -961,7 +863,6 @@ cases:
     case_type: reynolds_regime
     expected_trajectory:
     - convert_units
-    - water_properties
     - reynolds_number
     tags:
     - units:metric
@@ -980,7 +881,6 @@ cases:
   metadata:
     case_type: reynolds_regime
     expected_trajectory:
-    - water_properties
     - reynolds_number
     tags:
     - units:si
@@ -1000,7 +900,6 @@ cases:
     case_type: trap
     expected_trajectory:
     - convert_units
-    - water_properties
     - reynolds_number
     tags:
     - units:metric
@@ -1021,7 +920,6 @@ cases:
     case_type: trap
     expected_trajectory:
     - convert_units
-    - water_properties
     - reynolds_number
     tags:
     - units:metric
@@ -1042,9 +940,6 @@ cases:
     case_type: trap
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:metric
@@ -1066,8 +961,6 @@ cases:
     case_type: trap
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:metric
@@ -1092,9 +985,6 @@ cases:
     - convert_units
     - convert_units
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     tags:
     - units:imperial
@@ -1117,9 +1007,7 @@ cases:
     expected_trajectory:
     - convert_units
     - convert_units
-    - water_properties
     - mean_velocity
-    - reynolds_number
     - heat_transfer_coefficient
     tags:
     - units:flow_rate
@@ -1144,11 +1032,8 @@ cases:
     - convert_units
     - convert_units
     - convert_units
-    - water_properties
     - mean_velocity
-    - reynolds_number
     - relative_roughness
-    - friction_factor
     - pressure_drop
     tags:
     - units:imperial
@@ -1173,7 +1058,6 @@ cases:
     - convert_units
     - convert_units
     - convert_units
-    - water_properties
     - reynolds_number
     tags:
     - units:imperial
@@ -1287,9 +1171,6 @@ cases:
     case_type: trap
     expected_trajectory:
     - convert_units
-    - water_properties
-    - reynolds_number
-    - friction_factor
     - pressure_drop
     - convert_units
     tags:
@@ -1313,10 +1194,7 @@ cases:
     expected_trajectory:
     - convert_units
     - convert_units
-    - water_properties
-    - reynolds_number
     - relative_roughness
-    - friction_factor
     - pressure_drop
     - convert_units
     tags:

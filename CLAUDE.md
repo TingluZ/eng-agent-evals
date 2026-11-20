@@ -30,7 +30,7 @@ uv run python -m eng_agent_evals.run_evals [--subset N] [--model ...]   # run th
 ## Conventions
 
 - `physics.py` is the single source of truth: agent tools and the dataset both use it.
-- Agent tools take SI inputs; unit conversion is a separate tool.
+- Agent tools take inputs in m, m/s, m^3/s and °C; unit conversion is a separate tool. Calculation tools compute intermediate values internally rather than taking them from other tools.
 - Tests never call real model APIs; use PydanticAI's `TestModel` or `FunctionModel`. Set `PYDANTIC_AI_NO_BANNER=1`.
 - Add dependencies with `uv add`.
 - One change per branch and pull request; do not push to `main`.

@@ -263,32 +263,17 @@ def test_extract_tool_calls_pairs_results_and_skips_output_tool():
 def _scripted_pressure_drop(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
     """A fake LLM that follows the ideal trajectory for 2 m/s, 50 mm, 30 m, 20 °C,
     then reports the answer in kPa converted 'in its head' (as observed live)."""
-    calls = extract_tool_calls(messages)
-    done = {c.name: c.result for c in calls if not c.retried}
+    done = {c.name: c.result for c in extract_tool_calls(messages) if not c.retried}
     if "convert_units" not in done:
         call = ToolCallPart("convert_units", {"value": 50, "from_unit": "mm", "to_unit": "m"})
-    elif "water_properties" not in done:
-        call = ToolCallPart("water_properties", {"temperature_c": 20})
-    elif "reynolds_number" not in done:
-        w = done["water_properties"]
-        args = {"velocity": 2, "diameter": done["convert_units"], "density": w["density"], "viscosity": w["dynamic_viscosity"]}
-        call = ToolCallPart("reynolds_number", args)
-    elif "friction_factor" not in done:
-        call = ToolCallPart("friction_factor", {"reynolds_number": done["reynolds_number"]["reynolds_number"]})
     elif "pressure_drop" not in done:
-        args = {
-            "friction_factor": done["friction_factor"],
-            "length": 30,
-            "diameter": done["convert_units"],
-            "density": done["water_properties"]["density"],
-            "velocity": 2,
-        }
+        args = {"velocity": 2, "diameter": done["convert_units"], "length": 30, "temperature_c": 20}
         call = ToolCallPart("pressure_drop", args)
     else:
         args = {
-            "value": round(done["pressure_drop"] / 1000, 2),
+            "value": round(done["pressure_drop"]["pressure_drop"] / 1000, 2),
             "unit": "kPa",
-            "regime": "turbulent",
+            "regime": done["pressure_drop"]["regime"],
             "assumptions": ["smooth pipe"],
             "explanation": "Darcy-Weisbach with Colebrook.",
         }
@@ -310,7 +295,7 @@ def scripted_case(name: str = "pd", case_type: str = "pressure_drop", **expected
     w = physics.water_properties(20)
     re = physics.reynolds_number(2, 0.05, w.density, w.dynamic_viscosity)
     expected_dp = physics.pressure_drop(physics.friction_factor(re), 30, 0.05, w.density, 2)
-    trajectory = ["convert_units", "water_properties", "reynolds_number", "friction_factor", "pressure_drop"]
+    trajectory = ["convert_units", "pressure_drop"]
     return Case(
         name=name,
         inputs="Water at 20 °C flows at 2 m/s through 30 m of 50 mm smooth pipe. What is the pressure drop?",
@@ -335,9 +320,9 @@ def test_end_to_end_with_scripted_agent():
     }
     # The output tool is not part of the span-based trajectory, so the match is exact.
     assert case.scores["trajectory"].value == 1.0
-    assert case.scores["tool_calls"].value == 5
+    assert case.scores["tool_calls"].value == 2
     assert case.scores["retries"].value == 0
-    assert case.output.usage["requests"] == 6
+    assert case.output.usage["requests"] == 3
 
 
 def test_trajectory_evaluators_attached_only_where_a_trajectory_is_defined():

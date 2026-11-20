@@ -80,35 +80,31 @@ class _Flow:
 
 
 def _reference(quantity: Quantity, flow: _Flow) -> tuple[float, physics.Regime]:
-    w = physics.water_properties(flow.temperature_c)
     velocity = flow.velocity
     if velocity is None:
         velocity = physics.mean_velocity(flow.flow_rate, flow.diameter)
-    re = physics.reynolds_number(velocity, flow.diameter, w.density, w.dynamic_viscosity)
-    regime = physics.flow_regime(re)
     rel_roughness = flow.relative_roughness
     if rel_roughness is None:
         rel_roughness = physics.relative_roughness(flow.roughness, flow.diameter)
+    state = physics.pipe_flow(velocity, flow.diameter, flow.temperature_c, rel_roughness)
     if quantity == "reynolds_number":
-        return re, regime
+        return state.reynolds_number, state.regime
     if quantity == "pressure_drop":
-        f = physics.friction_factor(re, rel_roughness)
-        return physics.pressure_drop(f, flow.length, flow.diameter, w.density, velocity), regime
-    nu = physics.nusselt_number(re, w.prandtl, rel_roughness)
-    return physics.heat_transfer_coefficient(nu, w.thermal_conductivity, flow.diameter), regime
+        dp = physics.pressure_drop(state.friction_factor, flow.length, flow.diameter, state.water.density, velocity)
+        return dp, state.regime
+    return state.heat_transfer_coefficient, state.regime
 
 
 def _trajectory(quantity: Quantity, flow: _Flow, output_conversion: bool = False) -> list[str]:
-    steps = ["convert_units"] * flow.conversions + ["water_properties"]
+    """Conversions of non-SI inputs, then the helper tools the inputs require,
+    then the one calculation tool for the requested quantity."""
+    steps = ["convert_units"] * flow.conversions
     if flow.velocity is None:
         steps.append("mean_velocity")
-    steps.append("reynolds_number")
     if flow.roughness > 0:
         steps.append("relative_roughness")
-    if quantity == "pressure_drop":
-        steps += ["friction_factor", "pressure_drop"]
-    elif quantity == "heat_transfer":
-        steps.append("heat_transfer_coefficient")
+    steps.append({"reynolds_number": "reynolds_number", "pressure_drop": "pressure_drop",
+                  "heat_transfer": "heat_transfer_coefficient"}[quantity])
     if output_conversion:
         steps.append("convert_units")
     return steps
