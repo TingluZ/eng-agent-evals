@@ -84,6 +84,14 @@ def build_agent(model: Model | str | None = None) -> Agent[None, Answer]:
         }
 
     @agent.tool_plain
+    def mean_velocity(flow_rate: float, diameter: float) -> float:
+        """Mean flow velocity [m/s] from volumetric flow rate. Inputs in SI: m^3/s, m."""
+        try:
+            return physics.mean_velocity(flow_rate, diameter)
+        except ValueError as exc:
+            raise ModelRetry(str(exc)) from exc
+
+    @agent.tool_plain
     def reynolds_number(velocity: float, diameter: float, density: float, viscosity: float) -> dict:
         """Reynolds number and flow regime. Inputs in SI: m/s, m, kg/m^3, Pa·s."""
         try:
@@ -91,6 +99,15 @@ def build_agent(model: Model | str | None = None) -> Agent[None, Answer]:
         except ValueError as exc:
             raise ModelRetry(str(exc)) from exc
         return {"reynolds_number": re, "regime": physics.flow_regime(re)}
+
+    @agent.tool_plain
+    def relative_roughness(roughness: float, diameter: float) -> float:
+        """Relative roughness eps/D from absolute roughness and pipe diameter, both in m.
+        Not needed if the question already gives eps/D."""
+        try:
+            return physics.relative_roughness(roughness, diameter)
+        except ValueError as exc:
+            raise ModelRetry(str(exc)) from exc
 
     @agent.tool_plain
     def friction_factor(reynolds_number: float, relative_roughness: float = 0.0) -> float:

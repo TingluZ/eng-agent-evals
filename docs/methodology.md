@@ -11,8 +11,10 @@ Scope: incompressible flow of liquid water (0–100 °C) in circular pipes, full
 | Quantity | Method | Notes |
 |---|---|---|
 | Water properties ρ, μ, k, Pr | Tabulated saturated-liquid values at 10 °C intervals, linear interpolation | Out-of-range temperatures raise an error |
+| Mean velocity | V = Q / (πD²/4) | |
 | Reynolds number | Re = ρVD/μ | |
 | Flow regime | laminar Re < 2300; transitional 2300 ≤ Re < 4000; turbulent Re ≥ 4000 | |
+| Relative roughness | ε/D | |
 | Darcy friction factor | Laminar: f = 64/Re. Otherwise: Colebrook-White, fixed-point iteration from the Haaland approximation | Colebrook in the transitional band is a conservative choice |
 | Pressure drop | Darcy-Weisbach, Δp = f (L/D) ρV²/2 | |
 | Nusselt number | Laminar: Nu = 3.66 (constant wall temperature). Otherwise: Gnielinski | |
@@ -30,13 +32,15 @@ The reference functions are checked against independent sources (`tests/test_phy
 
 ## Agent
 
-The agent (`src/eng_agent_evals/agent.py`) is a PydanticAI `Agent` with six tools and a typed output.
+The agent (`src/eng_agent_evals/agent.py`) is a PydanticAI `Agent` with eight tools and a typed output.
 
 | Tool | Wraps |
 |---|---|
 | `convert_units` | `units.convert` (pint) |
 | `water_properties` | `physics.water_properties` |
+| `mean_velocity` | `physics.mean_velocity` (V = Q / (πD²/4)), for questions that give a flow rate |
 | `reynolds_number` | `physics.reynolds_number`, `physics.flow_regime` |
+| `relative_roughness` | `physics.relative_roughness` (ε/D), for questions that give absolute roughness |
 | `friction_factor` | `physics.friction_factor` |
 | `pressure_drop` | `physics.pressure_drop` |
 | `heat_transfer_coefficient` | `physics.nusselt_number`, `physics.heat_transfer_coefficient` |

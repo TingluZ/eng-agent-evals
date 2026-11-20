@@ -42,6 +42,18 @@ def test_water_properties_rejects_out_of_range(t):
         physics.water_properties(t)
 
 
+# --- mean velocity -----------------------------------------------------------
+
+def test_mean_velocity_from_flow_rate():
+    # 1 L/s through a 25 mm bore: 1e-3 / (pi * 0.025^2 / 4) = 2.037 m/s.
+    assert physics.mean_velocity(1e-3, 0.025) == pytest.approx(2.0372, rel=1e-4)
+
+
+def test_mean_velocity_rejects_non_positive_inputs():
+    with pytest.raises(ValueError, match="flow_rate"):
+        physics.mean_velocity(0.0, 0.025)
+
+
 # --- Reynolds number and regime ---------------------------------------------
 
 def test_reynolds_number():
@@ -62,6 +74,16 @@ def test_reynolds_rejects_non_positive_inputs():
 
 
 # --- friction factor ---------------------------------------------------------
+
+def test_relative_roughness():
+    # Commercial steel, 0.045 mm, in a 50 mm pipe.
+    assert physics.relative_roughness(0.045e-3, 0.05) == pytest.approx(9e-4)
+
+
+def test_relative_roughness_rejects_negative_roughness():
+    with pytest.raises(ValueError, match="roughness"):
+        physics.relative_roughness(-1e-5, 0.05)
+
 
 def test_laminar_friction_factor_is_64_over_re():
     assert physics.friction_factor(1000) == pytest.approx(0.064)
