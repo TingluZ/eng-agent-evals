@@ -113,20 +113,43 @@ def case_process_ok(case: ReportCase) -> bool:
     return all(bool(r.value) for name, r in case.assertions.items() if name not in CORRECTNESS_CHECKS)
 
 
+_REPEAT_SUFFIX = re.compile(r" \[(\d+)/(\d+)\]$")
+
+
+def _repeat_index(name: str) -> int | None:
+    match = _REPEAT_SUFFIX.search(name)
+    return int(match.group(1)) if match else None
+
+
+def _source_name(name: str) -> str:
+    return _REPEAT_SUFFIX.sub("", name)
+
+
 def summarise(report: EvaluationReport) -> dict[str, Any]:
     """Pass rates with Wilson intervals, overall, per evaluator and per case type.
 
     A case passes when every correctness assertion that applies to it passes;
     process assertions are summarised separately. Cases whose task raised, or
     where an evaluator raised, count as failed on both.
+
+    With repeated runs, rates are pooled over all attempts, and each repeat's
+    rate is also reported, with the cases whose outcome differed between repeats.
+    Pooled intervals treat repeats of a case as independent, which they are not,
+    so they are narrower than the evidence supports.
     """
     overall, process = Rate(0, 0), Rate(0, 0)
     per_type: dict[str, Rate] = defaultdict(lambda: Rate(0, 0))
     per_evaluator: dict[str, Rate] = defaultdict(lambda: Rate(0, 0))
+    per_repeat: dict[int, Rate] = defaultdict(lambda: Rate(0, 0))
+    outcomes: dict[str, set[bool]] = defaultdict(set)
     trajectory_scores, tool_calls, retries = [], 0, 0
 
     for case in report.cases:
         passed = case_passed(case)
+        outcomes[_source_name(case.name)].add(passed)
+        if (index := _repeat_index(case.name)) is not None:
+            per_repeat[index].n += 1
+            per_repeat[index].successes += passed
         for name, result in case.assertions.items():
             per_evaluator[name].n += 1
             per_evaluator[name].successes += bool(result.value)
@@ -144,6 +167,9 @@ def summarise(report: EvaluationReport) -> dict[str, Any]:
         overall.n += 1
         process.n += 1
         per_type[failure.metadata.case_type].n += 1
+        outcomes[_source_name(failure.name)].add(False)
+        if (index := _repeat_index(failure.name)) is not None:
+            per_repeat[index].n += 1
 
     completed = len(report.cases)
     return {
@@ -156,6 +182,8 @@ def summarise(report: EvaluationReport) -> dict[str, Any]:
         "mean_tool_calls": tool_calls / completed if completed else None,
         "retry_rate": retries / tool_calls if tool_calls else 0.0,
         "task_errors": len(report.failures),
+        "per_repeat": {k: v.as_dict() for k, v in sorted(per_repeat.items())},
+        "inconsistent_cases": sorted(name for name, seen in outcomes.items() if len(seen) > 1),
     }
 
 
@@ -187,6 +215,19 @@ def print_summary(summary: dict[str, Any], console: Console) -> None:
     console.print(f"retry rate (retried / all tool calls): {summary['retry_rate']:.1%}")
     console.print(f"task errors: {summary['task_errors']}")
 
+    if len(summary["per_repeat"]) > 1:
+        repeats = Table(title="Correct answers per repeat")
+        for col in ("", "passed", "rate", "95 % CI"):
+            repeats.add_column(col)
+        for index, d in summary["per_repeat"].items():
+            repeats.add_row(*_rate_row(f"repeat {index}", d))
+        console.print(repeats)
+        inconsistent = summary["inconsistent_cases"]
+        console.print(f"cases with different outcomes across repeats: {len(inconsistent)}")
+        for name in inconsistent:
+            console.print(f"  {name}")
+        console.print("pooled intervals treat repeats as independent, so they are too narrow")
+
 
 def to_json(report: EvaluationReport, summary: dict[str, Any], model: str) -> dict[str, Any]:
     def results(mapping) -> dict[str, Any]:
@@ -201,6 +242,7 @@ def to_json(report: EvaluationReport, summary: dict[str, Any], model: str) -> di
         "cases": [
             {
                 "name": case.name,
+                "source_case": _source_name(case.name),
                 "case_type": case.metadata.case_type,
                 "tags": case.metadata.tags,
                 "passed": case_passed(case),
@@ -236,6 +278,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--subset", type=int, help="run a fixed, stratified subset of N cases")
     parser.add_argument("--model", default=DEFAULT_MODEL, help=f"model name (default {DEFAULT_MODEL})")
     parser.add_argument("--max-concurrency", type=int, default=5)
+    parser.add_argument("--repeat", type=int, default=1, help="run every case N times")
     parser.add_argument("--output-dir", type=Path, default=RESULTS_DIR)
     args = parser.parse_args(argv)
 
@@ -252,6 +295,7 @@ def main(argv: list[str] | None = None) -> None:
         make_task(build_agent(args.model)),
         name=args.model,
         max_concurrency=args.max_concurrency,
+        repeat=args.repeat,
     )
 
     console = Console()
@@ -262,7 +306,9 @@ def main(argv: list[str] | None = None) -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     path = args.output_dir / f"{stamp}-{re.sub(r'[^\w.-]+', '_', args.model)}.json"
-    path.write_text(json.dumps(to_json(report, summary, args.model), indent=2, default=str) + "\n")
+    data = to_json(report, summary, args.model)
+    data["repeat"] = args.repeat
+    path.write_text(json.dumps(data, indent=2, default=str) + "\n")
     console.print(f"saved {path}")
 
 
