@@ -139,8 +139,8 @@ The intervals on the correctness rate overlap; the change in pass rate is not si
 
 | ID | Action | Status |
 |---|---|---|
-| F3 | Instruction: every non-SI unit, including mm, is converted with `convert_units` | Proposed |
-| F1, F7, F8 | Structural rather than instruction fix: reduce the numbers the model must copy between tools | Proposed |
-| F6 | Disable parallel tool calls and measure the cost in requests and tokens | Proposed |
-| F10 | Accept common unit spellings such as "US gal/min" in `convert_units` | Proposed |
-| — | Repeat runs (`repeat=3`) to estimate run-to-run variance before attributing changes to a fix | Proposed |
+| F3 | Instruction lists the units the tools accept (m, m/s, m³/s, Pa, kg/m³, Pa·s, W/(m²·K), °C); every other unit, including mm, goes through `convert_units` | Done; to verify in run 3 |
+| F1, F7, F8 | Structural fix: calculation tools take velocity, diameter, temperature (and length, ε/D) and compute properties, Re and f internally (`physics.pipe_flow`); `friction_factor` tool removed; property instructions removed | Done; to verify in run 3 |
+| F6 | Parallel tool calls disabled (`parallel_tool_calls=False`); placeholder instruction removed | Done; to verify in run 3, including requests and tokens per case |
+| F10 | `convert_units` accepts "US gal", "imperial gal" and "gpm" | Done; to verify in run 3 |
+| — | `run_evals --repeat N`; per-repeat pass rates and cases with inconsistent outcomes | Done; run 3 uses `--repeat 3` |
