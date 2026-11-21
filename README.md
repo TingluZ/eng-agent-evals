@@ -2,7 +2,7 @@
 
 Evaluating an LLM agent that answers engineering questions about water flowing in pipes (pressure drop, Reynolds number, heat transfer coefficient) by calling calculation tools.
 
-The point of the project is the evaluation, not the agent. Expected answers are computed by the same reference functions the tools wrap, so every check is deterministic. Correctness checks (value, unit, regime, missing inputs) decide whether a case passes. Process checks (trajectory, values and inputs traceable to tools) explain why it failed. Runs are traced with Logfire, repeated to measure variation, and reported with Wilson 95 % intervals. Unit tests run in CI on Linux and macOS. Planned next: an LLM judge for the explanations, calibrated against human labels, and a CI gate on evaluation results.
+The point of the project is the evaluation, not the agent. Expected answers are computed by the same reference functions the tools wrap, so every check is deterministic. Correctness checks (value, unit, regime, missing inputs) decide whether a case passes. Process checks (trajectory, values and inputs traceable to tools) explain why it failed. Runs are traced with Logfire, repeated to measure variation, and reported with Wilson 95 % intervals. Unit tests run in CI on Linux and macOS. A CI gate runs the evaluations on labelled pull requests and weekly, and fails when a case that was stable in the baseline regresses; its thresholds are derived from measured run-to-run noise. Planned next: an LLM judge for the explanations, calibrated against human labels.
 
 ## Results
 
@@ -56,6 +56,14 @@ uv run python -m eng_agent_evals.run_evals --repeat 3      # every case three ti
 uv run python -m eng_agent_evals.run_evals --dataset hard  # the 30-case hard set
 ```
 
+Gate a results file against a baseline, as CI does (exit status 1 if the agent got worse):
+
+```bash
+uv run python -m eng_agent_evals.run_evals --recheck-failures 2      # re-run failed cases twice more
+uv run python -m eng_agent_evals.gate check results/<file>.json baselines/openai_gpt-5.4-mini-regression.json
+uv run python -m eng_agent_evals.gate baseline results/<3-repeat file>.json -o baselines/<name>.json --finding trap-missing-01=F11
+```
+
 ## Layout
 
 | Path | What it is |
@@ -72,6 +80,7 @@ uv run python -m eng_agent_evals.run_evals --dataset hard  # the 30-case hard se
 | `src/eng_agent_evals/hard_dataset.py` | Generates the 30-case hard set |
 | `data/cases.yaml`, `data/hard_cases.yaml` | Generated regression and hard sets (committed for review) |
 | `results/` | Saved evaluation reports |
+| `baselines/` | Per-model, per-dataset baselines for the CI gate |
 | `tests/` | Reference physics, agent wiring, dataset, evaluators and runner; no API calls |
 | `docs/methodology.md` | Ground truth, reference correlations, verification, agent and evaluation design |
 | `docs/run-log.md` | Each evaluation run: results, failures and their causes, and the changes made |
