@@ -976,8 +976,8 @@ cases:
     requested_unit: null
   evaluators: []
 - name: trap-units-01
-  inputs: Water at 68 °F flows at 6 ft/s through 50 ft of 2 inch smooth pipe. What
-    is the pressure drop?
+  inputs: Water at 68 °F flows at 6 ft/s through 50 ft of smooth pipe with a 2 inch
+    bore. What is the pressure drop?
   metadata:
     case_type: trap
     expected_trajectory:
@@ -1023,8 +1023,8 @@ cases:
     requested_unit: null
   evaluators: []
 - name: trap-units-03
-  inputs: 30 US gal/min of water at 15 °C flows through 100 ft of 2 inch commercial
-    steel pipe (absolute roughness 0.045 mm). What is the pressure drop?
+  inputs: 30 US gal/min of water at 15 °C flows through 100 ft of commercial steel
+    pipe with a 2 inch bore (absolute roughness 0.045 mm). What is the pressure drop?
   metadata:
     case_type: trap
     expected_trajectory:
@@ -1050,8 +1050,8 @@ cases:
     requested_unit: null
   evaluators: []
 - name: trap-units-04
-  inputs: Water at 140 °F flows at 3 ft/s through a 1 inch tube. What is the Reynolds
-    number, and what is the flow regime?
+  inputs: Water at 140 °F flows at 3 ft/s through a tube with a 1 inch bore. What
+    is the Reynolds number, and what is the flow regime?
   metadata:
     case_type: trap
     expected_trajectory:
@@ -1072,8 +1072,8 @@ cases:
     requested_unit: null
   evaluators: []
 - name: trap-missing-01
-  inputs: Water at 20 °C flows at 1 m/s through a 2 inch pipe. What is the pressure
-    drop?
+  inputs: Water at 20 °C flows at 1 m/s through a pipe with a 2 inch bore. What is
+    the pressure drop?
   metadata:
     case_type: trap
     expected_trajectory: null

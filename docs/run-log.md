@@ -371,7 +371,7 @@ mini's other hard-set changes: `hard-geometry-01` 0/3 → 3/3 and `hard-flow-01`
 | ID | Action | Status |
 |---|---|---|
 | F14 | `calculate` tool | Verified in run 5 |
-| E8 | Proposed: reword `trap-units-03` to state an inside diameter ("2 inch bore") | Proposed |
+| E8 | The four regression questions with inch sizes (`trap-units-01`, `-03`, `-04`, `trap-missing-01`) now state a bore ("a 2 inch bore"); expected values unchanged. Results on these cases before and after this change are not directly comparable | Done; to be verified by the next regression run |
 | F3 | Decision still open (see run 3); run 5 adds that unrelated instruction text shifts the rate. Prefer a structural option or accept prefix conversions as an ungated deviation | Open |
 | F21, F22 | No action unless gpt-5.4-mini is chosen as the target model | Open |
 | E5 | If gpt-6.1-sol is the target, the next step is a larger or harder set; 30 cases cannot support a claim below ≈ 10 % | Open |
