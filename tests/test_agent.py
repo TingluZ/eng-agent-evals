@@ -24,6 +24,7 @@ from eng_agent_evals import physics
 from eng_agent_evals.agent import Answer, build_agent
 
 EXPECTED_TOOLS = {
+    "calculate",
     "convert_units",
     "water_properties",
     "mean_velocity",
@@ -141,3 +142,26 @@ def test_invalid_tool_input_is_returned_to_the_model_as_a_retry():
     result = build_agent(FunctionModel(script)).run_sync("water at 150 °C?")
     assert result.output.value is None
     assert "outside the table range" in result.output.explanation
+
+
+def test_invalid_calculate_expression_is_returned_to_the_model_as_a_retry():
+    """Units inside an expression are rejected; the model sees why and can retry."""
+
+    def script(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
+        retries = _retries(messages)
+        returns = [r for r in _returns(messages) if r.outcome != "retried"]
+        if not retries:
+            return ModelResponse(parts=[ToolCallPart("calculate", {"expression": "60 mm - 2 * 5 mm"})])
+        if not returns:
+            return ModelResponse(parts=[ToolCallPart("calculate", {"expression": "0.060 - 2 * 0.005"})])
+        args = {
+            "value": returns[0].content,
+            "unit": "m",
+            "regime": None,
+            "explanation": str(retries[0].content),
+        }
+        return ModelResponse(parts=[ToolCallPart(info.output_tools[0].name, args)])
+
+    result = build_agent(FunctionModel(script)).run_sync("Inside diameter of a 60 mm tube with a 5 mm wall?")
+    assert result.output.value == pytest.approx(0.05)
+    assert "convert_units" in result.output.explanation

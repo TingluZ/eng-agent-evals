@@ -238,6 +238,24 @@ class ValueTraceableToTool(Evaluator):
 
 
 _NUMBER = re.compile(r"[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
+# Unsigned: in an expression a sign is an operator ("60-10" is 60 minus 10).
+_EXPRESSION_NUMBER = re.compile(r"(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?")
+_MAX_COEFFICIENT = 10
+
+
+def _numeric_args(call: ToolCall) -> list[tuple[str, float]]:
+    """Numeric arguments of a tool call, including the numbers in a `calculate`
+    expression other than small integer coefficients."""
+    args = []
+    for name, value in call.args.items():
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            args.append((name, float(value)))
+        elif call.name == "calculate" and name == "expression" and isinstance(value, str):
+            for token in _EXPRESSION_NUMBER.findall(value):
+                number = float(token)
+                if not (number.is_integer() and number <= _MAX_COEFFICIENT):
+                    args.append((name, number))
+    return args
 
 
 @dataclass
@@ -246,7 +264,11 @@ class InputsTraceable(Evaluator):
     `rel_tol`, a number in the question or an output of an earlier successful
     call. Catches values the model substituted or re-typed (for example generic
     water properties instead of the `water_properties` result). Zero is always
-    allowed, for smooth-pipe roughness."""
+    allowed, for smooth-pipe roughness.
+
+    The numbers inside a `calculate` expression are checked the same way, so
+    the calculator cannot launder a made-up value. Small integer coefficients
+    (2 in "2 * radius", 4 in "pi * D**2 / 4") are allowed there."""
 
     rel_tol: float = 1e-3
 
@@ -257,10 +279,9 @@ class InputsTraceable(Evaluator):
         known = [float(x) for x in _NUMBER.findall(ctx.inputs)] + [0.0]
         untraced = []
         for call in calls:
-            for name, value in call.args.items():
-                if isinstance(value, (int, float)) and not isinstance(value, bool):
-                    if not any(_is_close(float(value), k, self.rel_tol) for k in known):
-                        untraced.append(f"{call.name}.{name}={value:g}")
+            for name, value in _numeric_args(call):
+                if not any(_is_close(value, k, self.rel_tol) for k in known):
+                    untraced.append(f"{call.name}.{name}={value:g}")
             known += _numbers(call.result)
         if untraced:
             return EvaluationReason(False, "untraceable: " + ", ".join(untraced))

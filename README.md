@@ -37,6 +37,7 @@ uv run python -m eng_agent_evals.run_evals --dataset hard  # the 30-case hard se
 |---|---|
 | `src/eng_agent_evals/physics.py` | Reference calculations (ground truth for the evals) |
 | `src/eng_agent_evals/units.py` | Unit conversion with pint |
+| `src/eng_agent_evals/calculator.py` | Plain arithmetic for the `calculate` tool |
 | `src/eng_agent_evals/agent.py` | PydanticAI agent: tools, instructions, `Answer` schema |
 | `src/eng_agent_evals/ask.py` | Command-line entry point with Logfire tracing |
 | `src/eng_agent_evals/dataset.py` | Generates the evaluation cases from parameter sweeps |

@@ -311,7 +311,7 @@ The hard set separates the three models: the per-repeat ranges do not overlap. E
 
 | ID | Action | Status |
 |---|---|---|
-| F14 | Proposed: add a calculator tool for plain arithmetic, so derived inputs and combined results come from a tool and stay traceable; then re-run both sets | Proposed |
+| F14 | `calculate` tool for plain arithmetic (numbers, π, + − × ÷ ^; parsed, not `eval`), with an instruction to use it when no dedicated tool exists; `InputsTraceable` checks the numbers inside its expressions | Done; to be verified on both sets |
 | F15 | Proposed: instruction that the agent covers liquid water only; for any other fluid, return `value = null` and explain | Proposed |
 | F16, F11 | Proposed: instruction that a qualitative description ("hot", "long") is not a value and is reported in `missing_inputs`; combine with the F11 tool change | Proposed |
 | F19 | Proposed: state in the `pressure_drop` description that it also returns the friction factor, or provide a friction-factor tool | Proposed |
