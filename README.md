@@ -68,6 +68,7 @@ uv run python -m eng_agent_evals.run_evals --dataset hard  # the 30-case hard se
 | `src/eng_agent_evals/dataset.py` | Generates the evaluation cases from parameter sweeps |
 | `src/eng_agent_evals/evaluators.py` | Deterministic and trajectory evaluators |
 | `src/eng_agent_evals/run_evals.py` | Runs the suite, summarises pass rates with Wilson intervals |
+| `src/eng_agent_evals/gate.py` | CI gate: compares a results file with a committed baseline |
 | `src/eng_agent_evals/hard_dataset.py` | Generates the 30-case hard set |
 | `data/cases.yaml`, `data/hard_cases.yaml` | Generated regression and hard sets (committed for review) |
 | `results/` | Saved evaluation reports |

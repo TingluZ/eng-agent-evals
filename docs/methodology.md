@@ -118,3 +118,27 @@ Exact matching is too strict for this agent: observed runs repeat calls (for exa
 Pass rates are reported overall, per case type and per evaluator, each with a Wilson 95 % score interval. With n between 10 and 60, the normal approximation is unreliable and can fall outside [0, 1] when rates are near 0 or 1; the Wilson interval does not. The lower bound of the interval on the correctness pass rate is the quantity intended for the CI gate.
 
 `run_evals.py` also reports the mean trajectory score, mean tool calls per case, the retry rate (retried calls over all calls) and task errors, and saves the full report, per-case outputs and the git revision as JSON in `results/`. `--subset N` selects a fixed subset taken round-robin across case types. `--repeat N` runs every case N times to estimate run-to-run variation: the summary reports the pass rate of each repeat and the cases whose outcome differed between repeats. Rates pooled over repeats treat attempts at the same case as independent, which understates the width of their intervals; the per-repeat rates are the comparable figures.
+
+## CI gate
+
+`src/eng_agent_evals/gate.py` compares a results file with a committed baseline for the same model and dataset, and fails (exit status 1) when the agent has become worse. The main difficulty is run-to-run noise: with no code change, gpt-5.4-mini's correct count varies between 55 and 57 of 60 from one repeat to the next. A threshold on the headline rate alone would either fail at random or catch only large regressions. The gate therefore compares cases individually against the baseline.
+
+| Rule | Fails the gate when | Justification |
+|---|---|---|
+| 1. No crashes | Any task error, any evaluator error, or a baseline case that was not run | Deterministic; no noise to allow for |
+| 2. Stable cases stay passing | A case that passed every baseline attempt fails a majority of its attempts in this run, counting rechecks of failed cases | See below |
+| 3. Headline rate | The baseline correct rate is above the Wilson 95 % upper bound of this run's first attempts | Catches a broad decline spread over many cases, which rule 2 may miss. Report-only until its false-alarm rate has been observed in CI |
+
+**Rule 2 and rechecks.** In the saved runs with three repeats (runs 3, 4a–4c, 5a–5c), a case that passed two repeats failed the third in 4 of 688 checks: 0.58 %, Wilson 95 % interval [0.2 %, 1.5 %]. The CI baseline for gpt-5.4-mini has about 73 stable cases across both sets.
+- Failing the gate on any single failed attempt would raise a false alarm in about 35 % of runs (66 % at the upper end of the interval).
+- Re-running each failed case twice and requiring a majority of the three attempts to fail lowers the per-case rate to about 3p², or 0.01 %. That gives about 0.7 % per run (4.7 % at the upper end).
+
+This assumes attempts are independent, which is reasonable for stable cases. Cases that are already inconsistent in the baseline are reported, not gated.
+
+Power: a change that breaks a case completely is always caught. A case broken half the time is caught with probability 0.5 × 0.75 ≈ 38 % per run.
+
+**Rule 3 power.** Only first attempts count, since rechecks are a biased sample of failures. One run of the 60-case regression set flags a drop from gpt-5.4-mini's baseline of 94.4 % to 88.3 % (53/60) or below, about 6 points. The 30-case hard set needs a drop of about 19 points. Smaller declines need a deliberate run with repeats, not CI.
+
+**Known and flaky cases.** Cases that failed every baseline attempt (for example F11 for gpt-5.4-mini) are known failures. They never block, and the report says when one starts passing so the baseline can be updated. Cases that passed some baseline attempts are reported when they fail.
+
+**Reported, never gated:** process checks, mean tokens per attempt and latency, compared with the baseline. A warning is shown when tokens or latency grow by more than 1.5×. This follows the correctness/process split used throughout: the gate blocks wrong answers, and process checks explain them.
