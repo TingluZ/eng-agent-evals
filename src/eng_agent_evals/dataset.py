@@ -23,13 +23,27 @@ from . import physics, units
 SEED = 20261120
 DATASET_PATH = Path(__file__).resolve().parents[2] / "data" / "cases.yaml"
 
-Quantity = Literal["pressure_drop", "heat_transfer", "reynolds_number"]
-CaseType = Literal["pressure_drop", "heat_transfer", "reynolds_regime", "trap"]
+Quantity = Literal[
+    "pressure_drop",
+    "heat_transfer",
+    "reynolds_number",
+    "friction_factor",
+    "nusselt_number",
+    "pressure_gradient",
+    "head_loss",
+    "velocity",
+]
+CaseType = Literal["pressure_drop", "heat_transfer", "reynolds_regime", "trap", "hard"]
 
 SI_UNIT: dict[Quantity, str] = {
     "pressure_drop": "Pa",
     "heat_transfer": "W/(m^2*K)",
     "reynolds_number": "dimensionless",
+    "friction_factor": "dimensionless",
+    "nusselt_number": "dimensionless",
+    "pressure_gradient": "Pa/m",
+    "head_loss": "m",
+    "velocity": "m/s",
 }
 
 DIAMETERS_MM = [10, 15, 20, 25, 32, 40, 50, 65, 80, 100]

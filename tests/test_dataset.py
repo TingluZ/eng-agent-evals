@@ -60,3 +60,38 @@ def test_unanswerable_cases():
         "trap-missing-02": ["velocity"],
         "trap-missing-03": ["diameter"],
     }
+
+
+# --- hard set -------------------------------------------------------------------
+
+def test_hard_set_regenerates_to_the_committed_file(tmp_path):
+    from eng_agent_evals.hard_dataset import HARD_DATASET_PATH, build_hard_dataset
+
+    out = tmp_path / "hard_cases.yaml"
+    build_hard_dataset().to_file(out)
+    assert out.read_text() == HARD_DATASET_PATH.read_text(), (
+        "data/hard_cases.yaml is stale: run `uv run python -m eng_agent_evals.hard_dataset`"
+    )
+
+
+def test_hard_set_shape():
+    from eng_agent_evals.hard_dataset import HARD_DATASET_PATH, build_hard_dataset
+
+    cases = build_hard_dataset().cases
+    assert len(cases) == 30
+    assert len({c.name for c in cases}) == 30
+    assert all(c.metadata.case_type == "hard" and c.metadata.expected_trajectory is None for c in cases)
+    assert len(load_dataset(HARD_DATASET_PATH).cases) == 30
+
+
+def test_hard_knowledge_cases_separate_right_from_naive_answers():
+    """The traps are only traps if the naive answer falls outside the 2 % tolerance."""
+    from eng_agent_evals.hard_dataset import INCH, _dp
+
+    steel, as_smooth = _dp(2.0, 0.050, 30, 20, 0.045e-3), _dp(2.0, 0.050, 30, 20)
+    assert abs(as_smooth - steel) / steel > 0.02
+    sch40, nominal = _dp(2.0, 2.067 * INCH, 50, 15, 0.045e-3), _dp(2.0, 2 * INCH, 50, 15, 0.045e-3)
+    assert abs(nominal - sch40) / sch40 > 0.02
+    # PVC is effectively smooth: treating it as smooth must still pass.
+    pvc, pvc_smooth = _dp(1.5, 0.040, 50, 20, 0.0015e-3), _dp(1.5, 0.040, 50, 20)
+    assert abs(pvc_smooth - pvc) / pvc < 0.02

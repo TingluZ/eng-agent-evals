@@ -1,0 +1,506 @@
+# yaml-language-server: $schema=hard_cases_schema.json
+name: pipe_flow_hard
+cases:
+- name: hard-geometry-01
+  inputs: Water at 20 °C flows at 1.5 m/s through 40 m of smooth tube with an outside
+    diameter of 60 mm and a wall thickness of 5 mm. What is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:geometry
+    - roughness:smooth
+  expected_output:
+    quantity: pressure_drop
+    value: 17189.746858820738
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-geometry-02
+  inputs: Water at 40 °C flows at 0.8 m/s inside a tube with an internal radius of
+    12.5 mm. What is the convective heat transfer coefficient?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:geometry
+  expected_output:
+    quantity: heat_transfer
+    value: 4391.80033725979
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-geometry-03
+  inputs: Water at 15 °C flows at 2 m/s through 50 m of 2-inch schedule 40 commercial
+    steel pipe (absolute roughness 0.045 mm). What is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:geometry
+    - hard:knowledge
+    - roughness:absolute
+  expected_output:
+    quantity: pressure_drop
+    value: 41673.91480145173
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-geometry-04
+  inputs: What is the Reynolds number for water at 60 °C flowing at 0.5 m/s in a 1-inch
+    schedule 40 pipe?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:geometry
+    - hard:knowledge
+  expected_output:
+    quantity: reynolds_number
+    value: 28048.148522483938
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-geometry-05
+  inputs: Water at 70 °C flows at 1.2 m/s through a tube of 3.2 cm bore. Give the
+    heat transfer coefficient in kW/(m²·K).
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:geometry
+    - hard:output_unit
+  expected_output:
+    quantity: heat_transfer
+    value: 7269.199699677601
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: kW/(m^2*K)
+  evaluators: []
+- name: hard-geometry-06
+  inputs: Water at 25 °C flows at 1 m/s through 10 m of smooth tubing with a 1 inch
+    outside diameter and a 0.065 inch wall. What is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:geometry
+    - units:imperial
+    - roughness:smooth
+  expected_output:
+    quantity: pressure_drop
+    value: 5559.280452693393
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-distractor-01
+  inputs: A pump delivers water at 20 °C with an inlet gauge pressure of 350 kPa.
+    The water flows at 2.5 m/s through 120 m of 40 mm commercial steel pipe (absolute
+    roughness 0.045 mm) that rises 5 m in elevation. What is the frictional pressure
+    drop in bar?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:distractor
+    - hard:output_unit
+    - roughness:absolute
+  expected_output:
+    quantity: pressure_drop
+    value: 211441.6828786011
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: bar
+  evaluators: []
+- name: hard-distractor-02
+  inputs: Water with a bulk temperature of 30 °C flows at 1 m/s through a 20 mm copper
+    tube (thermal conductivity 400 W/(m·K)) whose wall is held at 80 °C. What is the
+    convective heat transfer coefficient on the water side?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:distractor
+  expected_output:
+    quantity: heat_transfer
+    value: 4963.109938230411
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-distractor-03
+  inputs: A 2 kW pump moves water at 10 °C through 40 m of 100 mm pipe at 0.3 m/s,
+    against a back pressure of 2 bar. What is the Reynolds number?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:distractor
+  expected_output:
+    quantity: reynolds_number
+    value: 22946.44223412395
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-flow-01
+  inputs: 0.5 kg/s of water at 20 °C flows through a 25 mm tube. What is the heat
+    transfer coefficient?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:flow_form
+  expected_output:
+    quantity: heat_transfer
+    value: 4357.015003041815
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-flow-02
+  inputs: 1.5 m³/h of water at 40 °C flows through 25 m of 32 mm smooth pipe. What
+    is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:flow_form
+    - roughness:smooth
+  expected_output:
+    quantity: pressure_drop
+    value: 2546.253512818655
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-flow-03
+  inputs: 200 L/min of water at 20 °C passes through a 50 mm pipe. Is the flow laminar
+    or turbulent, and what is the Reynolds number?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:flow_form
+  expected_output:
+    quantity: reynolds_number
+    value: 84560.72611807316
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-temperature-01
+  inputs: Water at 323.15 K flows at 1.2 m/s through 30 m of 25 mm smooth pipe. What
+    is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:temperature_form
+    - roughness:smooth
+  expected_output:
+    quantity: pressure_drop
+    value: 17517.808779049028
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-temperature-02
+  inputs: Water enters a 15 mm tube at 20 °C and leaves at 40 °C, flowing at 0.6 m/s.
+    Using properties at the mean bulk temperature, what is the heat transfer coefficient?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:temperature_form
+  expected_output:
+    quantity: heat_transfer
+    value: 3247.87209923615
+    unit: W/(m^2*K)
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-derived-01
+  inputs: What is the Darcy friction factor for water at 20 °C flowing at 3 m/s through
+    a 50 mm cast iron pipe (absolute roughness 0.26 mm)?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:derived_quantity
+    - roughness:absolute
+  expected_output:
+    quantity: friction_factor
+    value: 0.0313518144551489
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-derived-02
+  inputs: What is the Nusselt number for fully developed flow of water at 50 °C moving
+    at 1.5 m/s through a 25 mm smooth tube?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:derived_quantity
+  expected_output:
+    quantity: nusselt_number
+    value: 315.7192855139768
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-derived-03
+  inputs: What is the frictional pressure gradient, in Pa per metre, for water at
+    20 °C flowing at 2 m/s in a 32 mm smooth pipe?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:derived_quantity
+  expected_output:
+    quantity: pressure_gradient
+    value: 1235.3695153516633
+    unit: Pa/m
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-derived-04
+  inputs: What is the friction head loss, in metres of water, for water at 20 °C flowing
+    at 2 m/s through 100 m of 50 mm smooth pipe?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:derived_quantity
+  expected_output:
+    quantity: head_loss
+    value: 7.343607059705998
+    unit: m
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-multistep-01
+  inputs: 2 L/s of water at 20 °C flows through 10 m of 50 mm smooth pipe followed
+    by 20 m of 25 mm smooth pipe. What is the total frictional pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:multi_step
+    - hard:flow_form
+  expected_output:
+    quantity: pressure_drop
+    value: 121033.97310488169
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-inverse-01
+  inputs: What mean velocity of water at 20 °C gives a pressure drop of 5 kPa over
+    20 m of 25 mm smooth pipe?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:inverse
+  expected_output:
+    quantity: velocity
+    value: 0.6815998009704547
+    unit: m/s
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-knowledge-01
+  inputs: Water at 20 °C flows at 2 m/s through 30 m of 50 mm commercial steel pipe.
+    What is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:knowledge
+    - roughness:material_only
+  expected_output:
+    quantity: pressure_drop
+    value: 26161.481026165216
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-knowledge-02
+  inputs: Water at 20 °C flows at 1.5 m/s through 50 m of 40 mm PVC pipe. What is
+    the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:knowledge
+    - roughness:material_only
+  expected_output:
+    quantity: pressure_drop
+    value: 28400.282108755142
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-premise-01
+  inputs: A colleague says the flow is laminar, so f = 64/Re. What is the Darcy friction
+    factor for water at 20 °C flowing at 2 m/s through a 50 mm smooth pipe?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:wrong_premise
+  expected_output:
+    quantity: friction_factor
+    value: 0.018004046043016454
+    unit: dimensionless
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-premise-02
+  inputs: Water at 20 °C flows at 1 m/s through 30 m of 50 mm smooth pipe. The datasheet
+    gives Re ≈ 1800. What is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:wrong_premise
+    - roughness:smooth
+  expected_output:
+    quantity: pressure_drop
+    value: 6261.457830062793
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-scope-01
+  inputs: Engine oil at 40 °C flows at 0.5 m/s through 10 m of 25 mm smooth pipe.
+    What is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:out_of_scope
+  expected_output:
+    quantity: pressure_drop
+    value: null
+    unit: Pa
+    regime: null
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-scope-02
+  inputs: Air at 20 °C flows at 10 m/s through 20 m of 100 mm smooth duct. What is
+    the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:out_of_scope
+  expected_output:
+    quantity: pressure_drop
+    value: null
+    unit: Pa
+    regime: null
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-scope-03
+  inputs: A slurry of water with 30 % sand by volume flows at 1 m/s through 10 m of
+    50 mm smooth pipe. What is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:out_of_scope
+  expected_output:
+    quantity: pressure_drop
+    value: null
+    unit: Pa
+    regime: null
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-scope-04
+  inputs: A 50 % ethylene glycol and water mixture at 20 °C flows at 1 m/s through
+    a 25 mm tube. What is the heat transfer coefficient?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:out_of_scope
+  expected_output:
+    quantity: heat_transfer
+    value: null
+    unit: W/(m^2*K)
+    regime: null
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+- name: hard-missing-01
+  inputs: Hot water flows at 1 m/s through 20 m of 25 mm smooth pipe. What is the
+    pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:missing_input
+  expected_output:
+    quantity: pressure_drop
+    value: null
+    unit: Pa
+    regime: null
+    missing_inputs:
+    - temperature
+    requested_unit: null
+  evaluators: []
+- name: hard-phrasing-01
+  inputs: Water at twenty degrees Celsius moves at one and a half metres per second
+    through thirty metres of fifty-millimetre smooth pipe. What is the pressure drop?
+  metadata:
+    case_type: hard
+    expected_trajectory: null
+    tags:
+    - hard:phrasing
+    - roughness:smooth
+  expected_output:
+    quantity: pressure_drop
+    value: 12892.310144115556
+    unit: Pa
+    regime: turbulent
+    missing_inputs: []
+    requested_unit: null
+  evaluators: []
+evaluators: []
+report_evaluators: []
