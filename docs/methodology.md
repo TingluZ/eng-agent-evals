@@ -55,7 +55,7 @@ The model is set by `AGENT_MODEL` (default `openai:gpt-5.4-mini`). Agent wiring 
 
 ### Dataset
 
-`src/eng_agent_evals/dataset.py` generates 60 cases from seeded parameter sweeps and writes them to `data/cases.yaml`, which is committed so the cases can be reviewed without running code. A unit test regenerates the file and fails if the committed copy differs. Expected answers are computed with `physics.py`; values are stored in SI, with any unit requested in the question recorded separately.
+`src/eng_agent_evals/dataset.py` generates 60 cases from seeded parameter sweeps and writes them to `data/cases.yaml`, which is committed so the cases can be reviewed without running code. A unit test regenerates the file and fails if the committed copy differs. Expected values are rounded to 10 significant figures, far below the 2 % tolerance, so that last-digit differences in floating-point maths between operating systems do not make the file differ. Expected answers are computed with `physics.py`; values are stored in SI, with any unit requested in the question recorded separately.
 
 | Case type | n | Content |
 |---|---|---|

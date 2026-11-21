@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from pydantic_evals import Case, Dataset
 
 from . import physics, units
@@ -58,6 +58,11 @@ LAMINAR_BAND = (300.0, 1800.0)
 TURBULENT_BAND = (8000.0, 3.0e5)
 
 
+# Significant figures kept in expected values: far finer than the 2 % tolerance, and coarse
+# enough that last-digit differences in libm between platforms do not change the YAML.
+EXPECTED_SIGNIFICANT_FIGURES = 10
+
+
 class ExpectedAnswer(BaseModel):
     """Reference answer for one case. `value` is in the SI unit `unit`."""
 
@@ -67,6 +72,11 @@ class ExpectedAnswer(BaseModel):
     regime: physics.Regime | None
     missing_inputs: list[str] = []
     requested_unit: str | None = None
+
+    @field_validator("value")
+    @classmethod
+    def _round(cls, value: float | None) -> float | None:
+        return None if value is None else float(f"{value:.{EXPECTED_SIGNIFICANT_FIGURES}g}")
 
 
 class CaseMetadata(BaseModel):
