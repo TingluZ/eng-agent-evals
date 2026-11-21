@@ -60,7 +60,7 @@ def _ctx(answer: Answer, expected: ExpectedAnswer, calls: list[ToolCall] = (), t
 
 @pytest.mark.parametrize(
     "unit, normalised",
-    [("W/m²K", "W/(m^2*K)"), ("W/m^2 K", "W/(m^2*K)"), ("W/(m²·K)", "W/(m²*K)"), ("-", "dimensionless"), ("", "dimensionless")],
+    [("m of water", "m"), ("m H2O", "m"), ("mH2O", "m"), ("metres of water column", "m"), ("W/m²K", "W/(m^2*K)"), ("W/m^2 K", "W/(m^2*K)"), ("W/(m²·K)", "W/(m²*K)"), ("-", "dimensionless"), ("", "dimensionless")],
 )
 def test_normalise_unit(unit, normalised):
     assert normalise_unit(unit) == normalised
@@ -145,10 +145,17 @@ def test_nothing_missing_means_nothing_flagged():
     assert FlagsMissingInputs().evaluate(_ctx(_answer(missing_inputs=["roughness"]), _expected())).value is False
 
 
-def test_flags_missing_inputs_skips_out_of_range_cases():
+@pytest.mark.parametrize("tag", ["trap:out_of_range", "hard:out_of_scope"])
+def test_flags_missing_inputs_skips_cases_that_should_be_declined(tag):
     answer = _answer(value=None, missing_inputs=["temperature within 0-100 °C"])
-    ctx = _ctx(answer, _expected(value=None), tags=["trap:out_of_range"])
+    ctx = _ctx(answer, _expected(value=None), tags=[tag])
     assert FlagsMissingInputs().evaluate(ctx) == {}
+
+
+def test_flags_missing_temperature():
+    expected = _expected(value=None, missing_inputs=["temperature"])
+    answer = _answer(value=None, missing_inputs=["water temperature"])
+    assert FlagsMissingInputs().evaluate(_ctx(answer, expected)).value is True
 
 
 # --- traceability ------------------------------------------------------------
@@ -234,6 +241,36 @@ def test_inputs_traceable_rejects_values_from_later_calls():
         ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
     ]
     assert InputsTraceable().evaluate(_inputs_ctx(calls)).value is False
+
+
+def _calculate_ctx(question: str, calls: list[ToolCall]):
+    ctx = _ctx(_answer(), _expected(), calls)
+    ctx.inputs = question
+    return ctx
+
+
+def test_inputs_traceable_checks_numbers_inside_calculate_expressions():
+    question = "Water flows through 40 m of tube with 60 mm outside diameter and a 5 mm wall."
+    convert = [
+        ToolCall(name="convert_units", args={"value": 60, "from_unit": "mm", "to_unit": "m"}, result=0.06),
+        ToolCall(name="convert_units", args={"value": 5, "from_unit": "mm", "to_unit": "m"}, result=0.005),
+    ]
+    traced = [*convert, ToolCall(name="calculate", args={"expression": "0.06-2*0.005"}, result=0.05)]
+    assert InputsTraceable().evaluate(_calculate_ctx(question, traced)).value is True
+
+    made_up = [*convert, ToolCall(name="calculate", args={"expression": "0.06 - 0.012"}, result=0.048)]
+    result = InputsTraceable().evaluate(_calculate_ctx(question, made_up))
+    assert result.value is False
+    assert "calculate.expression=0.012" in result.reason
+
+
+def test_inputs_traceable_allows_small_integer_coefficients_only():
+    question = "A tube of radius 12.5 mm."
+    doubled = [ToolCall(name="calculate", args={"expression": "2 * 12.5"}, result=25.0)]
+    assert InputsTraceable().evaluate(_calculate_ctx(question, doubled)).value is True
+
+    large = [ToolCall(name="calculate", args={"expression": "12.5 * 1000"}, result=12500.0)]
+    assert InputsTraceable().evaluate(_calculate_ctx(question, large)).value is False
 
 
 def test_tool_call_stats():

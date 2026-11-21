@@ -32,7 +32,7 @@ The reference functions are checked against independent sources (`tests/test_phy
 
 ## Agent
 
-The agent (`src/eng_agent_evals/agent.py`) is a PydanticAI `Agent` with seven tools and a typed output.
+The agent (`src/eng_agent_evals/agent.py`) is a PydanticAI `Agent` with eight tools and a typed output.
 
 | Tool | Inputs | Wraps |
 |---|---|---|
@@ -43,8 +43,9 @@ The agent (`src/eng_agent_evals/agent.py`) is a PydanticAI `Agent` with seven to
 | `pressure_drop` | velocity, diameter, length, temperature, ε/D | `physics.pipe_flow`, `physics.pressure_drop`: Δp with Re, regime and f |
 | `heat_transfer_coefficient` | velocity, diameter, temperature, ε/D | `physics.pipe_flow`: h with Nu, Re and regime |
 | `water_properties` | temperature | `physics.water_properties`; informational, not required by the other tools |
+| `calculate` | arithmetic expression | `calculator.evaluate`: numbers, π, parentheses and + − × ÷ ^ only, for arithmetic no other tool does (an inside diameter from the outside diameter and wall, a sum of pressure drops, a mass flow rate divided by density) |
 
-Tools take inputs in m, m/s, m³/s and °C; any other unit is converted with `convert_units`, so unit conversion is an explicit, observable step in the trajectory. The calculation tools take the quantities stated in the question and compute water properties, the Reynolds number and the friction factor internally (`physics.pipe_flow`). An earlier design exposed each step as a separate tool; evaluation runs 1 and 2 showed the model substituting generic property values and re-typing intermediate results between tools, including errors of an order of magnitude, and instructions did not prevent it (`docs/run-log.md`, F1, F7, F8). Removing the need to copy intermediate values removes that failure mode. Invalid inputs raise `ModelRetry`: the error message is returned to the model, which may correct the call (up to two retries per tool). Parallel tool calls are disabled, since parallel calls were issued with placeholder arguments before the results they depended on existed (F6).
+Tools take inputs in m, m/s, m³/s and °C; any other unit is converted with `convert_units`, so unit conversion is an explicit, observable step in the trajectory. The calculation tools take the quantities stated in the question and compute water properties, the Reynolds number and the friction factor internally (`physics.pipe_flow`). An earlier design exposed each step as a separate tool; evaluation runs 1 and 2 showed the model substituting generic property values and re-typing intermediate results between tools, including errors of an order of magnitude, and instructions did not prevent it (`docs/run-log.md`, F1, F7, F8). Removing the need to copy intermediate values removes that failure mode. The instructions forbid mental arithmetic; `calculate` makes that rule satisfiable for questions that need arithmetic between steps, which without it the most capable model declined to answer (F14). Invalid inputs raise `ModelRetry`: the error message is returned to the model, which may correct the call (up to two retries per tool). Parallel tool calls are disabled, since parallel calls were issued with placeholder arguments before the results they depended on existed (F6).
 
 The output is an `Answer`: `value`, `unit`, `regime`, `assumptions`, `missing_inputs` and `explanation`. When a required input is absent, the agent is instructed to return `value = null` and name the missing input rather than assume one; when no roughness is given, it assumes a smooth pipe and states the assumption. Both behaviours are evaluated.
 
@@ -67,6 +68,25 @@ Regular cases are sampled from Reynolds-number bands (300–1800 laminar, 8000�
 
 Each case carries metadata: `case_type`, `tags` (units, roughness form, regime, trap kind) for slicing, and `expected_trajectory`. The trajectory is derived from the question: one `convert_units` call per non-SI input, `mean_velocity` when a flow rate is given, `relative_roughness` when absolute roughness is given, then the calculation tool for the requested quantity, and a final `convert_units` when an output unit is requested. Cases with a missing input or an out-of-range temperature have no expected trajectory, since no single path is correct.
 
+### Hard set
+
+`src/eng_agent_evals/hard_dataset.py` writes 30 hand-written cases to `data/hard_cases.yaml`. They were added when gpt-6.1-sol answered every regression case correctly (run 3c): with no failures in 60 cases, the regression set bounds the error rate only to below about 5 % (3/n), and can no longer distinguish strong models. The hard set is kept separate so regression results stay comparable across runs, and is run with `--dataset hard`.
+
+| Category | n | What it requires |
+|---|---|---|
+| Geometry given indirectly | 6 | Inner diameter from outer diameter and wall thickness, from a radius, or from a nominal pipe size (schedule 40 bore); diameter in cm |
+| Irrelevant information | 3 | Ignoring inlet pressure, elevation, wall temperature, pump power |
+| Flow in other forms | 3 | Mass flow (kg/s), m³/h, L/min |
+| Temperature in other forms | 2 | Kelvin; mean bulk temperature from inlet and outlet |
+| Derived quantities | 4 | Friction factor, Nusselt number, pressure gradient (Pa/m), head loss (m of water) |
+| Multi-step and inverse | 2 | Two pipe sections in series; velocity for a given pressure drop |
+| Roughness from the material | 2 | Commercial steel and PVC with no roughness stated |
+| Wrong or conflicting premise | 2 | A claim that turbulent flow is laminar; a datasheet Reynolds number that contradicts the inputs |
+| Outside scope | 4 | Engine oil, air, a sand slurry, ethylene glycol: expected to decline |
+| Missing input, unusual phrasing | 2 | "Hot water" with no temperature; numbers written in words |
+
+Cases have no expected trajectory, since most admit several reasonable tool paths; trajectory evaluators are therefore not applied, and process checks still are. Where a case tests knowledge, a test confirms that the naive answer falls outside the 2 % tolerance (a smooth-pipe assumption for commercial steel: 18 % low; a 2.000 in bore for 2-inch schedule 40: 4 % high) and that a reasonable alternative falls inside it (PVC treated as smooth: 0.7 %).
+
 ### Evaluators
 
 The task returns the agent's `Answer` together with its tool calls (name, arguments, result, whether retried) read from the message history.
@@ -80,7 +100,7 @@ Assertions are of two kinds. **Correctness** checks concern the answer: value, r
 | `RegimeCorrect` | correctness | Regime equals the reference, including null when it cannot be computed | A correct value with the wrong regime indicates a lucky rather than sound answer |
 | `FlagsMissingInputs` | correctness | If an input is missing: value is null and the input is named. Otherwise: nothing is flagged. Not applied to out-of-range cases | Refusing to guess is required behaviour; spurious flags are also errors |
 | `ValueTraceableToTool` | process | The value, in SI, equals some successful tool output within 0.5 % | Detects numbers computed by the model rather than a tool. Comparison in SI allows unit scaling of the final value; 0.5 % allows rounding to three significant figures |
-| `InputsTraceable` | process | Every numeric argument of every successful tool call equals, within 0.1 %, a number in the question or an output of an earlier call (zero allowed) | A final value can be a genuine tool output computed from wrong inputs, for example generic water properties substituted for the looked-up ones; this check finds substituted, re-typed and mentally computed inputs |
+| `InputsTraceable` | process | Every numeric argument of every successful tool call equals, within 0.1 %, a number in the question or an output of an earlier call (zero allowed) | A final value can be a genuine tool output computed from wrong inputs, for example generic water properties substituted for the looked-up ones; this check finds substituted, re-typed and mentally computed inputs. The numbers inside a `calculate` expression are checked the same way, apart from integer coefficients up to 10, so the calculator cannot introduce an untraceable value |
 | `ToolCorrectness` (built-in) | process | Every tool in the expected trajectory was called; extra calls allowed | Required steps were taken |
 | `TrajectoryMatch` (built-in) | score | F1 of the longest common subsequence of actual and expected tool names | See below |
 | `ToolCallStats` | metric | Tool calls and retried calls per case | Efficiency and robustness, reported but not gated |

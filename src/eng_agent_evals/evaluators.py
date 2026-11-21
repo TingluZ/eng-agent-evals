@@ -88,6 +88,8 @@ def extract_tool_calls(messages: list[ModelMessage]) -> list[ToolCall]:
 
 _DIMENSIONLESS = {"", "-", "1", "none", "dimensionless"}
 # "W/m²K" and similar are read by engineers as W/(m²·K); pint would read W/m² · K.
+# Head is written as a length of water column: "m of water", "m H2O", "mH2O", "m WC".
+_HEAD_UNIT = re.compile(r"^(m|metres?|meters?)\s*(of\s+)?(water(\s+column)?|H2O|H₂O|WC|w\.c\.)$", re.IGNORECASE)
 _HEAT_TRANSFER_UNIT = re.compile(r"^(\w?W)\s*/\s*m\s*(\^2|²|\*\*2|2)\s*[·*.]?\s*K$")
 
 
@@ -95,6 +97,8 @@ def normalise_unit(unit: str) -> str:
     u = unit.strip()
     if u.lower() in _DIMENSIONLESS:
         return "dimensionless"
+    if _HEAD_UNIT.match(u):
+        return "m"
     if m := _HEAT_TRANSFER_UNIT.match(u):
         return f"{m.group(1)}/(m^2*K)"
     return u.replace("·", "*")
@@ -180,17 +184,21 @@ _SYNONYMS = {
     "length": ("length",),
     "velocity": ("velocity", "flow rate", "speed"),
     "diameter": ("diameter", "bore"),
+    "temperature": ("temperature",),
 }
+
+# Cases where the right answer is to decline; declining is checked by the value evaluator.
+_DECLINE_TAGS = frozenset({"trap:out_of_range", "hard:out_of_scope"})
 
 
 @dataclass
 class FlagsMissingInputs(Evaluator):
     """Missing inputs are named and no value is invented; when nothing is
-    missing, nothing is flagged. Not applied to out-of-range cases, where
-    declining is checked by the value evaluator."""
+    missing, nothing is flagged. Not applied to out-of-range or out-of-scope
+    cases, where declining is checked by the value evaluator."""
 
     def evaluate(self, ctx: Ctx) -> EvaluatorOutput:
-        if "trap:out_of_range" in ctx.metadata.tags:
+        if _DECLINE_TAGS & set(ctx.metadata.tags):
             return {}
         answer, expected = ctx.output.answer, _expected(ctx)
         flagged = " | ".join(answer.missing_inputs).lower()
@@ -230,6 +238,24 @@ class ValueTraceableToTool(Evaluator):
 
 
 _NUMBER = re.compile(r"[-+]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
+# Unsigned: in an expression a sign is an operator ("60-10" is 60 minus 10).
+_EXPRESSION_NUMBER = re.compile(r"(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?")
+_MAX_COEFFICIENT = 10
+
+
+def _numeric_args(call: ToolCall) -> list[tuple[str, float]]:
+    """Numeric arguments of a tool call, including the numbers in a `calculate`
+    expression other than small integer coefficients."""
+    args = []
+    for name, value in call.args.items():
+        if isinstance(value, (int, float)) and not isinstance(value, bool):
+            args.append((name, float(value)))
+        elif call.name == "calculate" and name == "expression" and isinstance(value, str):
+            for token in _EXPRESSION_NUMBER.findall(value):
+                number = float(token)
+                if not (number.is_integer() and number <= _MAX_COEFFICIENT):
+                    args.append((name, number))
+    return args
 
 
 @dataclass
@@ -238,7 +264,11 @@ class InputsTraceable(Evaluator):
     `rel_tol`, a number in the question or an output of an earlier successful
     call. Catches values the model substituted or re-typed (for example generic
     water properties instead of the `water_properties` result). Zero is always
-    allowed, for smooth-pipe roughness."""
+    allowed, for smooth-pipe roughness.
+
+    The numbers inside a `calculate` expression are checked the same way, so
+    the calculator cannot launder a made-up value. Small integer coefficients
+    (2 in "2 * radius", 4 in "pi * D**2 / 4") are allowed there."""
 
     rel_tol: float = 1e-3
 
@@ -249,10 +279,9 @@ class InputsTraceable(Evaluator):
         known = [float(x) for x in _NUMBER.findall(ctx.inputs)] + [0.0]
         untraced = []
         for call in calls:
-            for name, value in call.args.items():
-                if isinstance(value, (int, float)) and not isinstance(value, bool):
-                    if not any(_is_close(float(value), k, self.rel_tol) for k in known):
-                        untraced.append(f"{call.name}.{name}={value:g}")
+            for name, value in _numeric_args(call):
+                if not any(_is_close(value, k, self.rel_tol) for k in known):
+                    untraced.append(f"{call.name}.{name}={value:g}")
             known += _numbers(call.result)
         if untraced:
             return EvaluationReason(False, "untraceable: " + ", ".join(untraced))

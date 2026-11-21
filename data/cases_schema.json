@@ -156,7 +156,8 @@
             "pressure_drop",
             "heat_transfer",
             "reynolds_regime",
-            "trap"
+            "trap",
+            "hard"
           ],
           "title": "Case Type",
           "type": "string"
@@ -198,7 +199,12 @@
           "enum": [
             "pressure_drop",
             "heat_transfer",
-            "reynolds_number"
+            "reynolds_number",
+            "friction_factor",
+            "nusselt_number",
+            "pressure_gradient",
+            "head_loss",
+            "velocity"
           ],
           "title": "Quantity",
           "type": "string"

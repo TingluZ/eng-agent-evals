@@ -1,10 +1,11 @@
 """A PydanticAI agent that answers pipe-flow and heat-transfer questions.
 
-The agent does no arithmetic itself: every number comes from a tool, and every
-tool is a thin wrapper around the reference functions in physics.py. The
-calculation tools take the question's inputs (velocity, diameter, temperature,
+The agent does no arithmetic itself: every number comes from a tool. The
+calculation tools are thin wrappers around the reference functions in
+physics.py; they take the question's inputs (velocity, diameter, temperature,
 ...) and look up properties and intermediate results themselves, so the model
-never has to copy one tool's output into another tool's input.
+does not copy intermediate values between them. `calculate` covers plain
+arithmetic that no other tool does, such as adding two pressure drops.
 """
 
 from __future__ import annotations
@@ -17,7 +18,7 @@ from pydantic_ai import Agent, ModelRetry
 from pydantic_ai.models import Model
 from pydantic_ai.settings import ModelSettings
 
-from . import physics, units
+from . import calculator, physics, units
 
 DEFAULT_MODEL = os.environ.get("AGENT_MODEL", "openai:gpt-5.4-mini")
 
@@ -26,6 +27,11 @@ You are an engineering assistant for internal flow of liquid water in circular p
 
 Rules:
 - Never do arithmetic in your head. Every number in your answer must come from a tool.
+  Use a dedicated tool when one exists (for example `mean_velocity` for a velocity from a
+  volumetric flow rate). For any other arithmetic, such as an inside diameter from the
+  outside diameter and wall thickness, a mass flow rate divided by density, or the sum of
+  two pressure drops, use `calculate`, writing each number exactly as given in the
+  question or returned by a tool.
 - The tools take SI units: the base units (m, kg, s, A, K, mol, cd) and units derived
   from them with no prefix or numerical factor, such as m/s, m^3/s, Pa, kg/m^3, Pa·s
   and W/(m^2·K). Temperature is the exception: the tools take °C, so a temperature in
@@ -80,6 +86,16 @@ def build_agent(model: Model | str | None = None) -> Agent[None, Answer]:
         """Convert a value between units, e.g. 50 'mm' to 'm', or 20 'L/min' to 'm^3/s'."""
         try:
             return units.convert(value, from_unit, to_unit)
+        except ValueError as exc:
+            raise ModelRetry(str(exc)) from exc
+
+    @agent.tool_plain
+    def calculate(expression: str) -> float:
+        """Evaluate plain arithmetic on numbers, e.g. '0.060 - 2 * 0.005' or
+        '2156.6 + 118877.4'. Allowed: numbers, pi, parentheses, + - * / **. No units:
+        convert values with `convert_units` first."""
+        try:
+            return calculator.evaluate(expression)
         except ValueError as exc:
             raise ModelRetry(str(exc)) from exc
 
