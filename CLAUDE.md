@@ -8,6 +8,7 @@ An evaluation suite for an LLM agent that answers questions about internal flow 
 |---|---|
 | `src/eng_agent_evals/physics.py` | Reference calculations; the single source of truth |
 | `src/eng_agent_evals/units.py` | Unit conversion (pint) |
+| `src/eng_agent_evals/calculator.py` | Plain arithmetic for the `calculate` tool |
 | `src/eng_agent_evals/agent.py` | Agent, tools, instructions, `Answer` schema |
 | `src/eng_agent_evals/ask.py` | Single-question CLI with tracing |
 | `src/eng_agent_evals/dataset.py` | Generates the regression set (60 cases) |

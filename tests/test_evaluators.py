@@ -243,6 +243,36 @@ def test_inputs_traceable_rejects_values_from_later_calls():
     assert InputsTraceable().evaluate(_inputs_ctx(calls)).value is False
 
 
+def _calculate_ctx(question: str, calls: list[ToolCall]):
+    ctx = _ctx(_answer(), _expected(), calls)
+    ctx.inputs = question
+    return ctx
+
+
+def test_inputs_traceable_checks_numbers_inside_calculate_expressions():
+    question = "Water flows through 40 m of tube with 60 mm outside diameter and a 5 mm wall."
+    convert = [
+        ToolCall(name="convert_units", args={"value": 60, "from_unit": "mm", "to_unit": "m"}, result=0.06),
+        ToolCall(name="convert_units", args={"value": 5, "from_unit": "mm", "to_unit": "m"}, result=0.005),
+    ]
+    traced = [*convert, ToolCall(name="calculate", args={"expression": "0.06-2*0.005"}, result=0.05)]
+    assert InputsTraceable().evaluate(_calculate_ctx(question, traced)).value is True
+
+    made_up = [*convert, ToolCall(name="calculate", args={"expression": "0.06 - 0.012"}, result=0.048)]
+    result = InputsTraceable().evaluate(_calculate_ctx(question, made_up))
+    assert result.value is False
+    assert "calculate.expression=0.012" in result.reason
+
+
+def test_inputs_traceable_allows_small_integer_coefficients_only():
+    question = "A tube of radius 12.5 mm."
+    doubled = [ToolCall(name="calculate", args={"expression": "2 * 12.5"}, result=25.0)]
+    assert InputsTraceable().evaluate(_calculate_ctx(question, doubled)).value is True
+
+    large = [ToolCall(name="calculate", args={"expression": "12.5 * 1000"}, result=12500.0)]
+    assert InputsTraceable().evaluate(_calculate_ctx(question, large)).value is False
+
+
 def test_tool_call_stats():
     calls = [*_CALLS, ToolCall(name="water_properties", args={}, result="error", retried=True)]
     assert ToolCallStats().evaluate(_ctx(_answer(), _expected(), calls)) == {"tool_calls": 3, "retries": 1}
