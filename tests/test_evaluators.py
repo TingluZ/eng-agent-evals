@@ -60,7 +60,7 @@ def _ctx(answer: Answer, expected: ExpectedAnswer, calls: list[ToolCall] = (), t
 
 @pytest.mark.parametrize(
     "unit, normalised",
-    [("W/m²K", "W/(m^2*K)"), ("W/m^2 K", "W/(m^2*K)"), ("W/(m²·K)", "W/(m²*K)"), ("-", "dimensionless"), ("", "dimensionless")],
+    [("m of water", "m"), ("m H2O", "m"), ("mH2O", "m"), ("metres of water column", "m"), ("W/m²K", "W/(m^2*K)"), ("W/m^2 K", "W/(m^2*K)"), ("W/(m²·K)", "W/(m²*K)"), ("-", "dimensionless"), ("", "dimensionless")],
 )
 def test_normalise_unit(unit, normalised):
     assert normalise_unit(unit) == normalised
@@ -145,10 +145,17 @@ def test_nothing_missing_means_nothing_flagged():
     assert FlagsMissingInputs().evaluate(_ctx(_answer(missing_inputs=["roughness"]), _expected())).value is False
 
 
-def test_flags_missing_inputs_skips_out_of_range_cases():
+@pytest.mark.parametrize("tag", ["trap:out_of_range", "hard:out_of_scope"])
+def test_flags_missing_inputs_skips_cases_that_should_be_declined(tag):
     answer = _answer(value=None, missing_inputs=["temperature within 0-100 °C"])
-    ctx = _ctx(answer, _expected(value=None), tags=["trap:out_of_range"])
+    ctx = _ctx(answer, _expected(value=None), tags=[tag])
     assert FlagsMissingInputs().evaluate(ctx) == {}
+
+
+def test_flags_missing_temperature():
+    expected = _expected(value=None, missing_inputs=["temperature"])
+    answer = _answer(value=None, missing_inputs=["water temperature"])
+    assert FlagsMissingInputs().evaluate(_ctx(answer, expected)).value is True
 
 
 # --- traceability ------------------------------------------------------------

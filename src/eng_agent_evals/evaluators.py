@@ -88,6 +88,8 @@ def extract_tool_calls(messages: list[ModelMessage]) -> list[ToolCall]:
 
 _DIMENSIONLESS = {"", "-", "1", "none", "dimensionless"}
 # "W/m²K" and similar are read by engineers as W/(m²·K); pint would read W/m² · K.
+# Head is written as a length of water column: "m of water", "m H2O", "mH2O", "m WC".
+_HEAD_UNIT = re.compile(r"^(m|metres?|meters?)\s*(of\s+)?(water(\s+column)?|H2O|H₂O|WC|w\.c\.)$", re.IGNORECASE)
 _HEAT_TRANSFER_UNIT = re.compile(r"^(\w?W)\s*/\s*m\s*(\^2|²|\*\*2|2)\s*[·*.]?\s*K$")
 
 
@@ -95,6 +97,8 @@ def normalise_unit(unit: str) -> str:
     u = unit.strip()
     if u.lower() in _DIMENSIONLESS:
         return "dimensionless"
+    if _HEAD_UNIT.match(u):
+        return "m"
     if m := _HEAT_TRANSFER_UNIT.match(u):
         return f"{m.group(1)}/(m^2*K)"
     return u.replace("·", "*")
@@ -180,17 +184,21 @@ _SYNONYMS = {
     "length": ("length",),
     "velocity": ("velocity", "flow rate", "speed"),
     "diameter": ("diameter", "bore"),
+    "temperature": ("temperature",),
 }
+
+# Cases where the right answer is to decline; declining is checked by the value evaluator.
+_DECLINE_TAGS = frozenset({"trap:out_of_range", "hard:out_of_scope"})
 
 
 @dataclass
 class FlagsMissingInputs(Evaluator):
     """Missing inputs are named and no value is invented; when nothing is
-    missing, nothing is flagged. Not applied to out-of-range cases, where
-    declining is checked by the value evaluator."""
+    missing, nothing is flagged. Not applied to out-of-range or out-of-scope
+    cases, where declining is checked by the value evaluator."""
 
     def evaluate(self, ctx: Ctx) -> EvaluatorOutput:
-        if "trap:out_of_range" in ctx.metadata.tags:
+        if _DECLINE_TAGS & set(ctx.metadata.tags):
             return {}
         answer, expected = ctx.output.answer, _expected(ctx)
         flagged = " | ".join(answer.missing_inputs).lower()
