@@ -43,4 +43,4 @@ uv run python -m eng_agent_evals.run_evals [--dataset regression|hard] [--subset
 
 ## Required checks
 
-`uv run pytest` passes before a pull request is opened.
+`uv run pytest` passes before a pull request is opened. CI (`.github/workflows/tests.yml`) runs the same tests on every pull request and push to `main`, on Linux and macOS with Python 3.11 and 3.13.
