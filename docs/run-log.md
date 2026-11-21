@@ -244,3 +244,78 @@ Same agent code, instructions and dataset as run 3 (`src/` and `data/` unchanged
 |---|---|---|
 | E5 | Extend the dataset with harder and more realistic cases so the strongest model is no longer at the ceiling | Proposed |
 | — | Decide the agent's target model from cost, latency and the required pass rate, rather than continuing to adapt the agent to gpt-5.4-mini | Open |
+
+---
+
+## Runs 4a–4c: hard set on three models
+
+Same agent code and instructions as run 3 (`src/eng_agent_evals/agent.py`, `physics.py` and `units.py` unchanged since `22cc7be`), on the new 30-case hard set (`data/hard_cases.yaml`, described in `docs/methodology.md`). Three repeats per model. Hard cases have no expected trajectory, so no trajectory score is reported.
+
+| | |
+|---|---|
+| Date | 21 Nov 2026 |
+| Code | `a90cdfd` |
+| Models | 4a `openai:gpt-5.4-mini`; 4b `openai:gpt-5.4`; 4c `openai:gpt-6.1-sol` |
+| Result files | `results/20261121T112759Z-openai_gpt-5.4-mini-hard.json`, `results/20261121T180847Z-openai_gpt-5.4-hard.json`, `results/20261121T182902Z-openai_gpt-6.1-sol-hard.json` |
+| Cost (estimated from tokens and list prices) | 4a ≈ $0.34 (≈ $0.004 per attempt); 4b ≈ $2.46 (≈ $0.027); 4c ≈ $2.39 (≈ $0.027) |
+
+### Results
+
+| | gpt-5.4-mini (4a) | gpt-5.4 (4b) | gpt-6.1-sol (4c) |
+|---|---|---|---|
+| **Correct answers, pooled** | 57/90, 63 % [53 %, 73 %] | 71/90, 79 % [69 %, 86 %] | **85/90, 94 % [88 %, 98 %]** |
+| Correct answers, per repeat | 18, 19, 20 of 30 | 23, 24, 24 of 30 | 29, 28, 28 of 30 |
+| Process clean | 13/90, 14 % | 46/90, 51 % | 58/90, 64 % |
+| `ValueTraceableToTool` | 71/88, 81 % | 73/82, 89 % | 67/70, 96 % |
+| `InputsTraceable` | 15/89, 17 % | 50/88, 57 % | 46/78, 59 % |
+| Cases with inconsistent repeats | 5 | 3 | 1 |
+| Requests per attempt | 3.17 | 3.89 | 4.09 |
+| Mean latency per attempt | 5.3 s | 7.5 s | 14.1 s |
+
+Correct answers by category (attempts, 3 per case):
+
+| Category (cases) | mini | gpt-5.4 | gpt-6.1-sol |
+|---|---|---|---|
+| Geometry given indirectly (6) | 10/18 | 13/18 | 18/18 |
+| Distractor values (3) | 9/9 | 9/9 | 9/9 |
+| Flow in other forms (3) | 5/9 | 9/9 | 7/9 |
+| Temperature in other forms (2) | 6/6 | 6/6 | 6/6 |
+| Other quantities (4) | 10/12 | 12/12 | 12/12 |
+| Multi-step (1) | 3/3 | 3/3 | 0/3 |
+| Inverse (1) | 1/3 | 3/3 | 3/3 |
+| Roughness from material (2) | 6/6 | 5/6 | 6/6 |
+| Wrong premise (2) | 3/6 | 3/6 | 6/6 |
+| Out of scope (4) | 1/12 | 5/12 | 12/12 |
+| Missing or vague input (1) | 0/3 | 0/3 | 3/3 |
+| Numbers in words (1) | 3/3 | 3/3 | 3/3 |
+
+The hard set separates the three models: the per-repeat ranges do not overlap. Every incorrect answer was traced to an agent cause in the per-case output; no reference value was found to be wrong.
+
+### Findings
+
+| ID | Type | Cases | Observation | Cause |
+|---|---|---|---|---|
+| F14 | Specification conflict | gpt-6.1-sol: `hard-multistep-01` 3/3, `hard-flow-01` 2/3 | Sol computed both section pressure drops but returned `value = null`, stating that the tools provide no addition; for 0.5 kg/s it returned null, stating that the tools cannot convert a mass flow rate to a velocity. It also routed arithmetic through tools: `relative_roughness(0.0125, 0.5)` to double a radius, and "5 cm" for 60 − 2 × 5 mm. gpt-5.4 and mini added the two pressure drops and computed head loss and velocity from mass flow without a tool, and passed | The instruction "never do arithmetic in your head" has no arithmetic tool to go with it. Questions that need a sum, a difference or a division are unanswerable under strict compliance, so the correctness checks reward breaking the rule and penalise the model that follows it |
+| F15 | Wrong answer | `hard-scope-*`: mini 11/12, gpt-5.4 7/12, Sol 0/12 | Engine oil, air, sand slurry and glycol computed with water properties. mini mostly without comment; gpt-5.4 stated in `assumptions` that the result is not valid for the fluid but still returned a value | The instructions state the agent's domain but not what to do outside it; the tools accept any inputs |
+| F16 | Wrong answer | `hard-missing-01`: mini 3/3, gpt-5.4 3/3 | "Hot water" taken as 60 °C (gpt-5.4, stated in `assumptions`) or 80–100 °C (mini, twice stated, once not); `missing_inputs` empty | Same family as F11: a required tool argument is filled rather than reported as missing. A qualitative description is treated as a value |
+| F17 | Wrong answer | `hard-geometry-03`, `-04`: mini 5/6, gpt-5.4 5/6, Sol 0/6 | Nominal pipe size used as the bore ("2-inch schedule 40" as 2.000 in instead of 2.067 in; 1-inch as 1.000 in instead of 1.049 in); 4–5 % error | Domain knowledge; capability-dependent |
+| F18 | Wrong answer, fabricated value | mini: 9 attempts (`hard-geometry-01` 2, `hard-derived-01` 2, `hard-inverse-01` 2, `hard-premise-01` 3) | Final value matches no tool output: a pressure drop reported after only unit conversions; friction factors of 0.0, 0.0189 and 0.0194 after only a Reynolds number call; an inverse velocity estimated from a single evaluation | The model states numbers without completing the calculation; capability-dependent (none with gpt-5.4 or Sol) |
+| F19 | Wrong answer | `hard-premise-01`: gpt-5.4 3/3; mini `hard-derived-01` | After correcting the premise (turbulent, not laminar), gpt-5.4 returned no friction factor; mini stated that no tool returns a friction factor | The friction factor is only available from `pressure_drop`, which requires a length; neither its name nor the instructions say it can be used for this |
+| F12 | Recurrence | `hard-flow-02`: mini 2/3 | Velocity computed by the model from 1.5 m³/h (0.509 and 0.511 m/s; correct 0.518 m/s), skipping `mean_velocity`; 2.4–3.1 % error | As in run 3 |
+| F20 | Wrong answer, quantity confusion | mini: `hard-flow-01` 1/3, `hard-flow-02` 1/3 | 0.5 kg/s passed to `mean_velocity` as 0.5 m³/s (velocity 1018 m/s, h 430× too high); a flow rate passed to `pressure_drop` as a velocity (Re = 20, reported as laminar). Neither implausible result was questioned | The tools check ranges only for temperature; the model does not sanity-check its intermediate values |
+| E6 | Eval gap | Hard set, all models | `InputsTraceable` fails on most correct answers (Sol 59 % pass) | The hard set requires inputs that are not written as numbers in the question: a bore from an outside diameter, a schedule table, a material's roughness, numbers in words. The check cannot distinguish these from invented values, so the hard-set process rate is not meaningful |
+| E7 | Eval gap | `hard-inverse-01`: all of Sol's and gpt-5.4's correct attempts | `ValueTraceableToTool` fails a correct inverse answer: Sol reported the velocity it passed to `pressure_drop` after confirming that it gives 5000.0026 Pa | The check looks for the answer among tool outputs; for an inverse question the answer is a tool input |
+| E5 | Partly addressed | — | The hard set restores headroom for mini and gpt-5.4. Sol's five failures are all F14; if F14 is fixed, Sol is expected to be near the ceiling again | — |
+
+### Actions
+
+| ID | Action | Status |
+|---|---|---|
+| F14 | Proposed: add a calculator tool for plain arithmetic, so derived inputs and combined results come from a tool and stay traceable; then re-run both sets | Proposed |
+| F15 | Proposed: instruction that the agent covers liquid water only; for any other fluid, return `value = null` and explain | Proposed |
+| F16, F11 | Proposed: instruction that a qualitative description ("hot", "long") is not a value and is reported in `missing_inputs`; combine with the F11 tool change | Proposed |
+| F19 | Proposed: state in the `pressure_drop` description that it also returns the friction factor, or provide a friction-factor tool | Proposed |
+| F17, F18, F20, F12 | No action unless gpt-5.4-mini is chosen as the target model | Open |
+| E6 | Proposed: exclude `InputsTraceable` from the hard-set process rate, or accept values derived from the question by a tool | Proposed |
+| E7 | Proposed: for inverse questions, accept a value that was a tool input whose output matches the target | Proposed |
+| E5 | Add harder cases once F14 is fixed, if Sol remains the candidate | Open |
