@@ -55,7 +55,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: pressure_drop
-    value: 55.65952000000001
+    value: 55.65952
     unit: Pa
     regime: laminar
     missing_inputs: []
@@ -75,7 +75,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: pressure_drop
-    value: 1938.2774399999998
+    value: 1938.27744
     unit: Pa
     regime: laminar
     missing_inputs: []
@@ -95,7 +95,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 9601.497563820774
+    value: 9601.497564
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -117,7 +117,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 54138.78519695603
+    value: 54138.7852
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -137,7 +137,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 76.91811943929883
+    value: 76.91811944
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -157,7 +157,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 100265.23508676044
+    value: 100265.2351
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -177,7 +177,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 26.766978087357153
+    value: 26.76697809
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -199,7 +199,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 2290.6634876862663
+    value: 2290.663488
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -219,7 +219,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 9469.789212061001
+    value: 9469.789212
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -239,7 +239,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 103.95190235417734
+    value: 103.9519024
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -259,7 +259,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 2526.556282291083
+    value: 2526.556282
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -282,7 +282,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 5815.186674701438
+    value: 5815.186675
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -302,7 +302,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 751542.6111357579
+    value: 751542.6111
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -322,7 +322,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 270.549737253243
+    value: 270.5497373
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -342,7 +342,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 13244.898463356953
+    value: 13244.89846
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -364,7 +364,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 5869.239386906835
+    value: 5869.239387
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -384,7 +384,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 97651.09058999858
+    value: 97651.09059
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -404,7 +404,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 26415.015408201423
+    value: 26415.01541
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -424,7 +424,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: heat_transfer
-    value: 163.60200000000003
+    value: 163.602
     unit: W/(m^2*K)
     regime: laminar
     missing_inputs: []
@@ -464,7 +464,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: heat_transfer
-    value: 148.81560000000002
+    value: 148.8156
     unit: W/(m^2*K)
     regime: laminar
     missing_inputs: []
@@ -522,7 +522,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 5376.489203814076
+    value: 5376.489204
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -542,7 +542,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 4901.715192656163
+    value: 4901.715193
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -562,7 +562,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 9631.523620480106
+    value: 9631.52362
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -582,7 +582,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 2186.5657255414076
+    value: 2186.565726
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -602,7 +602,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 4253.349599957008
+    value: 4253.3496
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -622,7 +622,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 1805.6750077989152
+    value: 1805.675008
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -642,7 +642,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 3489.6175893583813
+    value: 3489.617589
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -662,7 +662,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 16173.140140695821
+    value: 16173.14014
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -682,7 +682,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 11206.143319378176
+    value: 11206.14332
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -702,7 +702,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 3590.6166227350423
+    value: 3590.616623
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -721,7 +721,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: reynolds_number
-    value: 1681.5241935483873
+    value: 1681.524194
     unit: dimensionless
     regime: laminar
     missing_inputs: []
@@ -739,7 +739,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: reynolds_number
-    value: 1053.3946443061939
+    value: 1053.394644
     unit: dimensionless
     regime: laminar
     missing_inputs: []
@@ -758,7 +758,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: reynolds_number
-    value: 919.148034643571
+    value: 919.1480346
     unit: dimensionless
     regime: laminar
     missing_inputs: []
@@ -776,7 +776,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: reynolds_number
-    value: 1250.2204928664073
+    value: 1250.220493
     unit: dimensionless
     regime: laminar
     missing_inputs: []
@@ -795,7 +795,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: reynolds_number
-    value: 159117.64011799413
+    value: 159117.6401
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -813,7 +813,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: reynolds_number
-    value: 9269.382627422827
+    value: 9269.382627
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -832,7 +832,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: reynolds_number
-    value: 23569.335793357935
+    value: 23569.33579
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -850,7 +850,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: reynolds_number
-    value: 31063.9294197489
+    value: 31063.92942
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -869,7 +869,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: reynolds_number
-    value: 9372.952380952382
+    value: 9372.952381
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -887,7 +887,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: reynolds_number
-    value: 62049.833033650146
+    value: 62049.83303
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -907,7 +907,7 @@ cases:
     - regime:laminar
   expected_output:
     quantity: reynolds_number
-    value: 2116.9411177644715
+    value: 2116.941118
     unit: dimensionless
     regime: laminar
     missing_inputs: []
@@ -927,7 +927,7 @@ cases:
     - regime:transitional
   expected_output:
     quantity: reynolds_number
-    value: 2988.6227544910175
+    value: 2988.622754
     unit: dimensionless
     regime: transitional
     missing_inputs: []
@@ -948,7 +948,7 @@ cases:
     - regime:transitional
   expected_output:
     quantity: pressure_drop
-    value: 213.2641670208289
+    value: 213.264167
     unit: Pa
     regime: transitional
     missing_inputs: []
@@ -969,7 +969,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 1916.6083661079963
+    value: 1916.608366
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -993,7 +993,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 9156.05902937596
+    value: 9156.059029
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -1016,7 +1016,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: heat_transfer
-    value: 3227.102810577575
+    value: 3227.102811
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -1043,7 +1043,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 6379.763163342813
+    value: 6379.763163
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -1065,7 +1065,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: reynolds_number
-    value: 48898.430903640285
+    value: 48898.4309
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -1180,7 +1180,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 10135.421384167554
+    value: 10135.42138
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -1204,7 +1204,7 @@ cases:
     - regime:turbulent
   expected_output:
     quantity: pressure_drop
-    value: 159124.68801084554
+    value: 159124.688
     unit: Pa
     regime: turbulent
     missing_inputs: []

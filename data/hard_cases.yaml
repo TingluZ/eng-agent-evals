@@ -12,7 +12,7 @@ cases:
     - roughness:smooth
   expected_output:
     quantity: pressure_drop
-    value: 17189.746858820738
+    value: 17189.74686
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -28,7 +28,7 @@ cases:
     - hard:geometry
   expected_output:
     quantity: heat_transfer
-    value: 4391.80033725979
+    value: 4391.800337
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -46,7 +46,7 @@ cases:
     - roughness:absolute
   expected_output:
     quantity: pressure_drop
-    value: 41673.91480145173
+    value: 41673.9148
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -63,7 +63,7 @@ cases:
     - hard:knowledge
   expected_output:
     quantity: reynolds_number
-    value: 28048.148522483938
+    value: 28048.14852
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -80,7 +80,7 @@ cases:
     - hard:output_unit
   expected_output:
     quantity: heat_transfer
-    value: 7269.199699677601
+    value: 7269.1997
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -98,7 +98,7 @@ cases:
     - roughness:smooth
   expected_output:
     quantity: pressure_drop
-    value: 5559.280452693393
+    value: 5559.280453
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -118,7 +118,7 @@ cases:
     - roughness:absolute
   expected_output:
     quantity: pressure_drop
-    value: 211441.6828786011
+    value: 211441.6829
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -135,7 +135,7 @@ cases:
     - hard:distractor
   expected_output:
     quantity: heat_transfer
-    value: 4963.109938230411
+    value: 4963.109938
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -151,7 +151,7 @@ cases:
     - hard:distractor
   expected_output:
     quantity: reynolds_number
-    value: 22946.44223412395
+    value: 22946.44223
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -167,7 +167,7 @@ cases:
     - hard:flow_form
   expected_output:
     quantity: heat_transfer
-    value: 4357.015003041815
+    value: 4357.015003
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -184,7 +184,7 @@ cases:
     - roughness:smooth
   expected_output:
     quantity: pressure_drop
-    value: 2546.253512818655
+    value: 2546.253513
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -200,7 +200,7 @@ cases:
     - hard:flow_form
   expected_output:
     quantity: reynolds_number
-    value: 84560.72611807316
+    value: 84560.72612
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -217,7 +217,7 @@ cases:
     - roughness:smooth
   expected_output:
     quantity: pressure_drop
-    value: 17517.808779049028
+    value: 17517.80878
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -233,7 +233,7 @@ cases:
     - hard:temperature_form
   expected_output:
     quantity: heat_transfer
-    value: 3247.87209923615
+    value: 3247.872099
     unit: W/(m^2*K)
     regime: turbulent
     missing_inputs: []
@@ -250,7 +250,7 @@ cases:
     - roughness:absolute
   expected_output:
     quantity: friction_factor
-    value: 0.0313518144551489
+    value: 0.03135181446
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -266,7 +266,7 @@ cases:
     - hard:derived_quantity
   expected_output:
     quantity: nusselt_number
-    value: 315.7192855139768
+    value: 315.7192855
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -282,7 +282,7 @@ cases:
     - hard:derived_quantity
   expected_output:
     quantity: pressure_gradient
-    value: 1235.3695153516633
+    value: 1235.369515
     unit: Pa/m
     regime: turbulent
     missing_inputs: []
@@ -298,7 +298,7 @@ cases:
     - hard:derived_quantity
   expected_output:
     quantity: head_loss
-    value: 7.343607059705998
+    value: 7.34360706
     unit: m
     regime: turbulent
     missing_inputs: []
@@ -315,7 +315,7 @@ cases:
     - hard:flow_form
   expected_output:
     quantity: pressure_drop
-    value: 121033.97310488169
+    value: 121033.9731
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -331,7 +331,7 @@ cases:
     - hard:inverse
   expected_output:
     quantity: velocity
-    value: 0.6815998009704547
+    value: 0.681599801
     unit: m/s
     regime: turbulent
     missing_inputs: []
@@ -348,7 +348,7 @@ cases:
     - roughness:material_only
   expected_output:
     quantity: pressure_drop
-    value: 26161.481026165216
+    value: 26161.48103
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -365,7 +365,7 @@ cases:
     - roughness:material_only
   expected_output:
     quantity: pressure_drop
-    value: 28400.282108755142
+    value: 28400.28211
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -381,7 +381,7 @@ cases:
     - hard:wrong_premise
   expected_output:
     quantity: friction_factor
-    value: 0.018004046043016454
+    value: 0.01800404604
     unit: dimensionless
     regime: turbulent
     missing_inputs: []
@@ -398,7 +398,7 @@ cases:
     - roughness:smooth
   expected_output:
     quantity: pressure_drop
-    value: 6261.457830062793
+    value: 6261.45783
     unit: Pa
     regime: turbulent
     missing_inputs: []
@@ -496,7 +496,7 @@ cases:
     - roughness:smooth
   expected_output:
     quantity: pressure_drop
-    value: 12892.310144115556
+    value: 12892.31014
     unit: Pa
     regime: turbulent
     missing_inputs: []

@@ -2,7 +2,7 @@
 
 from collections import Counter
 
-from eng_agent_evals.dataset import DATASET_PATH, build_dataset, load_dataset
+from eng_agent_evals.dataset import DATASET_PATH, ExpectedAnswer, build_dataset, load_dataset
 
 
 def test_regenerating_gives_the_committed_file(tmp_path):
@@ -95,3 +95,11 @@ def test_hard_knowledge_cases_separate_right_from_naive_answers():
     # PVC is effectively smooth: treating it as smooth must still pass.
     pvc, pvc_smooth = _dp(1.5, 0.040, 50, 20, 0.0015e-3), _dp(1.5, 0.040, 50, 20)
     assert abs(pvc_smooth - pvc) / pvc < 0.02
+
+
+def test_expected_values_are_rounded_so_the_files_match_across_platforms():
+    # Linux and macOS differ in the last digit of some results (…821 vs …823).
+    a = ExpectedAnswer(quantity="pressure_drop", value=17189.746858820738, unit="Pa", regime="turbulent")
+    b = ExpectedAnswer(quantity="pressure_drop", value=17189.746858820742, unit="Pa", regime="turbulent")
+    assert a.value == b.value == 17189.74686
+    assert ExpectedAnswer(quantity="pressure_drop", value=None, unit="Pa", regime=None).value is None
