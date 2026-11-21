@@ -313,7 +313,8 @@ def main(argv: list[str] | None = None) -> None:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    path = args.output_dir / f"{stamp}-{re.sub(r'[^\w.-]+', '_', args.model)}-{args.dataset}.json"
+    model = re.sub(r"[^\w.-]+", "_", args.model)
+    path = args.output_dir / f"{stamp}-{model}-{args.dataset}.json"
     data = to_json(report, summary, args.model)
     data["repeat"] = args.repeat
     data["dataset_file"] = DATASETS[args.dataset].name
