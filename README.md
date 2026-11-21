@@ -28,6 +28,7 @@ uv run python -m eng_agent_evals.run_evals                 # all 60 cases
 uv run python -m eng_agent_evals.run_evals --subset 20     # fixed stratified subset
 uv run python -m eng_agent_evals.run_evals --model openai:gpt-5.4
 uv run python -m eng_agent_evals.run_evals --repeat 3      # every case three times, to measure run-to-run variation
+uv run python -m eng_agent_evals.run_evals --dataset hard  # the 30-case hard set
 ```
 
 ## Layout
@@ -41,7 +42,8 @@ uv run python -m eng_agent_evals.run_evals --repeat 3      # every case three ti
 | `src/eng_agent_evals/dataset.py` | Generates the evaluation cases from parameter sweeps |
 | `src/eng_agent_evals/evaluators.py` | Deterministic and trajectory evaluators |
 | `src/eng_agent_evals/run_evals.py` | Runs the suite, summarises pass rates with Wilson intervals |
-| `data/cases.yaml` | Generated dataset (committed for review) |
+| `src/eng_agent_evals/hard_dataset.py` | Generates the 30-case hard set |
+| `data/cases.yaml`, `data/hard_cases.yaml` | Generated regression and hard sets (committed for review) |
 | `results/` | Saved evaluation reports |
 | `tests/` | Reference physics, agent wiring, dataset, evaluators and runner; no API calls |
 | `docs/methodology.md` | Ground truth, reference correlations, verification, agent and evaluation design |

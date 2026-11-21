@@ -28,10 +28,12 @@ from rich.console import Console
 from rich.table import Table
 
 from .agent import DEFAULT_MODEL, Answer, build_agent
-from .dataset import load_dataset
+from .dataset import DATASET_PATH, load_dataset
+from .hard_dataset import HARD_DATASET_PATH
 from .evaluators import CORRECTNESS_CHECKS, AgentRun, extract_tool_calls, with_trajectory_evaluators
 
 RESULTS_DIR = Path(__file__).resolve().parents[2] / "results"
+DATASETS = {"regression": DATASET_PATH, "hard": HARD_DATASET_PATH}
 
 
 # --- statistics ----------------------------------------------------------------
@@ -275,6 +277,12 @@ def _git_describe() -> str | None:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument(
+        "--dataset",
+        choices=sorted(DATASETS),
+        default="regression",
+        help="regression: the 60-case set (default); hard: the 30-case set beyond it",
+    )
     parser.add_argument("--subset", type=int, help="run a fixed, stratified subset of N cases")
     parser.add_argument("--model", default=DEFAULT_MODEL, help=f"model name (default {DEFAULT_MODEL})")
     parser.add_argument("--max-concurrency", type=int, default=5)
@@ -286,7 +294,7 @@ def main(argv: list[str] | None = None) -> None:
     logfire.configure(send_to_logfire="if-token-present", service_name="eng-agent-evals", console=False)
     logfire.instrument_pydantic_ai()
 
-    dataset = load_dataset()
+    dataset = load_dataset(DATASETS[args.dataset])
     if args.subset:
         dataset = stratified_subset(dataset, args.subset)
     dataset = with_trajectory_evaluators(dataset)
@@ -305,9 +313,10 @@ def main(argv: list[str] | None = None) -> None:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    path = args.output_dir / f"{stamp}-{re.sub(r'[^\w.-]+', '_', args.model)}.json"
+    path = args.output_dir / f"{stamp}-{re.sub(r'[^\w.-]+', '_', args.model)}-{args.dataset}.json"
     data = to_json(report, summary, args.model)
     data["repeat"] = args.repeat
+    data["dataset_file"] = DATASETS[args.dataset].name
     path.write_text(json.dumps(data, indent=2, default=str) + "\n")
     console.print(f"saved {path}")
 

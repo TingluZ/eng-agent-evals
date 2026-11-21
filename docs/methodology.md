@@ -67,6 +67,25 @@ Regular cases are sampled from Reynolds-number bands (300–1800 laminar, 8000�
 
 Each case carries metadata: `case_type`, `tags` (units, roughness form, regime, trap kind) for slicing, and `expected_trajectory`. The trajectory is derived from the question: one `convert_units` call per non-SI input, `mean_velocity` when a flow rate is given, `relative_roughness` when absolute roughness is given, then the calculation tool for the requested quantity, and a final `convert_units` when an output unit is requested. Cases with a missing input or an out-of-range temperature have no expected trajectory, since no single path is correct.
 
+### Hard set
+
+`src/eng_agent_evals/hard_dataset.py` writes 30 hand-written cases to `data/hard_cases.yaml`. They were added when gpt-6.1-sol answered every regression case correctly (run 3c): with no failures in 60 cases, the regression set bounds the error rate only to below about 5 % (3/n), and can no longer distinguish strong models. The hard set is kept separate so regression results stay comparable across runs, and is run with `--dataset hard`.
+
+| Category | n | What it requires |
+|---|---|---|
+| Geometry given indirectly | 6 | Inner diameter from outer diameter and wall thickness, from a radius, or from a nominal pipe size (schedule 40 bore); diameter in cm |
+| Irrelevant information | 3 | Ignoring inlet pressure, elevation, wall temperature, pump power |
+| Flow in other forms | 3 | Mass flow (kg/s), m³/h, L/min |
+| Temperature in other forms | 2 | Kelvin; mean bulk temperature from inlet and outlet |
+| Derived quantities | 4 | Friction factor, Nusselt number, pressure gradient (Pa/m), head loss (m of water) |
+| Multi-step and inverse | 2 | Two pipe sections in series; velocity for a given pressure drop |
+| Roughness from the material | 2 | Commercial steel and PVC with no roughness stated |
+| Wrong or conflicting premise | 2 | A claim that turbulent flow is laminar; a datasheet Reynolds number that contradicts the inputs |
+| Outside scope | 4 | Engine oil, air, a sand slurry, ethylene glycol: expected to decline |
+| Missing input, unusual phrasing | 2 | "Hot water" with no temperature; numbers written in words |
+
+Cases have no expected trajectory, since most admit several reasonable tool paths; trajectory evaluators are therefore not applied, and process checks still are. Where a case tests knowledge, a test confirms that the naive answer falls outside the 2 % tolerance (a smooth-pipe assumption for commercial steel: 18 % low; a 2.000 in bore for 2-inch schedule 40: 4 % high) and that a reasonable alternative falls inside it (PVC treated as smooth: 0.7 %).
+
 ### Evaluators
 
 The task returns the agent's `Answer` together with its tool calls (name, arguments, result, whether retried) read from the message history.

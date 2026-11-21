@@ -10,10 +10,11 @@ An evaluation suite for an LLM agent that answers questions about internal flow 
 | `src/eng_agent_evals/units.py` | Unit conversion (pint) |
 | `src/eng_agent_evals/agent.py` | Agent, tools, instructions, `Answer` schema |
 | `src/eng_agent_evals/ask.py` | Single-question CLI with tracing |
-| `src/eng_agent_evals/dataset.py` | Generates the evaluation cases |
+| `src/eng_agent_evals/dataset.py` | Generates the regression set (60 cases) |
+| `src/eng_agent_evals/hard_dataset.py` | Generates the hard set (30 cases) |
 | `src/eng_agent_evals/evaluators.py` | Custom evaluators |
 | `src/eng_agent_evals/run_evals.py` | Runs the suite and summarises results |
-| `data/` | Generated dataset (`cases.yaml`) |
+| `data/` | Generated datasets (`cases.yaml`, `hard_cases.yaml`) |
 | `results/` | Saved evaluation reports |
 | `tests/` | Unit tests (no API calls) |
 | `docs/` | Methodology, run log and results |
@@ -24,7 +25,7 @@ An evaluation suite for an LLM agent that answers questions about internal flow 
 uv sync                                                   # install from uv.lock
 uv run pytest                                             # unit tests
 uv run ask "..."                                          # ask the agent one question
-uv run python -m eng_agent_evals.run_evals [--subset N] [--model ...]   # run the evals (calls the API)
+uv run python -m eng_agent_evals.run_evals [--dataset regression|hard] [--subset N] [--repeat N] [--model ...]   # run the evals (calls the API)
 ```
 
 ## Conventions
