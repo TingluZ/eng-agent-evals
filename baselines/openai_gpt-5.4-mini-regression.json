@@ -1,0 +1,282 @@
+{
+  "model": "openai:gpt-5.4-mini",
+  "dataset": "pipe_flow",
+  "dataset_file": "cases.yaml",
+  "source_results": "20261121T193257Z-openai_gpt-5.4-mini-regression.json",
+  "git_commit": "8980578",
+  "repeat": 3,
+  "cases": {
+    "heat_transfer-01": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-02": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-03": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-04": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-05": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-06": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-07": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-08": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-09": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-10": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-11": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-12": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-13": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-14": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "heat_transfer-15": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-01": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-02": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-03": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-04": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-05": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-06": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-07": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-08": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-09": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-10": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-11": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-12": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-13": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-14": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-15": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-16": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-17": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-18": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-19": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "pressure_drop-20": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-01": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-02": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-03": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-04": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-05": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-06": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-07": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-08": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-09": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "reynolds_regime-10": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-missing-01": {
+      "passed": 0,
+      "attempts": 3
+    },
+    "trap-missing-02": {
+      "passed": 0,
+      "attempts": 3
+    },
+    "trap-missing-03": {
+      "passed": 1,
+      "attempts": 3
+    },
+    "trap-out_of_range-01": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-out_of_range-02": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-output_unit-01": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-output_unit-02": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-transition-01": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-transition-02": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-transition-03": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-transition-04": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-units-01": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-units-02": {
+      "passed": 3,
+      "attempts": 3
+    },
+    "trap-units-03": {
+      "passed": 1,
+      "attempts": 3
+    },
+    "trap-units-04": {
+      "passed": 3,
+      "attempts": 3
+    }
+  },
+  "known_failures": {
+    "trap-missing-01": "F11",
+    "trap-missing-02": "F11"
+  },
+  "process_checks": {
+    "tool_correctness": {
+      "successes": 54,
+      "n": 165,
+      "rate": 0.32727272727272727,
+      "ci_low": 0.26031693573089887,
+      "ci_high": 0.4020885378016902
+    },
+    "ValueTraceableToTool": {
+      "successes": 173,
+      "n": 173,
+      "rate": 1.0,
+      "ci_low": 0.9782766045998228,
+      "ci_high": 1.0
+    },
+    "InputsTraceable": {
+      "successes": 56,
+      "n": 178,
+      "rate": 0.3146067415730337,
+      "ci_low": 0.2509161078011028,
+      "ci_high": 0.386130640577706
+    }
+  },
+  "mean_usage": {
+    "input_tokens": 3564.2555555555555,
+    "output_tokens": 179.1611111111111,
+    "latency_s": 4.391478238888888
+  }
+}

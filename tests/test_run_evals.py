@@ -110,3 +110,33 @@ def test_summary_with_repeats_reports_each_repeat():
     assert all(d["successes"] == 1 and d["n"] == 2 for d in summary["per_repeat"].values())
     # The scripted agent is deterministic, so no case changes outcome between repeats.
     assert summary["inconsistent_cases"] == []
+
+
+def test_recheck_reruns_only_failed_cases_and_names_them():
+    from eng_agent_evals.agent import build_agent
+    from eng_agent_evals.evaluators import with_trajectory_evaluators
+    from eng_agent_evals.run_evals import make_task, recheck_failures, rechecks_json
+    from pydantic_ai.models.function import FunctionModel
+    from test_evaluators import _scripted_pressure_drop
+
+    dataset = with_trajectory_evaluators(Dataset(name="offline", cases=[scripted_case("a"), scripted_case("b", value=1.0)]))
+    task = make_task(build_agent(FunctionModel(_scripted_pressure_drop)))
+    report = dataset.evaluate_sync(task, progress=False)
+
+    recheck = recheck_failures(dataset, report, task, n=2)
+    cases, errors = rechecks_json(recheck, 2)
+    assert sorted(c["name"] for c in cases) == ["b [recheck 1/2]", "b [recheck 2/2]"]
+    assert {c["source_case"] for c in cases} == {"b"}
+    assert errors == []
+
+
+def test_recheck_returns_none_when_nothing_failed():
+    from eng_agent_evals.agent import build_agent
+    from eng_agent_evals.evaluators import with_trajectory_evaluators
+    from eng_agent_evals.run_evals import make_task, recheck_failures
+    from pydantic_ai.models.function import FunctionModel
+    from test_evaluators import _scripted_pressure_drop
+
+    dataset = with_trajectory_evaluators(Dataset(name="offline", cases=[scripted_case("a")]))
+    task = make_task(build_agent(FunctionModel(_scripted_pressure_drop)))
+    assert recheck_failures(dataset, dataset.evaluate_sync(task, progress=False), task, n=2) is None

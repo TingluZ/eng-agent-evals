@@ -182,3 +182,57 @@ def test_cli_exit_code_and_summary_file(tmp_path, capsys, passed, code):
     assert main(["check", str(tmp_path / "r.json"), str(tmp_path / "b.json"), "--summary-file", str(summary)]) == code
     assert "## Evaluation gate" in capsys.readouterr().out
     assert "## Evaluation gate" in summary.read_text()
+
+
+# --- baseline builder ----------------------------------------------------------
+
+def _repeated_results(outcomes: dict[str, list[bool]]) -> dict:
+    cases = [
+        _case(name, passed, attempt=f"{i}/{len(seq)}")
+        for name, seq in outcomes.items()
+        for i, passed in enumerate(seq, 1)
+    ]
+    summary = {"process_checks": {"InputsTraceable": {"successes": 5, "n": 6, "rate": 5 / 6}}}
+    return {"model": MODEL, "dataset": DATASET, "cases": cases, "errors": [], "summary": summary, "repeat": 3}
+
+
+def test_build_baseline_counts_first_attempts_and_marks_known_failures():
+    from eng_agent_evals.gate import build_baseline
+
+    results = _repeated_results({"stable": [True] * 3, "flaky": [True, False, True], "missing-01": [False] * 3})
+    results["rechecks"] = [_case("flaky", True, attempt="recheck 1/2")]  # ignored: biased sample
+    baseline = build_baseline(results, "run.json", {"missing-01": "F11"})
+    assert baseline["cases"] == {
+        "flaky": {"passed": 2, "attempts": 3},
+        "missing-01": {"passed": 0, "attempts": 3},
+        "stable": {"passed": 3, "attempts": 3},
+    }
+    assert baseline["known_failures"] == {"missing-01": "F11"}
+    assert baseline["source_results"] == "run.json"
+    assert baseline["mean_usage"]["input_tokens"] == 1000
+    assert baseline["process_checks"]["InputsTraceable"]["rate"] == pytest.approx(5 / 6)
+
+
+def test_build_baseline_rejects_single_runs_and_wrong_findings():
+    from eng_agent_evals.gate import build_baseline
+
+    with pytest.raises(ValueError, match="at least 3 attempts"):
+        build_baseline(_results({"a": True}), "run.json")
+    with pytest.raises(ValueError, match="not known failures"):
+        build_baseline(_repeated_results({"a": [True] * 3}), "run.json", {"a": "F1"})
+
+
+def test_baseline_round_trip_through_the_cli(tmp_path):
+    results = _repeated_results({**{name: [True] * 3 for name in STABLE}, "missing-01": [False] * 3})
+    (tmp_path / "run.json").write_text(json.dumps(results))
+    out = tmp_path / "baselines" / "b.json"
+    assert main(["baseline", str(tmp_path / "run.json"), "-o", str(out), "--finding", "missing-01=F11"]) == 0
+    same_again = _results({**{name: True for name in STABLE}, "missing-01": False})
+    assert check(same_again, json.loads(out.read_text())).passed
+
+
+def test_recheck_errors_count_as_failed_rechecks():
+    results = _results({"a": False}, rechecks={"a": [True]})
+    results["errors"] = [{"name": "a [recheck 2/2]", "error": "TimeoutError"}]
+    outcome = collect_outcomes(results)["a"]
+    assert outcome.first == [False] and sorted(outcome.rechecks) == [False, True]

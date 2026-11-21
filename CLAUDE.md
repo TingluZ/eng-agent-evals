@@ -18,6 +18,7 @@ An evaluation suite for an LLM agent that answers questions about internal flow 
 | `src/eng_agent_evals/gate.py` | CI gate: compares a results file with a committed baseline |
 | `data/` | Generated datasets (`cases.yaml`, `hard_cases.yaml`) |
 | `results/` | Saved evaluation reports |
+| `baselines/` | Per-model, per-dataset baselines for the CI gate |
 | `tests/` | Unit tests (no API calls) |
 | `docs/` | Methodology, run log and results |
 
@@ -40,6 +41,7 @@ uv run python -m eng_agent_evals.run_evals [--dataset regression|hard] [--subset
 - No secrets in the repository (`.env`, `.logfire/` are ignored).
 - `notes/` is local and ignored.
 - Update `docs/methodology.md` when the evaluation design changes.
+- Baselines in `baselines/` are rebuilt with `python -m eng_agent_evals.gate baseline` from a logged run with at least three repeats, in their own pull request, with the run-log entry saying the baseline changed.
 - After every full evaluation run, commit its file in `results/` and add an entry to `docs/run-log.md`: configuration, results with intervals, findings with their cause (from the per-case output), and actions. Keep finding IDs stable across runs and mark actions as verified by the run that confirms them. Smoke-test runs (`--subset`) are not logged.
 
 ## Required checks

@@ -142,3 +142,12 @@ Power: a change that breaks a case completely is always caught. A case broken ha
 **Known and flaky cases.** Cases that failed every baseline attempt (for example F11 for gpt-5.4-mini) are known failures. They never block, and the report says when one starts passing so the baseline can be updated. Cases that passed some baseline attempts are reported when they fail.
 
 **Reported, never gated:** process checks, mean tokens per attempt and latency, compared with the baseline. A warning is shown when tokens or latency grow by more than 1.5×. This follows the correctness/process split used throughout: the gate blocks wrong answers, and process checks explain them.
+
+**Baselines.** `baselines/<model>-<dataset>.json` is built with `gate baseline` from a logged run with at least three repeats. With fewer repeats a flaky case looks stable, and rule 2 would gate on it. A baseline holds per-case pass counts over first attempts, known failures annotated with their finding IDs, process-check rates and mean usage. Rechecks are excluded, since they sample only failures. A baseline changes only in a reviewed pull request, together with a run-log entry, so that moving the reference point is visible in the history in the same way as an agent change.
+
+The first baselines are for gpt-5.4-mini, from runs 5b (hard) and 5c (regression):
+- **Why mini:** it is the cheapest model (≈ $0.30 per gated pull request with rechecks), and its remaining failures leave room to detect regressions.
+- **Why not gpt-6.1-sol:** it would give a sharper signal, since it scores 100 %, but costs ≈ $3.30 per pull request while the target model is undecided.
+- **Caveat:** run 5c predates the E8 rewording of four regression questions. The regression baseline should be rebuilt from the first full three-repeat run after it.
+
+**Validation on past runs.** Gating run 5b (hard set, `calculate` tool) against a baseline built from run 4a (before it) fails on `hard-multistep-01`: 3/3 → 1/3, finding F22, which run 5 found by reading the per-case output. The same check lists the two known failures that the change fixed (`hard-geometry-01`, `hard-flow-02`). Gating run 5c against run 3 on the regression set passes. The rise in model-side unit conversions (F3) appears in the process rows but does not block.

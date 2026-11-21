@@ -1,6 +1,7 @@
 """Run the evaluation suite against a real model and summarise the results.
 
     uv run python -m eng_agent_evals.run_evals [--subset N] [--model openai:gpt-5.4-mini]
+        [--repeat N] [--recheck-failures N]
 
 Calls the model API for every case. Prints the Pydantic Evals report and a
 summary with Wilson 95 % intervals, and saves everything as JSON in results/.
@@ -99,6 +100,22 @@ def stratified_subset(dataset: Dataset, n: int) -> Dataset:
             if queue and len(picked) < n:
                 picked.append(queue.pop(0))
     return Dataset(name=dataset.name, cases=picked, evaluators=dataset.evaluators)
+
+
+def recheck_failures(
+    dataset: Dataset, report: EvaluationReport, task, n: int, max_concurrency: int = 5
+) -> EvaluationReport | None:
+    """Run every case that failed any attempt in `report` `n` more times, or
+    return None if nothing failed. Used by the CI gate to tell a regression from
+    a one-off failure without re-running the whole suite."""
+    failed = {_source_name(c.name) for c in report.cases if not case_passed(c)}
+    failed |= {_source_name(f.name) for f in report.failures}
+    if not failed:
+        return None
+    subset = Dataset(
+        name=dataset.name, cases=[c for c in dataset.cases if c.name in failed], evaluators=dataset.evaluators
+    )
+    return subset.evaluate_sync(task, name="recheck", max_concurrency=max_concurrency, repeat=n, progress=False)
 
 
 # --- summarising ---------------------------------------------------------------
@@ -231,36 +248,52 @@ def print_summary(summary: dict[str, Any], console: Console) -> None:
         console.print("pooled intervals treat repeats as independent, so they are too narrow")
 
 
-def to_json(report: EvaluationReport, summary: dict[str, Any], model: str) -> dict[str, Any]:
+def _case_json(case: ReportCase, name: str) -> dict[str, Any]:
     def results(mapping) -> dict[str, Any]:
-        return {name: {"value": r.value, "reason": r.reason} for name, r in mapping.items()}
+        return {key: {"value": r.value, "reason": r.reason} for key, r in mapping.items()}
 
+    return {
+        "name": name,
+        "source_case": _source_name(case.name),
+        "case_type": case.metadata.case_type,
+        "tags": case.metadata.tags,
+        "passed": case_passed(case),
+        "process_ok": case_process_ok(case),
+        "assertions": results(case.assertions),
+        "scores": results(case.scores),
+        "output": case.output.model_dump(mode="json"),
+        "duration_s": case.task_duration,
+        "evaluator_failures": [str(f) for f in case.evaluator_failures],
+    }
+
+
+def _error_json(failure, name: str) -> dict[str, Any]:
+    return {"name": name, "case_type": failure.metadata.case_type, "error": failure.error_message}
+
+
+def to_json(report: EvaluationReport, summary: dict[str, Any], model: str) -> dict[str, Any]:
     return {
         "model": model,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "git_commit": _git_describe(),
         "dataset": report.dataset_name,
         "summary": summary,
-        "cases": [
-            {
-                "name": case.name,
-                "source_case": _source_name(case.name),
-                "case_type": case.metadata.case_type,
-                "tags": case.metadata.tags,
-                "passed": case_passed(case),
-                "process_ok": case_process_ok(case),
-                "assertions": results(case.assertions),
-                "scores": results(case.scores),
-                "output": case.output.model_dump(mode="json"),
-                "duration_s": case.task_duration,
-                "evaluator_failures": [str(f) for f in case.evaluator_failures],
-            }
-            for case in report.cases
-        ],
-        "errors": [
-            {"name": f.name, "case_type": f.metadata.case_type, "error": f.error_message} for f in report.failures
-        ],
+        "cases": [_case_json(case, case.name) for case in report.cases],
+        "errors": [_error_json(f, f.name) for f in report.failures],
     }
+
+
+def _recheck_name(name: str, n: int) -> str:
+    return f"{_source_name(name)} [recheck {_repeat_index(name) or 1}/{n}]"
+
+
+def rechecks_json(report: EvaluationReport, n: int) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Cases and task errors of a recheck run, named "case [recheck i/n]". They are
+    stored apart from the main cases and left out of the summary, since rechecks
+    sample only failures."""
+    cases = [_case_json(case, _recheck_name(case.name, n)) for case in report.cases]
+    errors = [_error_json(f, _recheck_name(f.name, n)) for f in report.failures]
+    return cases, errors
 
 
 def _git_describe() -> str | None:
@@ -287,6 +320,13 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--model", default=DEFAULT_MODEL, help=f"model name (default {DEFAULT_MODEL})")
     parser.add_argument("--max-concurrency", type=int, default=5)
     parser.add_argument("--repeat", type=int, default=1, help="run every case N times")
+    parser.add_argument(
+        "--recheck-failures",
+        type=int,
+        default=0,
+        metavar="N",
+        help="run every failed case N more times, stored as rechecks for the CI gate (default 0)",
+    )
     parser.add_argument("--output-dir", type=Path, default=RESULTS_DIR)
     args = parser.parse_args(argv)
 
@@ -299,11 +339,12 @@ def main(argv: list[str] | None = None) -> None:
         dataset = stratified_subset(dataset, args.subset)
     dataset = with_trajectory_evaluators(dataset)
 
-    report = dataset.evaluate_sync(
-        make_task(build_agent(args.model)),
-        name=args.model,
-        max_concurrency=args.max_concurrency,
-        repeat=args.repeat,
+    task = make_task(build_agent(args.model))
+    report = dataset.evaluate_sync(task, name=args.model, max_concurrency=args.max_concurrency, repeat=args.repeat)
+    recheck = (
+        recheck_failures(dataset, report, task, args.recheck_failures, args.max_concurrency)
+        if args.recheck_failures
+        else None
     )
 
     console = Console()
@@ -318,6 +359,11 @@ def main(argv: list[str] | None = None) -> None:
     data = to_json(report, summary, args.model)
     data["repeat"] = args.repeat
     data["dataset_file"] = DATASETS[args.dataset].name
+    if recheck is not None:
+        rechecked, recheck_errors = rechecks_json(recheck, args.recheck_failures)
+        data["rechecks"] = rechecked
+        data["errors"] += recheck_errors
+        console.print(f"rechecked {len({c['source_case'] for c in rechecked})} failed cases {args.recheck_failures}× each")
     path.write_text(json.dumps(data, indent=2, default=str) + "\n")
     console.print(f"saved {path}")
 
