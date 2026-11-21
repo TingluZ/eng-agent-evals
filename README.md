@@ -27,6 +27,7 @@ Run the evaluation suite (calls the API for every case; results are saved to `re
 uv run python -m eng_agent_evals.run_evals                 # all 60 cases
 uv run python -m eng_agent_evals.run_evals --subset 20     # fixed stratified subset
 uv run python -m eng_agent_evals.run_evals --model openai:gpt-5.4
+uv run python -m eng_agent_evals.run_evals --repeat 3      # every case three times, to measure run-to-run variation
 ```
 
 ## Layout

@@ -67,16 +67,19 @@ def report():
     return run_scripted_evaluation(Dataset(name="offline", cases=cases))
 
 
-def test_summary_counts_a_case_as_passed_only_if_every_assertion_passes(report):
+def test_summary_counts_a_case_as_passed_only_if_every_correctness_check_passes(report):
     summary = summarise(report)
     assert summary["overall"]["successes"] == 2
     assert summary["overall"]["n"] == 3
     assert summary["per_case_type"]["pressure_drop"]["successes"] == 1
     assert summary["per_case_type"]["trap"]["successes"] == 1
-    assert summary["per_evaluator"]["ValueWithinTolerance"]["successes"] == 2
-    assert summary["per_evaluator"]["RegimeCorrect"]["successes"] == 3
+    assert summary["correctness_checks"]["ValueWithinTolerance"]["successes"] == 2
+    assert summary["correctness_checks"]["RegimeCorrect"]["successes"] == 3
+    # The wrong reference makes the answer wrong, not the process.
+    assert summary["process"]["successes"] == 3
+    assert set(summary["process_checks"]) == {"ValueTraceableToTool", "InputsTraceable", "tool_correctness"}
     assert summary["mean_trajectory_score"] == 1.0
-    assert summary["mean_tool_calls"] == 5.0
+    assert summary["mean_tool_calls"] == 2.0
     assert summary["retry_rate"] == 0.0
     assert summary["task_errors"] == 0
 
@@ -86,4 +89,24 @@ def test_json_output_is_serialisable(report):
     data = json.loads(json.dumps(data, default=str))
     assert data["model"] == "test-model"
     assert [c["passed"] for c in data["cases"]] == [True, True, False]
+    assert [c["process_ok"] for c in data["cases"]] == [True, True, True]
     assert data["cases"][0]["output"]["answer"]["unit"] == "kPa"
+
+
+def test_summary_with_repeats_reports_each_repeat():
+    from eng_agent_evals.run_evals import make_task
+    from eng_agent_evals.agent import build_agent
+    from eng_agent_evals.evaluators import with_trajectory_evaluators
+    from pydantic_ai.models.function import FunctionModel
+    from test_evaluators import _scripted_pressure_drop
+
+    dataset = with_trajectory_evaluators(Dataset(name="offline", cases=[scripted_case("a"), scripted_case("b", value=1.0)]))
+    task = make_task(build_agent(FunctionModel(_scripted_pressure_drop)))
+    summary = summarise(dataset.evaluate_sync(task, repeat=3, progress=False))
+
+    assert summary["overall"]["n"] == 6
+    assert summary["overall"]["successes"] == 3
+    assert list(summary["per_repeat"]) == [1, 2, 3]
+    assert all(d["successes"] == 1 and d["n"] == 2 for d in summary["per_repeat"].values())
+    # The scripted agent is deterministic, so no case changes outcome between repeats.
+    assert summary["inconsistent_cases"] == []

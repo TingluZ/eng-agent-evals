@@ -17,6 +17,7 @@ from eng_agent_evals.dataset import CaseMetadata, ExpectedAnswer
 from eng_agent_evals.evaluators import (
     AgentRun,
     FlagsMissingInputs,
+    InputsTraceable,
     RegimeCorrect,
     ReportsRequestedUnit,
     ToolCall,
@@ -176,6 +177,65 @@ def test_value_traceable_not_applicable_without_value():
     assert ValueTraceableToTool().evaluate(_ctx(_answer(value=None), _expected(value=None))) == {}
 
 
+# --- input traceability ------------------------------------------------------
+
+_QUESTION = "What is the Reynolds number for water at 37 °C flowing at 0.26 m/s in a 0.025 m pipe?"
+_PROPS = {"density": 993.25, "dynamic_viscosity": 0.0006965}
+
+
+def _inputs_ctx(calls: list[ToolCall]):
+    ctx = _ctx(_answer(), _expected(), calls)
+    ctx.inputs = _QUESTION
+    return ctx
+
+
+def test_inputs_traceable_when_copied_from_question_and_tools():
+    calls = [
+        ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
+        ToolCall(
+            name="reynolds_number",
+            args={"velocity": 0.26, "diameter": 0.025, "density": 993.25, "viscosity": 0.0006965},
+            result={"reynolds_number": 9269.4, "regime": "turbulent"},
+        ),
+        ToolCall(name="friction_factor", args={"reynolds_number": 9269.4, "relative_roughness": 0.0}, result=0.03),
+    ]
+    assert InputsTraceable().evaluate(_inputs_ctx(calls)).value is True
+
+
+def test_inputs_traceable_catches_substituted_properties():
+    # Run 1, reynolds_regime-06: properties looked up, then generic values used.
+    calls = [
+        ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
+        ToolCall(
+            name="reynolds_number",
+            args={"velocity": 0.26, "diameter": 0.025, "density": 1000, "viscosity": 0.001},
+            result={"reynolds_number": 6500.0, "regime": "turbulent"},
+        ),
+    ]
+    result = InputsTraceable().evaluate(_inputs_ctx(calls))
+    assert result.value is False
+    assert "reynolds_number.density=1000" in result.reason
+    assert "reynolds_number.viscosity=0.001" in result.reason
+
+
+def test_inputs_traceable_catches_retyped_numbers():
+    # Run 1, pressure_drop-12: Re 9132.3 from the tool passed on as 9145.7.
+    calls = [
+        ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
+        ToolCall(name="friction_factor", args={"reynolds_number": 9145.7}, result=0.03),
+    ]
+    ctx = _inputs_ctx([*calls[:1], ToolCall(name="reynolds_number", args={}, result={"reynolds_number": 9132.3}), calls[1]])
+    assert InputsTraceable().evaluate(ctx).value is False
+
+
+def test_inputs_traceable_rejects_values_from_later_calls():
+    calls = [
+        ToolCall(name="reynolds_number", args={"velocity": 0.26, "diameter": 0.025, "density": 993.25, "viscosity": 0.0006965}),
+        ToolCall(name="water_properties", args={"temperature_c": 37}, result=_PROPS),
+    ]
+    assert InputsTraceable().evaluate(_inputs_ctx(calls)).value is False
+
+
 def test_tool_call_stats():
     calls = [*_CALLS, ToolCall(name="water_properties", args={}, result="error", retried=True)]
     assert ToolCallStats().evaluate(_ctx(_answer(), _expected(), calls)) == {"tool_calls": 3, "retries": 1}
@@ -203,32 +263,17 @@ def test_extract_tool_calls_pairs_results_and_skips_output_tool():
 def _scripted_pressure_drop(messages: list[ModelMessage], info: AgentInfo) -> ModelResponse:
     """A fake LLM that follows the ideal trajectory for 2 m/s, 50 mm, 30 m, 20 °C,
     then reports the answer in kPa converted 'in its head' (as observed live)."""
-    calls = extract_tool_calls(messages)
-    done = {c.name: c.result for c in calls if not c.retried}
+    done = {c.name: c.result for c in extract_tool_calls(messages) if not c.retried}
     if "convert_units" not in done:
         call = ToolCallPart("convert_units", {"value": 50, "from_unit": "mm", "to_unit": "m"})
-    elif "water_properties" not in done:
-        call = ToolCallPart("water_properties", {"temperature_c": 20})
-    elif "reynolds_number" not in done:
-        w = done["water_properties"]
-        args = {"velocity": 2, "diameter": done["convert_units"], "density": w["density"], "viscosity": w["dynamic_viscosity"]}
-        call = ToolCallPart("reynolds_number", args)
-    elif "friction_factor" not in done:
-        call = ToolCallPart("friction_factor", {"reynolds_number": done["reynolds_number"]["reynolds_number"]})
     elif "pressure_drop" not in done:
-        args = {
-            "friction_factor": done["friction_factor"],
-            "length": 30,
-            "diameter": done["convert_units"],
-            "density": done["water_properties"]["density"],
-            "velocity": 2,
-        }
+        args = {"velocity": 2, "diameter": done["convert_units"], "length": 30, "temperature_c": 20}
         call = ToolCallPart("pressure_drop", args)
     else:
         args = {
-            "value": round(done["pressure_drop"] / 1000, 2),
+            "value": round(done["pressure_drop"]["pressure_drop"] / 1000, 2),
             "unit": "kPa",
-            "regime": "turbulent",
+            "regime": done["pressure_drop"]["regime"],
             "assumptions": ["smooth pipe"],
             "explanation": "Darcy-Weisbach with Colebrook.",
         }
@@ -250,10 +295,10 @@ def scripted_case(name: str = "pd", case_type: str = "pressure_drop", **expected
     w = physics.water_properties(20)
     re = physics.reynolds_number(2, 0.05, w.density, w.dynamic_viscosity)
     expected_dp = physics.pressure_drop(physics.friction_factor(re), 30, 0.05, w.density, 2)
-    trajectory = ["convert_units", "water_properties", "reynolds_number", "friction_factor", "pressure_drop"]
+    trajectory = ["convert_units", "pressure_drop"]
     return Case(
         name=name,
-        inputs="pressure drop?",
+        inputs="Water at 20 °C flows at 2 m/s through 30 m of 50 mm smooth pipe. What is the pressure drop?",
         expected_output=_expected(**{"value": expected_dp, **expected}),
         metadata=CaseMetadata(case_type=case_type, expected_trajectory=trajectory, tags=[]),
     )
@@ -270,13 +315,14 @@ def test_end_to_end_with_scripted_agent():
         "RegimeCorrect": True,
         "FlagsMissingInputs": True,
         "ValueTraceableToTool": True,
+        "InputsTraceable": True,
         "tool_correctness": True,
     }
     # The output tool is not part of the span-based trajectory, so the match is exact.
     assert case.scores["trajectory"].value == 1.0
-    assert case.scores["tool_calls"].value == 5
+    assert case.scores["tool_calls"].value == 2
     assert case.scores["retries"].value == 0
-    assert case.output.usage["requests"] == 6
+    assert case.output.usage["requests"] == 3
 
 
 def test_trajectory_evaluators_attached_only_where_a_trajectory_is_defined():
@@ -289,4 +335,4 @@ def test_trajectory_evaluators_attached_only_where_a_trajectory_is_defined():
             assert names == set(), case.name
         else:
             assert names == {"trajectory", "tool_correctness"}, case.name
-    assert len(dataset.evaluators) == 6
+    assert len(dataset.evaluators) == 7

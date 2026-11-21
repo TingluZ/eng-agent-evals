@@ -29,3 +29,16 @@ def test_incompatible_units_raise_value_error():
 def test_unknown_unit_raises_value_error():
     with pytest.raises(ValueError):
         convert(1, "furlongz", "m")
+
+
+@pytest.mark.parametrize(
+    "unit, factor",
+    [
+        ("US gal/min", 6.30902e-5),
+        ("US gallon/min", 6.30902e-5),
+        ("gpm", 6.30902e-5),
+        ("imperial gal/min", 7.57682e-5),
+    ],
+)
+def test_common_gallon_spellings(unit, factor):
+    assert convert(1.0, unit, "m^3/s") == pytest.approx(factor, rel=1e-5)

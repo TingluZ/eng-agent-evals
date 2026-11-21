@@ -29,7 +29,6 @@ EXPECTED_TOOLS = {
     "mean_velocity",
     "reynolds_number",
     "relative_roughness",
-    "friction_factor",
     "pressure_drop",
     "heat_transfer_coefficient",
 }
@@ -92,45 +91,19 @@ def test_scripted_pressure_drop_trajectory_matches_reference():
         returns = {r.tool_name: r.content for r in _tool_returns(messages)}
         if "convert_units" not in returns:
             call = ToolCallPart("convert_units", {"value": d_mm, "from_unit": "mm", "to_unit": "m"})
-        elif "water_properties" not in returns:
-            call = ToolCallPart("water_properties", {"temperature_c": t})
-        elif "reynolds_number" not in returns:
-            w = returns["water_properties"]
-            call = ToolCallPart(
-                "reynolds_number",
-                {
-                    "velocity": v,
-                    "diameter": returns["convert_units"],
-                    "density": w["density"],
-                    "viscosity": w["dynamic_viscosity"],
-                },
-            )
-        elif "friction_factor" not in returns:
-            call = ToolCallPart(
-                "friction_factor", {"reynolds_number": returns["reynolds_number"]["reynolds_number"]}
-            )
         elif "pressure_drop" not in returns:
-            call = ToolCallPart(
-                "pressure_drop",
-                {
-                    "friction_factor": returns["friction_factor"],
-                    "length": length,
-                    "diameter": returns["convert_units"],
-                    "density": returns["water_properties"]["density"],
-                    "velocity": v,
-                },
-            )
+            args = {"velocity": v, "diameter": returns["convert_units"], "length": length, "temperature_c": t}
+            call = ToolCallPart("pressure_drop", args)
         else:
-            call = ToolCallPart(
-                info.output_tools[0].name,
-                {
-                    "value": returns["pressure_drop"],
-                    "unit": "Pa",
-                    "regime": returns["reynolds_number"]["regime"],
-                    "assumptions": ["smooth pipe"],
-                    "explanation": "Darcy-Weisbach with Colebrook.",
-                },
-            )
+            result = returns["pressure_drop"]
+            args = {
+                "value": result["pressure_drop"],
+                "unit": "Pa",
+                "regime": result["regime"],
+                "assumptions": ["smooth pipe"],
+                "explanation": "Darcy-Weisbach with Colebrook.",
+            }
+            call = ToolCallPart(info.output_tools[0].name, args)
         return ModelResponse(parts=[call])
 
     result = build_agent(FunctionModel(script)).run_sync("pressure drop?")
@@ -142,13 +115,11 @@ def test_scripted_pressure_drop_trajectory_matches_reference():
     assert result.output.value == pytest.approx(expected)
     assert result.output.regime == "turbulent"
     called = [r.tool_name for r in _tool_returns(result.all_messages())]
-    assert called == [
-        "convert_units",
-        "water_properties",
-        "reynolds_number",
-        "friction_factor",
-        "pressure_drop",
-    ]
+    assert called == ["convert_units", "pressure_drop"]
+
+
+def test_parallel_tool_calls_are_disabled():
+    assert build_agent(TestModel()).model_settings == {"parallel_tool_calls": False}
 
 
 def test_invalid_tool_input_is_returned_to_the_model_as_a_retry():

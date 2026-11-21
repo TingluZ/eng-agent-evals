@@ -32,20 +32,19 @@ The reference functions are checked against independent sources (`tests/test_phy
 
 ## Agent
 
-The agent (`src/eng_agent_evals/agent.py`) is a PydanticAI `Agent` with eight tools and a typed output.
+The agent (`src/eng_agent_evals/agent.py`) is a PydanticAI `Agent` with seven tools and a typed output.
 
-| Tool | Wraps |
-|---|---|
-| `convert_units` | `units.convert` (pint) |
-| `water_properties` | `physics.water_properties` |
-| `mean_velocity` | `physics.mean_velocity` (V = Q / (πD²/4)), for questions that give a flow rate |
-| `reynolds_number` | `physics.reynolds_number`, `physics.flow_regime` |
-| `relative_roughness` | `physics.relative_roughness` (ε/D), for questions that give absolute roughness |
-| `friction_factor` | `physics.friction_factor` |
-| `pressure_drop` | `physics.pressure_drop` |
-| `heat_transfer_coefficient` | `physics.nusselt_number`, `physics.heat_transfer_coefficient` |
+| Tool | Inputs | Wraps |
+|---|---|---|
+| `convert_units` | value, from unit, to unit | `units.convert` (pint) |
+| `mean_velocity` | flow rate, diameter | `physics.mean_velocity` (V = Q / (πD²/4)), for questions that give a flow rate |
+| `relative_roughness` | roughness, diameter | `physics.relative_roughness` (ε/D), for questions that give absolute roughness |
+| `reynolds_number` | velocity, diameter, temperature | `physics.pipe_flow`: Re and regime |
+| `pressure_drop` | velocity, diameter, length, temperature, ε/D | `physics.pipe_flow`, `physics.pressure_drop`: Δp with Re, regime and f |
+| `heat_transfer_coefficient` | velocity, diameter, temperature, ε/D | `physics.pipe_flow`: h with Nu, Re and regime |
+| `water_properties` | temperature | `physics.water_properties`; informational, not required by the other tools |
 
-Tools take SI inputs, so unit conversion is an explicit, observable step in the trajectory. Invalid inputs raise `ModelRetry`: the error message is returned to the model, which may correct the call (up to two retries per tool).
+Tools take inputs in m, m/s, m³/s and °C; any other unit is converted with `convert_units`, so unit conversion is an explicit, observable step in the trajectory. The calculation tools take the quantities stated in the question and compute water properties, the Reynolds number and the friction factor internally (`physics.pipe_flow`). An earlier design exposed each step as a separate tool; evaluation runs 1 and 2 showed the model substituting generic property values and re-typing intermediate results between tools, including errors of an order of magnitude, and instructions did not prevent it (`docs/run-log.md`, F1, F7, F8). Removing the need to copy intermediate values removes that failure mode. Invalid inputs raise `ModelRetry`: the error message is returned to the model, which may correct the call (up to two retries per tool). Parallel tool calls are disabled, since parallel calls were issued with placeholder arguments before the results they depended on existed (F6).
 
 The output is an `Answer`: `value`, `unit`, `regime`, `assumptions`, `missing_inputs` and `explanation`. When a required input is absent, the agent is instructed to return `value = null` and name the missing input rather than assume one; when no roughness is given, it assumes a smooth pipe and states the assumption. Both behaviours are evaluated.
 
@@ -66,20 +65,23 @@ The model is set by `AGENT_MODEL` (default `openai:gpt-5.4-mini`). Agent wiring 
 
 Regular cases are sampled from Reynolds-number bands (300–1800 laminar, 8000–3×10⁵ turbulent) so that rounding the velocity cannot move them across a regime boundary; only the traps sit near 2300–4000.
 
-Each case carries metadata: `case_type`, `tags` (units, roughness form, regime, trap kind) for slicing, and `expected_trajectory`. The trajectory is derived from the question: one `convert_units` call per non-SI input, `mean_velocity` when a flow rate is given, `relative_roughness` when absolute roughness is given, then the tools for the requested quantity, and a final `convert_units` when an output unit is requested. Cases with a missing input or an out-of-range temperature have no expected trajectory, since no single path is correct.
+Each case carries metadata: `case_type`, `tags` (units, roughness form, regime, trap kind) for slicing, and `expected_trajectory`. The trajectory is derived from the question: one `convert_units` call per non-SI input, `mean_velocity` when a flow rate is given, `relative_roughness` when absolute roughness is given, then the calculation tool for the requested quantity, and a final `convert_units` when an output unit is requested. Cases with a missing input or an out-of-range temperature have no expected trajectory, since no single path is correct.
 
 ### Evaluators
 
-The task returns the agent's `Answer` together with its tool calls (name, arguments, result, whether retried) read from the message history. A case passes when every applicable assertion passes.
+The task returns the agent's `Answer` together with its tool calls (name, arguments, result, whether retried) read from the message history.
+
+Assertions are of two kinds. **Correctness** checks concern the answer: value, requested unit, regime and missing inputs. A case passes when every applicable correctness check passes; this is the reported pass rate and the quantity intended for gating. **Process** checks concern how the answer was obtained: required tools called, final value and tool inputs traceable to tool outputs. They are reported as a separate rate. The distinction keeps a correct answer reached by a shortcut (for example a mm-to-m conversion done by the model) from counting the same as a wrong answer, while still recording it.
 
 | Evaluator | Type | Definition | Rationale |
 |---|---|---|---|
-| `ValueWithinTolerance` | assertion | Value converted with pint to the expected unit is within 2 % of the reference; passes if both are null | Correlations are exact in code, so a larger error indicates a wrong input or step rather than rounding. Unit-aware so that 21.6 kPa matches 21 559 Pa |
-| `ReportsRequestedUnit` | assertion | When the question names an output unit, the answer uses it | Separates "right number" from "answered the question asked" |
-| `RegimeCorrect` | assertion | Regime equals the reference, including null when it cannot be computed | A correct value with the wrong regime indicates a lucky rather than sound answer |
-| `FlagsMissingInputs` | assertion | If an input is missing: value is null and the input is named. Otherwise: nothing is flagged. Not applied to out-of-range cases | Refusing to guess is required behaviour; spurious flags are also errors |
-| `ValueTraceableToTool` | assertion | The value, in SI, equals some successful tool output within 0.5 % | Detects numbers computed by the model rather than a tool. Comparison in SI allows unit scaling of the final value; 0.5 % allows rounding to three significant figures |
-| `ToolCorrectness` (built-in) | assertion | Every tool in the expected trajectory was called; extra calls allowed | Required steps were taken |
+| `ValueWithinTolerance` | correctness | Value converted with pint to the expected unit is within 2 % of the reference; passes if both are null | Correlations are exact in code, so a larger error indicates a wrong input or step rather than rounding. Unit-aware so that 21.6 kPa matches 21 559 Pa |
+| `ReportsRequestedUnit` | correctness | When the question names an output unit, the answer uses it | Separates "right number" from "answered the question asked" |
+| `RegimeCorrect` | correctness | Regime equals the reference, including null when it cannot be computed | A correct value with the wrong regime indicates a lucky rather than sound answer |
+| `FlagsMissingInputs` | correctness | If an input is missing: value is null and the input is named. Otherwise: nothing is flagged. Not applied to out-of-range cases | Refusing to guess is required behaviour; spurious flags are also errors |
+| `ValueTraceableToTool` | process | The value, in SI, equals some successful tool output within 0.5 % | Detects numbers computed by the model rather than a tool. Comparison in SI allows unit scaling of the final value; 0.5 % allows rounding to three significant figures |
+| `InputsTraceable` | process | Every numeric argument of every successful tool call equals, within 0.1 %, a number in the question or an output of an earlier call (zero allowed) | A final value can be a genuine tool output computed from wrong inputs, for example generic water properties substituted for the looked-up ones; this check finds substituted, re-typed and mentally computed inputs |
+| `ToolCorrectness` (built-in) | process | Every tool in the expected trajectory was called; extra calls allowed | Required steps were taken |
 | `TrajectoryMatch` (built-in) | score | F1 of the longest common subsequence of actual and expected tool names | See below |
 | `ToolCallStats` | metric | Tool calls and retried calls per case | Efficiency and robustness, reported but not gated |
 
@@ -93,6 +95,6 @@ Exact matching is too strict for this agent: observed runs repeat calls (for exa
 
 ### Statistics
 
-Pass rates are reported overall, per case type and per evaluator, each with a Wilson 95 % score interval. With n between 10 and 60, the normal approximation is unreliable and can fall outside [0, 1] when rates are near 0 or 1; the Wilson interval does not. The lower bound of the overall interval is the quantity intended for the CI gate.
+Pass rates are reported overall, per case type and per evaluator, each with a Wilson 95 % score interval. With n between 10 and 60, the normal approximation is unreliable and can fall outside [0, 1] when rates are near 0 or 1; the Wilson interval does not. The lower bound of the interval on the correctness pass rate is the quantity intended for the CI gate.
 
-`run_evals.py` also reports the mean trajectory score, mean tool calls per case, the retry rate (retried calls over all calls) and task errors, and saves the full report, per-case outputs and the git revision as JSON in `results/`. `--subset N` selects a fixed subset taken round-robin across case types.
+`run_evals.py` also reports the mean trajectory score, mean tool calls per case, the retry rate (retried calls over all calls) and task errors, and saves the full report, per-case outputs and the git revision as JSON in `results/`. `--subset N` selects a fixed subset taken round-robin across case types. `--repeat N` runs every case N times to estimate run-to-run variation: the summary reports the pass rate of each repeat and the cases whose outcome differed between repeats. Rates pooled over repeats treat attempts at the same case as independent, which understates the width of their intervals; the per-repeat rates are the comparable figures.

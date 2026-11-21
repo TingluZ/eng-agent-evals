@@ -143,6 +143,34 @@ def heat_transfer_coefficient(nusselt: float, thermal_conductivity: float, diame
     return nusselt * thermal_conductivity / diameter
 
 
+@dataclass(frozen=True)
+class PipeFlow:
+    """Flow state of water in a pipe, computed from the question's inputs."""
+
+    water: WaterProperties
+    reynolds_number: float
+    regime: Regime
+    friction_factor: float  # Darcy
+    nusselt_number: float
+    heat_transfer_coefficient: float  # W/(m^2·K)
+
+
+def pipe_flow(
+    velocity: float, diameter: float, temperature_c: float, relative_roughness: float = 0.0
+) -> PipeFlow:
+    """Chain the reference functions: properties, Re, regime, f, Nu and h.
+
+    The agent's calculation tools and the evaluation dataset both use this, so
+    intermediate values never have to be copied from one step to the next.
+    """
+    w = water_properties(temperature_c)
+    re = reynolds_number(velocity, diameter, w.density, w.dynamic_viscosity)
+    f = friction_factor(re, relative_roughness)
+    nu = nusselt_number(re, w.prandtl, relative_roughness)
+    h = heat_transfer_coefficient(nu, w.thermal_conductivity, diameter)
+    return PipeFlow(w, re, flow_regime(re), f, nu, h)
+
+
 def _require_positive(**values: float) -> None:
     for name, value in values.items():
         if not value > 0:

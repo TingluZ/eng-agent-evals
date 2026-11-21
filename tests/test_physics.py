@@ -152,3 +152,22 @@ def test_gnielinski_close_to_dittus_boelter_in_fully_turbulent_flow():
 
 def test_heat_transfer_coefficient():
     assert physics.heat_transfer_coefficient(100.0, 0.6, 0.025) == pytest.approx(2400.0)
+
+
+# --- composed flow state -------------------------------------------------------
+
+def test_pipe_flow_matches_the_step_by_step_chain():
+    v, d, t, rr = 2.0, 0.05, 20.0, 9e-4
+    flow = physics.pipe_flow(v, d, t, rr)
+    w = physics.water_properties(t)
+    re = physics.reynolds_number(v, d, w.density, w.dynamic_viscosity)
+    assert flow.reynolds_number == re
+    assert flow.regime == "turbulent"
+    assert flow.friction_factor == physics.friction_factor(re, rr)
+    nu = physics.nusselt_number(re, w.prandtl, rr)
+    assert flow.heat_transfer_coefficient == physics.heat_transfer_coefficient(nu, w.thermal_conductivity, d)
+
+
+def test_pipe_flow_rejects_out_of_range_temperature():
+    with pytest.raises(ValueError, match="outside the table range"):
+        physics.pipe_flow(1.0, 0.05, 120.0)
