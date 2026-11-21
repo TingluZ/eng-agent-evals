@@ -2,7 +2,7 @@
 
 Evaluating an LLM agent that answers engineering questions about water flowing in pipes (pressure drop, Reynolds number, heat transfer coefficient) by calling calculation tools.
 
-The point of the project is the evaluation, not the agent. Expected answers are computed by the same reference functions the tools wrap, so every check is deterministic. Correctness checks (value, unit, regime, missing inputs) decide whether a case passes. Process checks (trajectory, values and inputs traceable to tools) explain why it failed. Runs are traced with Logfire, repeated to measure variation, and reported with Wilson 95 % intervals. Planned next: an LLM judge for the explanations, calibrated against human labels, and a CI gate on regressions.
+The point of the project is the evaluation, not the agent. Expected answers are computed by the same reference functions the tools wrap, so every check is deterministic. Correctness checks (value, unit, regime, missing inputs) decide whether a case passes. Process checks (trajectory, values and inputs traceable to tools) explain why it failed. Runs are traced with Logfire, repeated to measure variation, and reported with Wilson 95 % intervals. Unit tests run in CI on Linux and macOS. Planned next: an LLM judge for the explanations, calibrated against human labels, and a CI gate on evaluation results.
 
 ## Results
 
