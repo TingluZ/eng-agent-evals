@@ -304,10 +304,12 @@ def _trap_cases() -> list[Case]:
             _Flow(30, 0.010, velocity=0.35, conversions=1,
                   tags=["units:metric", "roughness:unspecified", "trap:transition"]),
         ),
-        # Imperial or mixed units, and flow rate instead of velocity.
+        # Imperial or mixed units, and flow rate instead of velocity. Inch sizes are stated as
+        # bores: a bare "2 inch pipe" is a nominal size whose bore depends on the schedule.
         _case(
             "trap-units-01", "trap", "pressure_drop",
-            "Water at 68 °F flows at 6 ft/s through 50 ft of 2 inch smooth pipe. What is the pressure drop?",
+            "Water at 68 °F flows at 6 ft/s through 50 ft of smooth pipe with a 2 inch bore. "
+            "What is the pressure drop?",
             _Flow(c(68, "degF", "degC"), c(2, "inch", "m"), velocity=c(6, "ft/s", "m/s"),
                   length=c(50, "ft", "m"), conversions=4,
                   tags=["units:imperial", "roughness:smooth", "trap:units"]),
@@ -321,7 +323,7 @@ def _trap_cases() -> list[Case]:
         ),
         _case(
             "trap-units-03", "trap", "pressure_drop",
-            "30 US gal/min of water at 15 °C flows through 100 ft of 2 inch commercial steel pipe "
+            "30 US gal/min of water at 15 °C flows through 100 ft of commercial steel pipe with a 2 inch bore "
             "(absolute roughness 0.045 mm). What is the pressure drop?",
             _Flow(15, c(2, "inch", "m"), flow_rate=c(30, "gal/min", "m^3/s"), length=c(100, "ft", "m"),
                   roughness=0.045e-3, conversions=4,
@@ -329,7 +331,7 @@ def _trap_cases() -> list[Case]:
         ),
         _case(
             "trap-units-04", "trap", "reynolds_number",
-            "Water at 140 °F flows at 3 ft/s through a 1 inch tube. "
+            "Water at 140 °F flows at 3 ft/s through a tube with a 1 inch bore. "
             "What is the Reynolds number, and what is the flow regime?",
             _Flow(c(140, "degF", "degC"), c(1, "inch", "m"), velocity=c(3, "ft/s", "m/s"), conversions=3,
                   tags=["units:imperial", "trap:units"]),
@@ -337,7 +339,7 @@ def _trap_cases() -> list[Case]:
         # A required input is missing: the agent should not guess.
         _unanswerable_case(
             "trap-missing-01", "pressure_drop",
-            "Water at 20 °C flows at 1 m/s through a 2 inch pipe. What is the pressure drop?",
+            "Water at 20 °C flows at 1 m/s through a pipe with a 2 inch bore. What is the pressure drop?",
             regime="turbulent", missing_inputs=["length"],
             tags=["units:imperial", "roughness:unspecified", "trap:missing_input"],
         ),
