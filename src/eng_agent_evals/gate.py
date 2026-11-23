@@ -1,7 +1,7 @@
 """Gate evaluation results against a committed baseline, for CI.
 
     uv run python -m eng_agent_evals.gate check RESULTS.json BASELINE.json [--enforce-headline]
-    uv run python -m eng_agent_evals.gate baseline RESULTS.json -o BASELINE.json [--finding CASE=ID ...]
+    uv run python -m eng_agent_evals.gate baseline RESULTS.json RESULTS.json ... -o BASELINE.json [--finding CASE=ID ...]
 
 Exits with status 1 if the gate fails. Three rules (docs/methodology.md, "CI gate"):
 
@@ -32,9 +32,11 @@ from .run_evals import wilson_interval
 
 # Warn when mean tokens or latency per attempt grow by more than this factor.
 COST_WARNING_RATIO = 1.5
-# A baseline needs repeats: with one attempt per case, a flaky case looks stable
-# and rule 2 would gate on it. Three is what the saved runs use.
-MIN_BASELINE_REPEATS = 3
+# A baseline needs evidence from separate runs: within one run, repeats share
+# conditions, and stable cases flipped 4.5 times more often in a later run (2.6 %)
+# than between repeats of the same run (0.58 %). See docs/methodology.md (E9).
+MIN_BASELINE_RUNS = 2
+MIN_BASELINE_ATTEMPTS = 3
 
 _REPEAT_SUFFIX = re.compile(r" \[(?:recheck )?\d+/\d+\]$")
 
@@ -159,30 +161,61 @@ def check(results: dict[str, Any], baseline: dict[str, Any], enforce_headline: b
     return _result(failures, warnings, notes, rows)
 
 
-def build_baseline(results: dict[str, Any], source: str, findings: dict[str, str] | None = None) -> dict[str, Any]:
-    """A baseline from a results file with repeats: per-case pass counts over first
-    attempts, known failures (cases that failed every attempt) annotated with
-    finding IDs, process-check rates and mean usage."""
+def build_baseline(runs: list[tuple[dict[str, Any], str]], findings: dict[str, str] | None = None) -> dict[str, Any]:
+    """A baseline pooled from separate runs, given as (results, source file name):
+    per-case pass counts over first attempts, known failures (cases that failed
+    every attempt) annotated with finding IDs, process-check rates and mean usage.
+
+    A case counts as stable only if it passed every attempt across all runs.
+    Repeats within one run share conditions and understate the variation between
+    runs, so at least MIN_BASELINE_RUNS separate runs are required."""
     findings = findings or {}
-    outcomes = collect_outcomes(results)
-    cases = {name: {"passed": sum(o.first), "attempts": len(o.first)} for name, o in sorted(outcomes.items())}
-    too_few = sorted(name for name, c in cases.items() if c["attempts"] < MIN_BASELINE_REPEATS)
+    if len(runs) < MIN_BASELINE_RUNS:
+        raise ValueError(f"baseline needs at least {MIN_BASELINE_RUNS} separate runs; got {len(runs)}")
+    first, *_ = (results for results, _ in runs)
+    for results, source in runs:
+        for key in ("model", "dataset"):
+            if results.get(key) != first.get(key):
+                raise ValueError(f"{source} is for {key} {results.get(key)!r}, not {first.get(key)!r}")
+
+    cases: dict[str, dict[str, int]] = defaultdict(lambda: {"passed": 0, "attempts": 0, "runs": 0})
+    process: dict[str, dict[str, float]] = defaultdict(lambda: {"successes": 0, "n": 0})
+    usage: dict[str, float] = defaultdict(float)
+    for results, _ in runs:
+        for name, outcome in collect_outcomes(results).items():
+            cases[name]["passed"] += sum(outcome.first)
+            cases[name]["attempts"] += len(outcome.first)
+            cases[name]["runs"] += 1
+        for name, rate in results.get("summary", {}).get("process_checks", {}).items():
+            process[name]["successes"] += rate["successes"]
+            process[name]["n"] += rate["n"]
+        for key, value in _mean_usage(results).items():
+            usage[key] += value * len(results["cases"])
+    attempts = sum(len(results["cases"]) for results, _ in runs)
+
+    too_few = sorted(name for name, c in cases.items() if c["attempts"] < MIN_BASELINE_ATTEMPTS or c["runs"] < MIN_BASELINE_RUNS)
     if too_few:
-        raise ValueError(f"baseline needs at least {MIN_BASELINE_REPEATS} attempts per case; too few for {too_few[:3]}")
+        raise ValueError(
+            f"every case needs at least {MIN_BASELINE_ATTEMPTS} attempts from {MIN_BASELINE_RUNS} runs; "
+            f"too few for {too_few[:3]}"
+        )
     not_failing = sorted(set(findings) - {name for name, c in cases.items() if c["passed"] == 0})
     if not_failing:
         raise ValueError(f"findings given for cases that are not known failures: {not_failing}")
     return {
-        "model": results["model"],
-        "dataset": results["dataset"],
-        "dataset_file": results.get("dataset_file"),
-        "source_results": source,
-        "git_commit": results.get("git_commit"),
-        "repeat": results.get("repeat"),
-        "cases": cases,
-        "known_failures": {name: findings.get(name, "") for name, c in cases.items() if c["passed"] == 0},
-        "process_checks": results.get("summary", {}).get("process_checks", {}),
-        "mean_usage": _mean_usage(results),
+        "model": first["model"],
+        "dataset": first["dataset"],
+        "dataset_file": first.get("dataset_file"),
+        "runs": [
+            {"source_results": source, "git_commit": results.get("git_commit"), "repeat": results.get("repeat")}
+            for results, source in runs
+        ],
+        "cases": dict(sorted(cases.items())),
+        "known_failures": {name: findings.get(name, "") for name, c in sorted(cases.items()) if c["passed"] == 0},
+        "process_checks": {
+            name: {**r, "rate": r["successes"] / r["n"]} for name, r in sorted(process.items()) if r["n"]
+        },
+        "mean_usage": {key: value / attempts for key, value in usage.items()} if attempts else {},
     }
 
 
@@ -205,8 +238,8 @@ def main(argv: list[str] | None = None) -> int:
     check_cmd.add_argument("baseline", type=Path)
     check_cmd.add_argument("--enforce-headline", action="store_true", help="fail on rule 3 instead of reporting it")
     check_cmd.add_argument("--summary-file", type=Path, help="also append the report here (e.g. $GITHUB_STEP_SUMMARY)")
-    baseline_cmd = commands.add_parser("baseline", help="build a baseline from a results file with repeats")
-    baseline_cmd.add_argument("results", type=Path)
+    baseline_cmd = commands.add_parser("baseline", help="build a baseline pooled from separate runs")
+    baseline_cmd.add_argument("results", type=Path, nargs="+", help="results files of separate runs (at least 2)")
     baseline_cmd.add_argument("-o", "--output", type=Path, required=True)
     baseline_cmd.add_argument(
         "--finding", action="append", default=[], metavar="CASE=ID", help="annotate a known failure, e.g. trap-missing-01=F11"
@@ -215,7 +248,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "baseline":
         findings = dict(item.split("=", 1) for item in args.finding)
-        baseline = build_baseline(json.loads(args.results.read_text()), args.results.name, findings)
+        runs = [(json.loads(path.read_text()), path.name) for path in args.results]
+        baseline = build_baseline(runs, findings)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(baseline, indent=2) + "\n")
         print(f"wrote {args.output}: {len(baseline['cases'])} cases, {len(baseline['known_failures'])} known failures")

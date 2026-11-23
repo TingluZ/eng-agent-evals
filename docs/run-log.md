@@ -375,3 +375,36 @@ mini's other hard-set changes: `hard-geometry-01` 0/3 → 3/3 and `hard-flow-01`
 | F3 | Decision still open (see run 3); run 5 adds that unrelated instruction text shifts the rate. Prefer a structural option or accept prefix conversions as an ungated deviation | Open |
 | F21, F22 | No action unless gpt-5.4-mini is chosen as the target model | Open |
 | E5 | If gpt-6.1-sol is the target, the next step is a larger or harder set; 30 cases cannot support a claim below ≈ 10 % | Open |
+
+---
+
+## First CI gate run and baseline update (E9)
+
+The first manual run of `.github/workflows/evals.yml` (`openai:gpt-5.4-mini`, one repeat, two rechecks of failures). Agent unchanged since run 5. Gate runs are not logged as runs; this entry records the finding and the baseline change it caused.
+
+| | |
+|---|---|
+| Date | 23 Nov 2026 |
+| Code | `d6dd38b` |
+| Workflow run | GitHub Actions run 45160390835 |
+| Result files | `results/20261123T105619Z-openai_gpt-5.4-mini-regression.json`, `results/20261123T105709Z-openai_gpt-5.4-mini-hard.json` (copied from the workflow artifact, as baseline sources) |
+
+### Results
+
+| | Baseline | This run | Gate |
+|---|---|---|---|
+| Regression, correct (first attempts) | 94.4 % | 55/60, 92 % [82 %, 96 %] | Passed |
+| Hard, correct (first attempts) | 68.9 % | 19/30, 63 % [46 %, 78 %] | **Failed**: `hard-scope-04` 3/3 → 0/3 |
+
+### Findings
+
+| ID | Type | Observation | Cause |
+|---|---|---|---|
+| E9 | Eval gap, false alarm | `hard-scope-04` (50 % ethylene glycol) failed the gate: 3/3 in the baseline, 0/3 with rechecks. All three answers computed h with water properties and no caveat (F15). The agent is unchanged, and the case was 1/3 in run 4a | The baseline came from one run. A case with a pass rate near 50 % passes three repeats in a row 12.5 % of the time, so it was labelled stable. Stable cases failed a first attempt in 2 of 76 cases between runs (2.6 %), against 0.58 % between repeats of one run, which the gate's thresholds assumed |
+| F15 | Recurrence | `hard-scope-04` | As in runs 4a–4c |
+
+### Actions
+
+| ID | Action | Status |
+|---|---|---|
+| E9 | Baselines are pooled from at least two separate runs; a case is stable only if it passed every attempt in all of them. Both mini baselines rebuilt from run 5 and this run: 74 stable cases (was 76); `hard-scope-04` and `trap-units-02` now flaky. Expected false-alarm rate revised from 0.7 % to about 3–4 % per gate run (`docs/methodology.md`) | Done; to be verified by later gate runs |
