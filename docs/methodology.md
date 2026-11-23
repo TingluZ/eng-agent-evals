@@ -151,3 +151,14 @@ The first baselines are for gpt-5.4-mini, from runs 5b (hard) and 5c (regression
 - **Caveat:** run 5c predates the E8 rewording of four regression questions. The regression baseline should be rebuilt from the first full three-repeat run after it.
 
 **Validation on past runs.** Gating run 5b (hard set, `calculate` tool) against a baseline built from run 4a (before it) fails on `hard-multistep-01`: 3/3 → 1/3, finding F22, which run 5 found by reading the per-case output. The same check lists the two known failures that the change fixed (`hard-geometry-01`, `hard-flow-02`). Gating run 5c against run 3 on the regression set passes. The rise in model-side unit conversions (F3) appears in the process rows but does not block.
+
+**Where it runs** (`.github/workflows/evals.yml`). The evaluations call a paid API, so the workflow runs:
+- on pull requests labelled `run-evals` that change `src/`, `data/`, `baselines/` or the dependencies. Pull requests that change only documentation or tests cost nothing;
+- weekly on `main`, with three repeats, to detect changes in the model behind the API, which code review cannot catch;
+- on demand.
+
+Each run evaluates both datasets with `--recheck-failures 2` and gates each against its baseline. The gate's report goes to the job summary, and the results files are kept as workflow artifacts for 90 days. Gate runs are not entered in the run log: it records deliberate experiments, and a gate run that changes a baseline is logged with that change.
+
+Security: the API key is a repository secret. The workflow uses the `pull_request` event, never `pull_request_target`, and skips pull requests from forks, so untrusted code never runs with the key. Workflow inputs are validated and passed to the shell through environment variables. Permissions are read-only.
+
+**Limits.** One repeat of 60 + 30 cases catches a case that breaks, or a headline drop of about 6 points (regression set) or 19 points (hard set). A smaller decline needs a deliberate run with repeats. The gate protects against regressions in the behaviour the datasets cover, and says nothing about cases they do not contain.
