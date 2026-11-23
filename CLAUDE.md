@@ -15,6 +15,7 @@ An evaluation suite for an LLM agent that answers questions about internal flow 
 | `src/eng_agent_evals/hard_dataset.py` | Generates the hard set (30 cases) |
 | `src/eng_agent_evals/evaluators.py` | Custom evaluators |
 | `src/eng_agent_evals/run_evals.py` | Runs the suite and summarises results |
+| `src/eng_agent_evals/gate.py` | CI gate: compares a results file with a committed baseline |
 | `data/` | Generated datasets (`cases.yaml`, `hard_cases.yaml`) |
 | `results/` | Saved evaluation reports |
 | `tests/` | Unit tests (no API calls) |
