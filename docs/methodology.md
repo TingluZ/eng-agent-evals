@@ -133,7 +133,13 @@ Pass rates are reported overall, per case type and per evaluator, each with a Wi
 - Failing the gate on any single failed attempt would raise a false alarm in about 35 % of runs (66 % at the upper end of the interval).
 - Re-running each failed case twice and requiring a majority of the three attempts to fail lowers the per-case rate to about 3p², or 0.01 %. That gives about 0.7 % per run (4.7 % at the upper end).
 
-This assumes attempts are independent, which is reasonable for stable cases. Cases that are already inconsistent in the baseline are reported, not gated.
+This assumes that a case labelled stable really is stable, and that its attempts are independent. Cases that are already inconsistent in the baseline are reported, not gated.
+
+**Revision after the first CI run (E9).** The first live gate run failed on `hard-scope-04`, a case that passed 3/3 in the baseline run (5b) and then failed all three attempts, with no change to the agent. Its earlier history (1/3 in run 4a) shows it is flaky. The estimate above was wrong in two ways:
+- **Within-run repeats understate the variation between runs.** Of 76 cases stable in run 5, 2 failed their first attempt in the CI run: 2.6 % [0.7 %, 9.1 %], about 4.5 times the within-run rate. Repeats in one run share the same time window and API conditions.
+- **Rechecks do not rescue a misclassified case.** For a case that passes about half the time, the rechecks fail too. They protect against one-off failures of genuinely stable cases, and `trap-units-02` in the same run was such a failure.
+
+Baselines are therefore pooled from at least two separate runs, and a case counts as stable only if it passed every attempt in all of them. Excluding the misclassified case, the measured between-run rate for stable cases is about 1.3 % (1 of 76). That gives an expected false-alarm rate of about 3–4 % per gate run. The evidence is one later run, so the estimate is weak. Each weekly run adds evidence, and the baselines should be rebuilt from accumulated runs as it grows.
 
 Power: a change that breaks a case completely is always caught. A case broken half the time is caught with probability 0.5 × 0.75 ≈ 38 % per run.
 
@@ -143,12 +149,12 @@ Power: a change that breaks a case completely is always caught. A case broken ha
 
 **Reported, never gated:** process checks, mean tokens per attempt and latency, compared with the baseline. A warning is shown when tokens or latency grow by more than 1.5×. This follows the correctness/process split used throughout: the gate blocks wrong answers, and process checks explain them.
 
-**Baselines.** `baselines/<model>-<dataset>.json` is built with `gate baseline` from a logged run with at least three repeats. With fewer repeats a flaky case looks stable, and rule 2 would gate on it. A baseline holds per-case pass counts over first attempts, known failures annotated with their finding IDs, process-check rates and mean usage. Rechecks are excluded, since they sample only failures. A baseline changes only in a reviewed pull request, together with a run-log entry, so that moving the reference point is visible in the history in the same way as an agent change.
+**Baselines.** `baselines/<model>-<dataset>.json` is built with `gate baseline`, pooled from at least two separate runs, with at least three attempts per case (E9). A baseline holds per-case pass counts over first attempts, known failures annotated with their finding IDs, process-check rates and mean usage. Rechecks are excluded, since they sample only failures. A baseline changes only in a reviewed pull request, together with a run-log entry, so that moving the reference point is visible in the history in the same way as an agent change.
 
-The first baselines are for gpt-5.4-mini, from runs 5b (hard) and 5c (regression):
+The baselines are for gpt-5.4-mini. They pool run 5c (regression) and run 5b (hard), each with three repeats, with the first CI gate run on 23 Nov 2026 (one repeat):
 - **Why mini:** it is the cheapest model (≈ $0.30 per gated pull request with rechecks), and its remaining failures leave room to detect regressions.
 - **Why not gpt-6.1-sol:** it would give a sharper signal, since it scores 100 %, but costs ≈ $3.30 per pull request while the target model is undecided.
-- **Caveat:** run 5c predates the E8 rewording of four regression questions. The regression baseline should be rebuilt from the first full three-repeat run after it.
+- **Caveat:** run 5c predates the E8 rewording of four regression questions; the CI run postdates it, and passed all four. The next full three-repeat regression run should replace run 5c in the pool.
 
 **Validation on past runs.** Gating run 5b (hard set, `calculate` tool) against a baseline built from run 4a (before it) fails on `hard-multistep-01`: 3/3 → 1/3, finding F22, which run 5 found by reading the per-case output. The same check lists the two known failures that the change fixed (`hard-geometry-01`, `hard-flow-02`). Gating run 5c against run 3 on the regression set passes. The rise in model-side unit conversions (F3) appears in the process rows but does not block.
 

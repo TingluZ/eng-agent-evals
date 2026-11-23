@@ -196,37 +196,62 @@ def _repeated_results(outcomes: dict[str, list[bool]]) -> dict:
     return {"model": MODEL, "dataset": DATASET, "cases": cases, "errors": [], "summary": summary, "repeat": 3}
 
 
-def test_build_baseline_counts_first_attempts_and_marks_known_failures():
+def test_build_baseline_pools_first_attempts_across_runs_and_marks_known_failures():
     from eng_agent_evals.gate import build_baseline
 
-    results = _repeated_results({"stable": [True] * 3, "flaky": [True, False, True], "missing-01": [False] * 3})
-    results["rechecks"] = [_case("flaky", True, attempt="recheck 1/2")]  # ignored: biased sample
-    baseline = build_baseline(results, "run.json", {"missing-01": "F11"})
+    run_1 = _repeated_results({"stable": [True] * 3, "flaky": [True, False, True], "missing-01": [False] * 3})
+    run_1["rechecks"] = [_case("flaky", True, attempt="recheck 1/2")]  # ignored: biased sample
+    run_2 = _results({"stable": True, "flaky": True, "missing-01": False})
+    run_2["summary"] = {"process_checks": {"InputsTraceable": {"successes": 1, "n": 3, "rate": 1 / 3}}}
+    baseline = build_baseline([(run_1, "run1.json"), (run_2, "run2.json")], {"missing-01": "F11"})
     assert baseline["cases"] == {
-        "flaky": {"passed": 2, "attempts": 3},
-        "missing-01": {"passed": 0, "attempts": 3},
-        "stable": {"passed": 3, "attempts": 3},
+        "flaky": {"passed": 3, "attempts": 4, "runs": 2},
+        "missing-01": {"passed": 0, "attempts": 4, "runs": 2},
+        "stable": {"passed": 4, "attempts": 4, "runs": 2},
     }
     assert baseline["known_failures"] == {"missing-01": "F11"}
-    assert baseline["source_results"] == "run.json"
+    assert [r["source_results"] for r in baseline["runs"]] == ["run1.json", "run2.json"]
     assert baseline["mean_usage"]["input_tokens"] == 1000
-    assert baseline["process_checks"]["InputsTraceable"]["rate"] == pytest.approx(5 / 6)
+    assert baseline["process_checks"]["InputsTraceable"]["rate"] == pytest.approx(6 / 9)
 
 
-def test_build_baseline_rejects_single_runs_and_wrong_findings():
+def test_a_case_stable_in_one_run_but_not_the_next_is_not_gated():
+    # The first live CI run (E9): hard-scope-04 passed 3/3 in run 5b, then 0/1.
     from eng_agent_evals.gate import build_baseline
 
-    with pytest.raises(ValueError, match="at least 3 attempts"):
-        build_baseline(_results({"a": True}), "run.json")
+    run_1 = _repeated_results({**{n: [True] * 3 for n in STABLE}, "hard-scope-04": [True] * 3})
+    run_2 = _results({**{n: True for n in STABLE}, "hard-scope-04": False})
+    baseline = build_baseline([(run_1, "5b.json"), (run_2, "ci.json")])
+    assert baseline["cases"]["hard-scope-04"] == {"passed": 3, "attempts": 4, "runs": 2}
+    later = _results({**{n: True for n in STABLE}, "hard-scope-04": False}, rechecks={"hard-scope-04": [False, False]})
+    result = check(later, baseline)
+    assert result.passed
+    assert any("Flaky case `hard-scope-04` (3/4" in n for n in result.notes)
+
+
+def test_build_baseline_requires_two_runs_enough_attempts_and_valid_findings():
+    from eng_agent_evals.gate import build_baseline
+
+    three = _repeated_results({"a": [True] * 3})
+    with pytest.raises(ValueError, match="at least 2 separate runs"):
+        build_baseline([(three, "run.json")])
+    with pytest.raises(ValueError, match="at least 3 attempts from 2 runs"):
+        build_baseline([(_results({"a": True}), "1.json"), (_results({"a": True}), "2.json")])
+    with pytest.raises(ValueError, match="at least 3 attempts from 2 runs"):
+        build_baseline([(three, "1.json"), (_results({"b": True}), "2.json")])  # "a" only in one run
     with pytest.raises(ValueError, match="not known failures"):
-        build_baseline(_repeated_results({"a": [True] * 3}), "run.json", {"a": "F1"})
+        build_baseline([(three, "1.json"), (_results({"a": True}), "2.json")], {"a": "F1"})
+    other_model = {**_results({"a": True}), "model": "openai:gpt-6.1-sol"}
+    with pytest.raises(ValueError, match="is for model"):
+        build_baseline([(three, "1.json"), (other_model, "2.json")])
 
 
 def test_baseline_round_trip_through_the_cli(tmp_path):
-    results = _repeated_results({**{name: [True] * 3 for name in STABLE}, "missing-01": [False] * 3})
-    (tmp_path / "run.json").write_text(json.dumps(results))
+    (tmp_path / "1.json").write_text(json.dumps(_repeated_results({**{n: [True] * 3 for n in STABLE}, "missing-01": [False] * 3})))
+    (tmp_path / "2.json").write_text(json.dumps(_results({**{n: True for n in STABLE}, "missing-01": False})))
     out = tmp_path / "baselines" / "b.json"
-    assert main(["baseline", str(tmp_path / "run.json"), "-o", str(out), "--finding", "missing-01=F11"]) == 0
+    argv = ["baseline", str(tmp_path / "1.json"), str(tmp_path / "2.json"), "-o", str(out), "--finding", "missing-01=F11"]
+    assert main(argv) == 0
     same_again = _results({**{name: True for name in STABLE}, "missing-01": False})
     assert check(same_again, json.loads(out.read_text())).passed
 

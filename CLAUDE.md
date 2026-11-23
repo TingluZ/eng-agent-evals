@@ -41,7 +41,7 @@ uv run python -m eng_agent_evals.run_evals [--dataset regression|hard] [--subset
 - No secrets in the repository (`.env`, `.logfire/` are ignored).
 - `notes/` is local and ignored.
 - Update `docs/methodology.md` when the evaluation design changes.
-- Baselines in `baselines/` are rebuilt with `python -m eng_agent_evals.gate baseline` from a logged run with at least three repeats, in their own pull request, with the run-log entry saying the baseline changed.
+- Baselines in `baselines/` are rebuilt with `python -m eng_agent_evals.gate baseline`, pooled from at least two separate runs (at least three attempts per case), in their own pull request, with the run-log entry saying the baseline changed. Results files used as baseline sources are committed to `results/`.
 - After every full evaluation run, commit its file in `results/` and add an entry to `docs/run-log.md`: configuration, results with intervals, findings with their cause (from the per-case output), and actions. Keep finding IDs stable across runs and mark actions as verified by the run that confirms them. Smoke-test runs (`--subset`) and CI gate runs (`.github/workflows/evals.yml`; results kept as workflow artifacts) are not logged.
 
 ## Required checks

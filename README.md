@@ -61,7 +61,7 @@ Gate a results file against a baseline, as CI does (exit status 1 if the agent g
 ```bash
 uv run python -m eng_agent_evals.run_evals --recheck-failures 2      # re-run failed cases twice more
 uv run python -m eng_agent_evals.gate check results/<file>.json baselines/openai_gpt-5.4-mini-regression.json
-uv run python -m eng_agent_evals.gate baseline results/<3-repeat file>.json -o baselines/<name>.json --finding trap-missing-01=F11
+uv run python -m eng_agent_evals.gate baseline results/<run 1>.json results/<run 2>.json -o baselines/<name>.json --finding trap-missing-01=F11
 ```
 
 ## Layout
